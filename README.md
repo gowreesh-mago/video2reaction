@@ -8,6 +8,7 @@ audio_encoder_acoustic="clap_general"
 audio_encoder_semantic="hubert_large"
 text_encoder = "bert-base-uncased"
 # Cache file can be downloaded from https://huggingface.co/datasets/video2reac/Video2Reaction/tree/main
+split = "train"
 train_dataset = Video2Reaction(metadata_file_path=os.path.join(metadata_dir, f"{split}.json"), 
                                  processed_feature_dir=processed_feature_dir, 
                                  visual_encoder=visual_encoder, 
