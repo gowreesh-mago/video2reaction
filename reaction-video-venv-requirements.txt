@@ -20,6 +20,9 @@ diffusers
 scenedetect[opencv]
 # LDL metrics
 python-ldl
+# VLM LoRA finetuning
+peft
+wandb
 
 # # antlr4-python3-runtime==4.9.3
 # # anyio==4.6.2.post1

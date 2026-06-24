@@ -38,6 +38,7 @@ Each sample in Video2Reaction pairs a movie clip with a distribution over **21 r
 - **Classical multimodal fusion baselines** combining visual, acoustic, semantic-audio, and text features (`src/model.py`, `src/baselines/`).
 - **Label Distribution Learning (LDL) baselines** (`scripts/run_ldl_baselines.py`).
 - **Zero-shot Vision-Language Model (VLM) classification** with LLaVA-NeXT and Qwen2.5-VL (`scripts/vlm_classification.py`).
+- **LoRA finetuning of VLMs** for reaction distribution prediction (`scripts/finetune_vlm_classification.py`).
 - **LLM-based automatic annotation** of reaction labels from YouTube comments (`src/automatic_annotation/`).
 
 ## Dataset
@@ -136,6 +137,32 @@ python scripts/vlm_classification.py \
     --model_name llava_next --split test --result_dir results/
 ```
 
+**VLM LoRA finetuning:**
+
+`scripts/finetune_vlm_classification.py` finetunes a VLM (LLaVA-NeXT or Qwen2.5-VL) with LoRA to predict the 21-class reaction distribution directly from video + scene description, using a multiple-choice-style prompt over the reaction taxonomy. It supports:
+
+- **Taxonomy augmentation** (`--apply_augmentation`, `--synonym_prob`, `--reorder_prob`): randomly substitutes emotion synonyms and reorders answer choices during training for robustness.
+- **Ablations** (`--ablate_text`, `--ablate_visual`): drop the scene description or replace video frames with blanks, to study each modality's contribution.
+- **Multiple training losses** (`--loss_type`): `kl_divergence`, `cross_entropy`, `mse`, or `mae` between the predicted and target reaction distributions.
+- **Debug mode** (`--debug`): runs a single batch/epoch and prints the constructed prompt, processed batch shapes, and decoded input for sanity-checking before a full run.
+
+```bash
+python scripts/finetune_vlm_classification.py \
+    --metadata_dir data/metadata --key_frame_dir data/processed_features \
+    --output_type reaction_distribution \
+    --model_name qwen2_vl \
+    --output_dir results/finetune_vlm \
+    --use_lora --lora_r 8 --lora_alpha 16 \
+    --num_epochs 3 --batch_size 2 --eval_batch_size 2 \
+    --learning_rate 2e-4 --warmup_steps 100 \
+    --logging_steps 10 --eval_steps 50 --save_steps 50 \
+    --gradient_accumulation_steps 4 --max_grad_norm 1.0 \
+    --loss_type cross_entropy \
+    --apply_augmentation --synonym_prob 0.3 --reorder_prob 0.5
+```
+
+Training logs are reported to [Weights & Biases](https://wandb.ai/) (`wandb.init`); run `wandb login` beforehand or set `WANDB_MODE=offline` to disable remote logging. The finetuned LoRA adapter and processor are saved to `{output_dir}/{loss_type}/{run_name}/final_model`.
+
 ## Repository Structure
 
 ```
@@ -152,7 +179,8 @@ video2reaction/
 ├── scripts/
 │   ├── train_cubemlp.py
 │   ├── run_ldl_baselines.py
-│   └── vlm_classification.py
+│   ├── vlm_classification.py
+│   └── finetune_vlm_classification.py
 └── data/                        # Local metadata/feature cache (populated from Hugging Face or data_preprocessing/)
 ```
 
