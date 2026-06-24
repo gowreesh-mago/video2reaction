@@ -270,14 +270,14 @@ DEBUG = False
 from IPython import get_ipython
 if get_ipython() is not None:
     args = argparse.Namespace()
-    args.metadata_dir = "/project/pi_mfiterau_umass_edu/trang/reaction-video-dataset/data/video2reaction-full"
+    args.metadata_dir = "data/video2reaction-full"
     args.split = "test"
-    args.key_frame_dir = "/project/pi_mfiterau_umass_edu/youtube_video/key_frames/"
+    args.key_frame_dir = "data/processed_data/key_frames/"
     args.reaction_outcome_type = "reaction_distribution"
     args.temperature_scaling = True
 
 
-    args.result_dir = "/scratch3/workspace/tramnguyen_umass_edu-email/reaction-video-dataset/results/video2reaction-full/vlm_zero_shot_multiple_choice/"
+    args.result_dir = "results/video2reaction-full/vlm_zero_shot_multiple_choice/"
     args.model_name = "qwen2_vl"
     args.reprocess = False
     DEBUG = False
