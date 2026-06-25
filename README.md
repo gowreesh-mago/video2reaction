@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[[📖 Paper](#)] [[📊 Dataset (Hugging Face)](https://huggingface.co/datasets/video2reac/Video2Reaction/tree/main)] [[📝 Citation](#citation)]
+[[📖 Paper](#)] [[📊 Dataset (Hugging Face)](https://huggingface.co/datasets/infofusionlab/Video2Reaction)] [[📝 Citation](#citation)]
 
 </div>
 
