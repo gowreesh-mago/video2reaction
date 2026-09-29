@@ -1,0 +1,25 @@
+[project]
+name = "video2reaction-research"
+version = "0.1.0"
+description = "Reproducible audience reaction experiments"
+requires-python = ">=3.11,<3.12"
+dependencies = [
+  "torch==2.8.0", "torchvision==0.23.0", "torchaudio==2.8.0",
+  "transformers==4.57.1", "accelerate>=1.10,<2", "peft>=0.17,<0.18",
+  "timm>=1.0,<1.1", "numpy>=2.1,<2.3", "scipy>=1.14,<2",
+  "pandas>=2.2,<3", "scikit-learn>=1.6,<1.8", "pillow>=11,<12",
+  "opencv-python-headless>=4.11,<5", "matplotlib>=3.9,<4", "tqdm>=4.67,<5",
+  "pyyaml>=6,<7", "einops>=0.8,<1", "safetensors>=0.6,<1",
+  "huggingface-hub>=0.34,<1",
+]
+
+[project.optional-dependencies]
+tracking = ["wandb>=0.21,<1"]
+vlm = ["qwen-vl-utils>=0.0.14", "av>=14,<16"]
+legacy = ["ipython>=8,<10", "torchsummary>=1.5"]
+
+[dependency-groups]
+dev = ["pytest>=8,<9"]
+
+[tool.uv]
+package = false

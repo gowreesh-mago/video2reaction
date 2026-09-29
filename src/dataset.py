@@ -15,34 +15,20 @@ from PIL import Image
 import pandas as pd
 import torchaudio
 import pickle
+from pathlib import Path
+from src.experiments.taxonomy import REACTION_CLASSES
 #%%
 
-# Define the fixed class order
-['sadness',
- 'disgust',
- 'grief',
- 'fear',
- 'disapproval',
- 'disappointment',
- 'embarrassment',
- 'nervousness',
- 'annoyance',
- 'anger',
- 'confusion',
- 'realization',
- 'caring',
- 'curiosity',
- 'relief',
- 'approval',
- 'surprise',
- 'excitement',
- 'amusement',
- 'admiration',
- 'joy']
-VAD_LEXICON = json.load(open("./data/nrc-python/nrc_vad.json"))
+# Preserve the published ordinal order, independent of the current directory.
+_vad_path = Path(os.environ.get('V2R_VAD_FILE', Path(__file__).resolve().parents[1] / 'data/nrc-python/nrc_vad.json'))
+if not _vad_path.is_file():
+    raise FileNotFoundError(f'NRC VAD asset missing: {_vad_path}. Run scripts/setup_vad.py --output data/nrc-python or set V2R_VAD_FILE.')
+with _vad_path.open() as _vad_stream:
+    VAD_LEXICON = json.load(_vad_stream)
 REACTION_CLASSES_VAD = {reaction: VAD_LEXICON[reaction] for reaction in REACTION_CLASSES}
 REACTION_CLASSES_SORTED_BY_VA = sorted(REACTION_CLASSES, key=lambda x: (REACTION_CLASSES_VAD[x]["valence"], REACTION_CLASSES_VAD[x]["arousal"]))
-REACTION_CLASSES = REACTION_CLASSES_SORTED_BY_VA
+if REACTION_CLASSES_SORTED_BY_VA != REACTION_CLASSES:
+    raise ValueError('VAD lexicon does not match the published reaction class order')
 REACTION_VA_MATRIX = np.zeros((len(REACTION_CLASSES), 2))
 for i, reaction in enumerate(REACTION_CLASSES):
     if reaction in REACTION_CLASSES_VAD:
@@ -525,5 +511,4 @@ def print_sorted_reaction_distribution(reaction_distribution, k=10):
     sorted_reactions = sorted(reaction_distribution_dict.items(), key=lambda x: x[1], reverse=True)
     for reaction, value in sorted_reactions[:k]:
         print(f"{reaction}: {value:.4f}")
-
 

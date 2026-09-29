@@ -1,0 +1,469 @@
+{
+  "frame_root": "/gpfs/home3/gmago/video2reaction/scratch4/workspace/sidongzhang_umass_edu-v2r/v2r_data/youtube_video/key_frames",
+  "metadata_root": "/scratch-shared/gmago/video2reaction-data/metadata",
+  "class_order": [
+    "sadness",
+    "disgust",
+    "grief",
+    "fear",
+    "disapproval",
+    "disappointment",
+    "embarrassment",
+    "nervousness",
+    "annoyance",
+    "anger",
+    "confusion",
+    "realization",
+    "caring",
+    "curiosity",
+    "relief",
+    "approval",
+    "surprise",
+    "excitement",
+    "amusement",
+    "admiration",
+    "joy"
+  ],
+  "splits": {
+    "train": {
+      "size": 7243,
+      "sha256": "22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0",
+      "keyframes": {
+        "n": 7243,
+        "min": 15,
+        "max": 176,
+        "mean": 43.89755626121773,
+        "median": 39,
+        "percentiles": {
+          "1": 15.0,
+          "5": 15.0,
+          "25": 25.0,
+          "50": 39.0,
+          "75": 58.0,
+          "95": 89.89999999999964,
+          "99": 115.57999999999993
+        }
+      },
+      "entropy_nats": {
+        "n": 7243,
+        "min": 0.11924692639624491,
+        "max": 2.479593622439213,
+        "mean": 1.459229258915208,
+        "median": 1.4902305301189536,
+        "percentiles": {
+          "1": 0.4894117605606791,
+          "5": 0.8093216891768688,
+          "25": 1.2406842919533958,
+          "50": 1.4902305301189536,
+          "75": 1.7114188587883388,
+          "95": 1.9887767492211075,
+          "99": 2.1534767624999755
+        }
+      },
+      "dominant_probability": {
+        "n": 7243,
+        "min": 0.13157894736842105,
+        "max": 0.9743589743589743,
+        "mean": 0.46173422998319386,
+        "median": 0.4375,
+        "percentiles": {
+          "1": 0.2,
+          "5": 0.25,
+          "25": 0.34615384615384615,
+          "50": 0.4375,
+          "75": 0.5555555555555556,
+          "95": 0.7586206896551724,
+          "99": 0.8695652173913043
+        }
+      },
+      "dominant_label_frequency": {
+        "admiration": 2825,
+        "amusement": 1743,
+        "fear": 344,
+        "disapproval": 1927,
+        "disappointment": 57,
+        "surprise": 35,
+        "sadness": 98,
+        "disgust": 74,
+        "confusion": 72,
+        "grief": 19,
+        "approval": 17,
+        "curiosity": 6,
+        "anger": 3,
+        "excitement": 4,
+        "joy": 14,
+        "caring": 1,
+        "nervousness": 2,
+        "realization": 1,
+        "relief": 1
+      },
+      "per_label_mean_probability": {
+        "sadness": 0.023993939998506113,
+        "disgust": 0.032465699987964454,
+        "grief": 0.0071641981553565584,
+        "fear": 0.04732102294588075,
+        "disapproval": 0.21311795008289264,
+        "disappointment": 0.041038238932947405,
+        "embarrassment": 0.0015620509770227313,
+        "nervousness": 0.002776133651403259,
+        "annoyance": 0.0017243762752302098,
+        "anger": 0.00453374731274684,
+        "confusion": 0.048446122251170586,
+        "realization": 0.0031896934732221676,
+        "caring": 0.0042133941149801925,
+        "curiosity": 0.01038511813964176,
+        "relief": 0.0038890186369869187,
+        "approval": 0.026677692138312514,
+        "surprise": 0.03176880459257596,
+        "excitement": 0.015399278930407946,
+        "amusement": 0.20074421392090394,
+        "admiration": 0.27206821960754035,
+        "joy": 0.0075210858743016236
+      },
+      "label_presence": {
+        "sadness": 1938,
+        "disgust": 2730,
+        "fear": 2563,
+        "disapproval": 6724,
+        "disappointment": 3696,
+        "confusion": 4233,
+        "admiration": 6752,
+        "curiosity": 1334,
+        "surprise": 3234,
+        "excitement": 1742,
+        "amusement": 5875,
+        "joy": 725,
+        "approval": 2755,
+        "realization": 456,
+        "relief": 574,
+        "grief": 653,
+        "anger": 595,
+        "caring": 578,
+        "embarrassment": 249,
+        "annoyance": 283,
+        "nervousness": 393
+      },
+      "mean_probability_imbalance": 174.17371366848877,
+      "dominant_ties": 562,
+      "metadata_dominant_not_argmax": 0,
+      "target_sum_min": 0.9999999999999996,
+      "target_sum_max": 1.0000000000000004,
+      "unknown_labels": [],
+      "distinct_movies": 1737,
+      "missing_fields": {
+        "genre": 1594
+      },
+      "nonmonotonic_indices": 0
+    },
+    "val": {
+      "size": 1035,
+      "sha256": "c78e6ed759d449041d8c0ff468098d71b829cb5a4d7e457d4710b2c2386acc83",
+      "keyframes": {
+        "n": 1035,
+        "min": 15,
+        "max": 169,
+        "mean": 44.40966183574879,
+        "median": 40,
+        "percentiles": {
+          "1": 15.0,
+          "5": 15.0,
+          "25": 25.0,
+          "50": 40.0,
+          "75": 58.0,
+          "95": 90.0,
+          "99": 121.65999999999997
+        }
+      },
+      "entropy_nats": {
+        "n": 1035,
+        "min": 0.19144408195771734,
+        "max": 2.2523542313691998,
+        "mean": 1.452786418564524,
+        "median": 1.4837354753419432,
+        "percentiles": {
+          "1": 0.6073237719831689,
+          "5": 0.8195428791273635,
+          "25": 1.2350644623691163,
+          "50": 1.4837354753419432,
+          "75": 1.694075698578092,
+          "95": 1.9561563589844309,
+          "99": 2.1438846470969883
+        }
+      },
+      "dominant_probability": {
+        "n": 1035,
+        "min": 0.17391304347826086,
+        "max": 0.9523809523809523,
+        "mean": 0.4620403914286802,
+        "median": 0.4375,
+        "percentiles": {
+          "1": 0.202,
+          "5": 0.2577880184331797,
+          "25": 0.35,
+          "50": 0.4375,
+          "75": 0.5555555555555556,
+          "95": 0.744354838709677,
+          "99": 0.8424749999999999
+        }
+      },
+      "dominant_label_frequency": {
+        "disgust": 11,
+        "disapproval": 275,
+        "amusement": 249,
+        "admiration": 404,
+        "fear": 49,
+        "sadness": 14,
+        "surprise": 5,
+        "disappointment": 8,
+        "grief": 3,
+        "confusion": 10,
+        "realization": 1,
+        "excitement": 2,
+        "joy": 2,
+        "approval": 2
+      },
+      "per_label_mean_probability": {
+        "sadness": 0.02561552350107871,
+        "disgust": 0.031185237449979614,
+        "grief": 0.008229724250154006,
+        "fear": 0.04924726798451478,
+        "disapproval": 0.21782822096127183,
+        "disappointment": 0.04158738304015577,
+        "embarrassment": 0.0016458053287362225,
+        "nervousness": 0.002995591165650564,
+        "annoyance": 0.0016902464634728277,
+        "anger": 0.004163815999251972,
+        "confusion": 0.04950953271145487,
+        "realization": 0.003061586185321793,
+        "caring": 0.004272822715728936,
+        "curiosity": 0.008777575615773636,
+        "relief": 0.004641507521052243,
+        "approval": 0.023606640823566543,
+        "surprise": 0.03338859678542674,
+        "excitement": 0.014792748810412487,
+        "amusement": 0.20073462126392808,
+        "admiration": 0.2663912848329549,
+        "joy": 0.006634266590114338
+      },
+      "label_presence": {
+        "disgust": 387,
+        "fear": 388,
+        "disapproval": 963,
+        "approval": 362,
+        "surprise": 450,
+        "amusement": 831,
+        "admiration": 967,
+        "disappointment": 542,
+        "confusion": 612,
+        "excitement": 237,
+        "curiosity": 171,
+        "sadness": 283,
+        "grief": 87,
+        "realization": 58,
+        "nervousness": 60,
+        "caring": 80,
+        "joy": 89,
+        "anger": 76,
+        "embarrassment": 34,
+        "relief": 104,
+        "annoyance": 40
+      },
+      "mean_probability_imbalance": 161.86074998159768,
+      "dominant_ties": 81,
+      "metadata_dominant_not_argmax": 0,
+      "target_sum_min": 0.9999999999999996,
+      "target_sum_max": 1.0000000000000002,
+      "unknown_labels": [],
+      "distinct_movies": 763,
+      "missing_fields": {
+        "genre": 231
+      },
+      "nonmonotonic_indices": 0
+    },
+    "test": {
+      "size": 2070,
+      "sha256": "58558f5694f3d038ac4c6af22e5a0f2b388b43236de9ab4ba74300adb0cc672d",
+      "keyframes": {
+        "n": 2070,
+        "min": 15,
+        "max": 163,
+        "mean": 44.11207729468599,
+        "median": 40.0,
+        "percentiles": {
+          "1": 15.0,
+          "5": 15.0,
+          "25": 25.0,
+          "50": 40.0,
+          "75": 59.0,
+          "95": 88.0,
+          "99": 109.0
+        }
+      },
+      "entropy_nats": {
+        "n": 2070,
+        "min": -0.0,
+        "max": 2.4005631264087506,
+        "mean": 1.4595293416387158,
+        "median": 1.5061269039506988,
+        "percentiles": {
+          "1": 0.4816981100464556,
+          "5": 0.7972383682313213,
+          "25": 1.2454897855677085,
+          "50": 1.5061269039506988,
+          "75": 1.7079346947759686,
+          "95": 1.9594795381632164,
+          "99": 2.121503094158909
+        }
+      },
+      "dominant_probability": {
+        "n": 2070,
+        "min": 0.14285714285714285,
+        "max": 1.0,
+        "mean": 0.4610738086509913,
+        "median": 0.4375,
+        "percentiles": {
+          "1": 0.20689655172413793,
+          "5": 0.25,
+          "25": 0.34615384615384615,
+          "50": 0.4375,
+          "75": 0.5555555555555556,
+          "95": 0.75,
+          "99": 0.875
+        }
+      },
+      "dominant_label_frequency": {
+        "disapproval": 551,
+        "amusement": 498,
+        "admiration": 807,
+        "confusion": 21,
+        "fear": 98,
+        "disappointment": 16,
+        "disgust": 21,
+        "surprise": 10,
+        "grief": 6,
+        "sadness": 28,
+        "anger": 4,
+        "approval": 5,
+        "joy": 4,
+        "excitement": 1
+      },
+      "per_label_mean_probability": {
+        "sadness": 0.024374077802693798,
+        "disgust": 0.03186419923450942,
+        "grief": 0.007858753354509567,
+        "fear": 0.04687143709516688,
+        "disapproval": 0.21218113163617297,
+        "disappointment": 0.042138013605497744,
+        "embarrassment": 0.0014359081635186488,
+        "nervousness": 0.003269436639272769,
+        "annoyance": 0.0018333080010561364,
+        "anger": 0.004550961700308373,
+        "confusion": 0.04984183432669442,
+        "realization": 0.0032726647461758544,
+        "caring": 0.004259777672707868,
+        "curiosity": 0.011044786294900629,
+        "relief": 0.004184431062239297,
+        "approval": 0.024375604259723436,
+        "surprise": 0.033704543409985424,
+        "excitement": 0.01385014019546754,
+        "amusement": 0.2027972715927384,
+        "admiration": 0.2692659859256901,
+        "joy": 0.007025733280970885
+      },
+      "label_presence": {
+        "disgust": 757,
+        "fear": 759,
+        "disapproval": 1905,
+        "disappointment": 1047,
+        "confusion": 1222,
+        "approval": 750,
+        "surprise": 940,
+        "amusement": 1653,
+        "admiration": 1922,
+        "anger": 149,
+        "excitement": 474,
+        "sadness": 549,
+        "grief": 203,
+        "annoyance": 80,
+        "caring": 168,
+        "curiosity": 393,
+        "relief": 166,
+        "realization": 138,
+        "nervousness": 123,
+        "joy": 188,
+        "embarrassment": 57
+      },
+      "mean_probability_imbalance": 187.52312492315812,
+      "dominant_ties": 159,
+      "metadata_dominant_not_argmax": 0,
+      "target_sum_min": 0.9999999999999996,
+      "target_sum_max": 1.0000000000000004,
+      "unknown_labels": [],
+      "distinct_movies": 1183,
+      "missing_fields": {
+        "genre": 452
+      },
+      "nonmonotonic_indices": 0
+    }
+  },
+  "cross_split": {
+    "train_val": {
+      "duplicate_video_ids": [],
+      "shared_movie_count": 722,
+      "clips_in_a_with_shared_movie": 3506,
+      "clips_in_b_with_shared_movie": 989,
+      "duplicate_descriptions": 0
+    },
+    "train_test": {
+      "duplicate_video_ids": [],
+      "shared_movie_count": 1110,
+      "clips_in_a_with_shared_movie": 5197,
+      "clips_in_b_with_shared_movie": 1986,
+      "duplicate_descriptions": 0
+    },
+    "val_test": {
+      "duplicate_video_ids": [],
+      "shared_movie_count": 568,
+      "clips_in_a_with_shared_movie": 772,
+      "clips_in_b_with_shared_movie": 1038,
+      "duplicate_descriptions": 0
+    }
+  },
+  "image_size_sample": {
+    "sampling": "first image of every 50th clip in official split order; JPEG header inspected",
+    "count": 207,
+    "width_height_counts": {
+      "[534, 360]": 9,
+      "[640, 360]": 197,
+      "[536, 360]": 1
+    }
+  },
+  "errors": [],
+  "keyframes_overall": {
+    "n": 10348,
+    "min": 15,
+    "max": 176,
+    "mean": 43.991689215307304,
+    "median": 39.0,
+    "percentiles": {
+      "1": 15.0,
+      "5": 15.0,
+      "25": 25.0,
+      "50": 39.0,
+      "75": 58.0,
+      "95": 89.0,
+      "99": 115.0
+    }
+  },
+  "frame_index_columns": [
+    "end_frame",
+    "end_time",
+    "scene_number",
+    "start_frame",
+    "start_time"
+  ],
+  "file_suffix_counts": {
+    ".jpg": 455226,
+    ".csv": 10348
+  }
+}

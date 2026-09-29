@@ -1,0 +1,26 @@
+experiment:
+  name: smoke_3videos
+  hypothesis: Three real training clips can pass frozen encoding, learning, checkpoint reload, and evaluation.
+  changed_component: infrastructure validation only
+  expected_outcome: finite normalized predictions, lower training loss, identical checkpoint reload
+seed: 42
+data:
+  split: train
+  video_ids: [4nSkJZ3i2-g, eiqBbLVXbQg, iKp5ARBBpyc]
+  metadata_sha256: 22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0
+  max_frames: 8
+encoder:
+  model: google/siglip2-so400m-patch14-384
+  revision: e8e487298228002f3d8a82e0cd5c8ea9c567f57f
+  local_files_only: true
+  batch_size: 4
+training:
+  steps: 25
+  learning_rate: 0.003
+  hidden_dim: 128
+  weight_decay: 0.0001
+variants:
+  meanpool: {aggregation: mean, loss: kl}
+  temporal_transformer: {aggregation: temporal, loss: kl}
+  distribution_loss: {aggregation: mean, loss: composite}
+  reaction_queries: {aggregation: query, loss: kl}
