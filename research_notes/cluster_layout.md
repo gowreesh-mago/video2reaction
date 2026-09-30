@@ -45,6 +45,8 @@ bash scripts/status_all.sh
 
 The smoke job uses exactly three explicit official **training** videos, at most eight chronological frames per video, one A100 MIG slice (20 GiB), and a ten-minute limit. The authorized MIG partition had the earliest estimated start when compared with A100 and H100. It checks frozen SigLIP2 encoding, four small predictors, 25 optimizer steps each, finite normalized predictions, lower training losses, exact checkpoint reload and a resumed optimizer update. Metrics on these training examples do not measure generalization.
 
+The first run needed dependency prefetching because cold imports on shared storage took several minutes. `scripts/warm_imports.sh` now automates those verified read commands at job startup; set `V2R_WARM_IMPORTS=0` to skip on a warm node. This reads Python dependency files into the node's filesystem cache, not dataset files. The submission script locks and records one job per synchronized source snapshot to prevent duplicate launches.
+
 For legacy imports, provision the private NRC VAD asset once:
 
 ```bash

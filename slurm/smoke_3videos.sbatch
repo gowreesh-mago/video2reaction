@@ -26,6 +26,9 @@ trap finish EXIT
 trap 'exit 143' TERM INT
 date -u
 hostname
+if [[ "${V2R_WARM_IMPORTS:-1}" == 1 ]]; then
+  bash scripts/warm_imports.sh
+fi
 uv run --frozen python scripts/check_gpu.py
 uv run --frozen python -c 'from src.dataset import REACTION_CLASSES, REACTION_VA_MATRIX; from src.metrics import compute_mean_reciprocal_rank; assert len(REACTION_CLASSES) == 21; assert REACTION_VA_MATRIX.shape == (21, 2); print("Legacy dataset/metrics imports passed")'
 uv run --frozen python -m pytest tests/test_experiments.py -q

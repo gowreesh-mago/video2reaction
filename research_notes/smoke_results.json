@@ -1,0 +1,116 @@
+{
+  "status": "completed",
+  "benchmark_result": false,
+  "video_count": 3,
+  "frame_count": 24,
+  "encoder_seconds": 46.89478603005409,
+  "variants": {
+    "meanpool": {
+      "initial_loss": 1.6432816982269287,
+      "final_loss": 0.028482966125011444,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.04118245467543602,
+        "kl": 0.028482891807990313,
+        "clark": 2.14401546723092,
+        "cad": 0.5428679659699177,
+        "cosine": 0.9946092528610507,
+        "intersection": 0.9359647715464234,
+        "mrr": 1.0,
+        "tpe": 0.01836092273394267,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.8518518518518517
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "temporal_transformer": {
+      "initial_loss": 1.7450084686279297,
+      "final_loss": 0.0121465427801013,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.022340537359317143,
+        "kl": 0.01214653687507966,
+        "clark": 1.9465251384767042,
+        "cad": 0.3296703642302919,
+        "cosine": 0.9972978144914698,
+        "intersection": 0.9577371946846446,
+        "mrr": 1.0,
+        "tpe": 0.01849783460299174,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.7777777777777778
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "distribution_loss": {
+      "initial_loss": 1.7824901342391968,
+      "final_loss": 0.024368267506361008,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.03110460750758648,
+        "kl": 0.023662027260571924,
+        "clark": 2.11528186639577,
+        "cad": 0.39953865875167666,
+        "cosine": 0.9964686945117855,
+        "intersection": 0.941196953256925,
+        "mrr": 1.0,
+        "tpe": 0.025795727968215942,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.7777777777777778
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "reaction_queries": {
+      "initial_loss": 1.6432979106903076,
+      "final_loss": 0.03365630283951759,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.04380624244610468,
+        "kl": 0.03365627614865515,
+        "clark": 2.1436449092929046,
+        "cad": 0.591692196213109,
+        "cosine": 0.9929605401123638,
+        "intersection": 0.9235120893766483,
+        "mrr": 1.0,
+        "tpe": 0.013814697662989298,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.7777777777777778
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    }
+  },
+  "environment": {
+    "hostname": "gcn2.local.snellius.surf.nl",
+    "python": "3.11.16",
+    "torch": "2.8.0+cu128",
+    "cuda_available": true,
+    "cuda_version": "12.8",
+    "gpu_count": 1,
+    "gpus": [
+      {
+        "name": "NVIDIA A100-SXM4-40GB MIG 3g.20gb",
+        "vram_gib": 19.75
+      }
+    ],
+    "bf16_supported": true
+  }
+}
