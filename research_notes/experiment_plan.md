@@ -21,4 +21,4 @@ Only submit to verified accounts and partitions. Keep one registry on Snellius; 
 
 ## Progress and remaining deliverables
 
-Track completed work, job IDs, and pending batches in the [experiment checklist](experiment_checklist.md). The reviewed full runner/configs/jobs are implemented and locally mock-tested; cluster regression and full runs remain pending. The user authorized the first batch after review. Later hypotheses, paired uncertainty analysis, qualitative examples, and the final report remain pending.
+Track completed work, job IDs, and pending batches in the [experiment checklist](experiment_checklist.md). The reviewed runner/configs/jobs are implemented. All 22 mock tests pass locally and on the cluster; the three-video shared-loader smoke passes on the cluster. B0 completed. Corrected feature extraction is processing frames, and four learned comparisons are submitted with a cache dependency. Later hypotheses, paired uncertainty analysis, qualitative examples, and the final report remain pending.

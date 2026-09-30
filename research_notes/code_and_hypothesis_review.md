@@ -68,9 +68,11 @@ Resolution: retain official metrics/splits, add seen/unseen-movie, entropy, fram
 
 ### Additional integration finding from the first launch
 
-Feature job `27382107` exposed a gap between the smoke and cache loaders: `AutoProcessor(use_fast=False)` propagated the flag to the unused Gemma text tokenizer and required SentencePiece. The prior smoke had left that flag unset. B0 completed, but the four dependent learned runs were cancelled before training. The fix uses `AutoImageProcessor` and a shared frozen-encoder loader in both smoke and full extraction, avoiding an unnecessary tokenizer dependency. A new synthetic end-to-end cache round-trip test covers extraction, image hashes, ordering, serialization, loading, and revisiting a completed cache. All **22 local tests pass** after this fix; the real three-video shared-loader regression must pass before replacements are submitted. This demonstrates why a smoke test must exercise the same loader as production.
+Feature job `27382107` exposed a gap between the smoke and cache loaders: `AutoProcessor(use_fast=False)` propagated the flag to the unused Gemma text tokenizer and required SentencePiece. The prior smoke had left that flag unset. B0 completed, but the four dependent learned runs were cancelled before training. The fix uses `AutoImageProcessor` and a shared frozen-encoder loader in both smoke and full extraction, avoiding an unnecessary tokenizer dependency. A new synthetic end-to-end cache round-trip test covers extraction, image hashes, ordering, serialization, loading, and revisiting a completed cache. All **22 tests pass locally and on Snellius** after this fix. The real three-video shared-loader regression (`27382205`, exit 0:0, 3m31s, revision `bbf8c1d`) also passed, with identical smoke losses. Replacement cache job `27382293` and learned jobs `27382294`–`27382297` were then submitted; B0 was retained. This demonstrates why a smoke test must exercise the same loader as production. Failed infrastructure and dependency cancellations are not negative model results.
 
 The first B0 result is a valid class-prior floor (test KL .689281, cosine .751309, MRR .599569, F1@3 .558669). It provides no evidence about visual, temporal, peak, or VAD models.
+
+Startup verification at 01:25:32 UTC: corrected cache job `27382293` has encoded, validated, and checkpointed 4,096 training frames with image hashes. The remaining learned jobs wait for successful completion of the entire cache.
 
 | Experiment | Actual intervention / needed comparison | What a favorable result supports | What it cannot establish |
 |---|---|---|---|
@@ -89,7 +91,7 @@ The first B0 result is a valid class-prior floor (test KL .689281, cosine .75130
 
 ## Adversarial questions before interpreting results
 
-1. **Could a simpler explanation give the same outcome?** Capacity, regularization, movie familiarity, class priors, and pretraining are alternatives to the headline hypotheses. Use the controls above.
+1. **Could a simpler explanation give the same outcome?** Capacity, regularization, movie familiarity, class priors, and pretraining are alternatives to the headline hypotheses. Use the controls above. In a later batch, add a movie-prior predictor fitted only from training clips, backing off to the global prior for unseen movies; this directly tests movie familiarity as a simple competing explanation.
 2. **Did the model have access to the alleged signal?** Static keyframes contain ordering but limited motion. Frozen visual features may discard emotion cues. A negative result rules out neither signals absent from the input nor untested encoders.
 3. **Was only one component changed?** B2/set and A5/B1 now satisfy this at the config level. B2/B1 is an architectural comparison, not a clean order ablation. B1's per-frame normalization is part of the documented baseline.
 4. **Was selection decided before test scores?** All trained first-batch models use the same maximum 50 epochs, AdamW settings, constant learning rate, patience 8, minimum KL improvement .0001, and validation KL checkpoint rule. Ranking gains that sacrifice KL may not be selected; interpret that as a property of the predeclared rule, not a complete rejection of ranking objectives.
