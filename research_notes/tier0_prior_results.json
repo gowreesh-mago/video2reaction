@@ -1,0 +1,41 @@
+{
+  "benchmark_result": true,
+  "experiment": {
+    "name": "b0_prior",
+    "hypothesis": "Training label frequency alone explains some official benchmark performance.",
+    "changed_component": "constant training-distribution prior",
+    "expected_outcome": "A reference floor without visual inputs or fitted hyperparameters."
+  },
+  "training": {
+    "trainable_parameters": 0,
+    "fit_split": "train"
+  },
+  "val": {
+    "chebyshev": 0.27505345884304033,
+    "kl": 0.6922466418428115,
+    "clark": 3.9680571095864914,
+    "cad": 3.173696430227401,
+    "cosine": 0.7480609577677966,
+    "intersection": 0.5609182847298215,
+    "mrr": 0.6045943669856714,
+    "tpe": 0.2505362425572315,
+    "f1_top1": 0.2352298667516059,
+    "f1_top2": 0.4423454464816381,
+    "f1_top3": 0.5538376719724333
+  },
+  "test": {
+    "chebyshev": 0.2736830046842936,
+    "kl": 0.6892810194057924,
+    "clark": 3.965987426577387,
+    "cad": 3.2122979902875435,
+    "cosine": 0.7513085485777509,
+    "intersection": 0.5630532217913516,
+    "mrr": 0.5995688217198515,
+    "tpe": 0.25074792971023074,
+    "f1_top1": 0.23762385748047013,
+    "f1_top2": 0.4398798590309938,
+    "f1_top3": 0.5586688035376577
+  },
+  "seed": 42,
+  "selection": "none"
+}

@@ -13,6 +13,7 @@ encoder:
   model: google/siglip2-so400m-patch14-384
   revision: e8e487298228002f3d8a82e0cd5c8ea9c567f57f
   local_files_only: true
+  use_fast: false
   batch_size: 4
 training:
   steps: 25

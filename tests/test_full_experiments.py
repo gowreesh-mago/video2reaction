@@ -16,6 +16,7 @@ from src.experiments.registry import update_registry
 from src.experiments.runtime import cache_directory, cache_spec, digest_file, fingerprint, load_config
 from src.experiments.taxonomy import REACTION_CLASSES
 from src.experiments import training
+from src.experiments import features as feature_module
 
 
 def test_temporal_control_matches_parameters_and_initialization():
@@ -161,3 +162,45 @@ def test_declared_control_configs_change_only_the_intended_component():
     assert ordered['model'].pop('positional_encoding') is True
     assert unordered['model'].pop('positional_encoding') is False
     assert ordered == unordered
+
+
+def test_feature_extraction_roundtrip_with_synthetic_images(tmp_path, monkeypatch):
+    from PIL import Image
+    monkeypatch.setenv('V2R_FEATURE_DIR', str(tmp_path / 'cache'))
+    monkeypatch.setenv('V2R_FRAME_DIR', str(tmp_path / 'frames'))
+    folder = tmp_path / 'frames' / 'mock'
+    folder.mkdir(parents=True)
+    (folder / 'index.csv').write_text('scene_number,start_frame\n0,0\n1,10\n2,20\n')
+    for i in range(3):
+        Image.new('RGB', (4, 4), (16 * (i + 1), 32, 64)).save(folder / f'{i + 1:03d}.jpg')
+    class Inputs(dict):
+        def to(self, device):
+            return self
+    class Processor:
+        def to_dict(self):
+            return {'synthetic_test_processor': True}
+        def __call__(self, images, return_tensors):
+            values = np.stack([np.asarray(image).mean((0, 1)) for image in images])
+            return Inputs(pixel_values=torch.tensor(values, dtype=torch.float32))
+    class Encoder:
+        def get_image_features(self, pixel_values):
+            return pixel_values
+    monkeypatch.setattr(feature_module, 'load_frozen_encoder', lambda *args: (Processor(), Encoder()))
+    monkeypatch.setattr(torch.cuda, 'is_available', lambda: True)
+    monkeypatch.setattr(torch.cuda, 'is_bf16_supported', lambda: True)
+    cfg = load_config('configs/experiments/feature_cache.yaml')
+    cfg['encoder'].update(feature_dim=3, batch_size=2, workers=0)
+    rows = {'mock': {'reaction_outcome': {'reaction_distribution': {REACTION_CLASSES[0]: 1.}}}}
+    out = tmp_path / 'output'
+    out.mkdir()
+    result = feature_module.prepare_features(cfg, {'train': rows}, out)
+    assert result['splits']['train']['frames'] == 3
+    dataset = CachedVideos(cfg, 'train', rows)
+    values, target, index = dataset[0]
+    assert values.shape == (3, 3) and target.shape == (21,) and index == 0
+    assert values[0, 0] < values[1, 0] < values[2, 0]
+    hashes = np.load(cache_directory(cfg) / 'train' / 'image_sha256.npy')
+    assert hashes[0].decode() == digest_file(folder / '001.jpg')
+    # A completed cache can be revisited without changing its data or identity.
+    second = feature_module.prepare_features(cfg, {'train': rows}, out)
+    assert result == second

@@ -66,6 +66,12 @@ Resolution: retain official metrics/splits, add seen/unseen-movie, entropy, fram
 
 ## Does each experiment implement its hypothesis?
 
+### Additional integration finding from the first launch
+
+Feature job `27382107` exposed a gap between the smoke and cache loaders: `AutoProcessor(use_fast=False)` propagated the flag to the unused Gemma text tokenizer and required SentencePiece. The prior smoke had left that flag unset. B0 completed, but the four dependent learned runs were cancelled before training. The fix uses `AutoImageProcessor` and a shared frozen-encoder loader in both smoke and full extraction, avoiding an unnecessary tokenizer dependency. A new synthetic end-to-end cache round-trip test covers extraction, image hashes, ordering, serialization, loading, and revisiting a completed cache. All **22 local tests pass** after this fix; the real three-video shared-loader regression must pass before replacements are submitted. This demonstrates why a smoke test must exercise the same loader as production.
+
+The first B0 result is a valid class-prior floor (test KL .689281, cosine .751309, MRR .599569, F1@3 .558669). It provides no evidence about visual, temporal, peak, or VAD models.
+
 | Experiment | Actual intervention / needed comparison | What a favorable result supports | What it cannot establish |
 |---|---|---|---|
 | B0 | Mean of training reaction distributions, held constant on val/test | Performance explained by class-frequency bias | Movie familiarity, temporal or visual evidence |
@@ -89,14 +95,14 @@ Resolution: retain official metrics/splits, add seen/unseen-movie, entropy, fram
 4. **Was selection decided before test scores?** All trained first-batch models use the same maximum 50 epochs, AdamW settings, constant learning rate, patience 8, minimum KL improvement .0001, and validation KL checkpoint rule. Ranking gains that sacrifice KL may not be selected; interpret that as a property of the predeclared rule, not a complete rejection of ranking objectives.
 5. **What would count as counterevidence?** Report paired metric differences, failures to improve, and conflicts between KL/ranking/rare classes. B2 failing against the matched control weakens this particular chronology implementation; A5 failing at one coefficient choice weakens this recipe. Neither rejects the broad search space.
 6. **Could random variation explain the margin?** One seed is the user's constraint. Use movie-clustered paired bootstrap intervals when collecting full results; these estimate test-sample uncertainty, not training-seed variance. Small differences remain provisional. Do not select additional configs using these test outcomes and then present them as an untouched confirmation set.
-7. **Do exploratory branches have fair negative controls?** Peaks need equal-K random/uniform selection; VAD needs permuted geometry and random auxiliary labels/embeddings with matched scale; retrieval must exclude the test clip and separately exclude same-movie neighbors; entropy/hierarchy need capacity-matched auxiliaries.
+7. **Do exploratory branches have fair negative controls?** Peaks need equal-K random/uniform selection; VAD needs permuted geometry and random auxiliary labels/embeddings with matched scale (permute only the auxiliary assignment, preserving the published class/CAD order); retrieval must exclude the test clip and separately exclude same-movie neighbors; entropy/hierarchy need capacity-matched auxiliaries.
 
 ## Validation and launch decision
 
 - Original 14 mock tests passed before changes.
 - After fixes/additions, **21 synthetic tests pass locally** in the allowed conda `torch` environment. No benchmark data was brought to the Mac.
 - Tests now cover the order control, ranking math, registry terminal state, immutable releases, interrupted/resumed training, cache corruption/identity, and configuration equality, in addition to the earlier metric/input/padding tests.
-- Run the same suite and the three-video integration smoke on Snellius uv before submitting the full batch. Record that job and actual outcomes in the checklist.
-- Submit one feature-cache job and B0 independently, then B1/B2/set/A5 with successful-cache dependencies. No Tier 1/2 results are implied by this first batch.
+- **Cluster regression passed:** job `27381915`, Snellius uv, all 21 tests plus the three-video GPU integration check, `COMPLETED`, exit `0:0`, elapsed `00:05:41`. Tested revision `e91a469`.
+- **First batch submitted:** feature cache `27382107`, B0 `27382108`, B1 `27382109`, B2 `27382110`, set control `27382111`, A5 `27382112`, from frozen release `e91a469f51ba-b53672620486`. The four learned predictors depend on cache success. Live status is maintained in the [checklist](experiment_checklist.md). No Tier 1/2 results are implied by this first batch.
 
 Remaining limitations: one seed, fixed coefficients/backbone, official movie overlap, static scene keyframes, unfinished higher-tier hypotheses, and post-run confidence/qualitative analysis. These limit scientific claims; they do not invalidate the bounded first-batch comparisons.

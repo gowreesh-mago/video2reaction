@@ -1,14 +1,14 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 00:42:39 UTC**. Implementation status updated after the code/hypothesis review; fresh launch status will be recorded below.
+Last cluster status check: **2026-09-30 01:12:23 UTC**.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
-- **Full benchmark experiments:** zero submitted, zero completed. B0/B1/B2/A5 plus the matched B2 set-transformer control are authorized as the first batch after review.
-- **Snellius queue:** empty at the check above. The shared registry contains only the completed smoke run.
-- **Launch control:** the user requested code/adversarial review, then launch. Complete the cluster regression smoke, then submit the first batch. Later batches remain pending a new request.
-- **Branch:** `research/video2reaction-experiments`. [Code and hypothesis review](code_and_hypothesis_review.md)
+- **Full benchmark experiments:** B0 completed; four learned runs were cancelled after their feature-cache dependency failed. Replacement jobs follow the corrected-loader regression check.
+- **Snellius queue:** empty at this check. The image-only processor fix is locally validated; 22 tests pass.
+- **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
+- **Branch:** `research/video2reaction-experiments`; tested/submitted source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
 
@@ -37,8 +37,9 @@ Checked boxes mean completed and verified. A model passing the three-video smoke
 | Run | Cluster / partition | Job ID | Status | Exit / elapsed | Scope |
 |---|---|---|---|---|---|
 | `smoke_3videos_27381153` | Snellius / `gpu_mig` | `27381153` | completed | `0:0` / `00:08:04` | Infrastructure validation on 3 training videos |
+| `smoke_3videos_27381915` | Snellius / `gpu_mig` | `27381915` | completed | `0:0` / `00:05:41` | Reviewed code: 21 tests plus the same 3-video GPU integration check |
 
-Tested source revision: `08b8c30`. No full validation/test benchmark scores are available yet.
+Original tested revision: `08b8c30`; expanded regression revision: `e91a469`. B0 has full validation/test results; learned-model results remain pending.
 
 ## 3. Work required before the first full batch
 
@@ -48,24 +49,27 @@ Tested source revision: `08b8c30`. No full validation/test benchmark scores are 
 - [x] Add bounded batch submission (`scripts/submit_all.sh`) and result collection (`scripts/collect_results.py`); `scripts/status_all.sh` already exists.
 - [ ] Save per-run config, code/model/split provenance, checkpoint where applicable, predictions with sample IDs/targets/top-k, metrics, and logs.
 - [x] Verify exact interrupted/resumed training, terminal registry protection, source isolation, cache integrity, and matched controls in synthetic tests: 21 local tests pass.
-- [ ] Pass the expanded test suite and three-video regression smoke in cluster uv.
+- [x] Pass all 21 tests and the three-video regression smoke in cluster uv (`27381915`, exit 0:0).
 - [x] Recheck authorized partition/account, queue, budget, and storage. `sbatch --test-only` is also required for every job before submission.
 
 ## 4. First proposed batch — Tier 0
 
-All five full runs are **pending**. No job IDs have been assigned. Feature extraction is a separate prerequisite job.
+First submission history follows. The feature job failed because `AutoProcessor(use_fast=False)` also selected a text tokenizer requiring SentencePiece. The corrected path uses `AutoImageProcessor`, shared with the smoke test, and adds a synthetic full cache round-trip test. The dependent jobs were cancelled before training; their IDs remain visible here.
 
-| Experiment | Question / change | Implementation readiness | Submitted | Completed |
+| Experiment | Job ID | Scheduler state | Dependency | Completed |
 |---|---|---|---|---|
-| B0 — Dataset prior | Predict the mean training distribution | Implemented; cluster regression pending | No | No |
-| B1 — Frozen visual mean pooling | Establish a learned visual baseline | Implemented; cluster regression/cache pending | No | No |
-| B2 — Temporal transformer | Test chronology against matched set transformer | Implemented; cluster regression/cache pending | No | No |
-| B2 set control | Same transformer without positional encoding | Implemented; invariance/initialization tested locally | No | No |
-| A5 — KL + cosine + ranking | Test distribution shape and reaction ordering | Implemented; cluster regression/cache pending | No | No |
+| All-keyframe feature cache | `27382107` | failed: tokenizer dependency | none | No |
+| B0 — Dataset prior | `27382108` | completed, exit 0:0, 00:04:51 | none | Yes |
+| B1 — Frozen visual mean pooling | `27382109` | cancelled: dependency failed | `27382107` | No |
+| B2 — Temporal transformer | `27382110` | cancelled: dependency failed | `27382107` | No |
+| B2 set control — no positions | `27382111` | cancelled: dependency failed | `27382107` | No |
+| A5 — KL + cosine + ranking | `27382112` | cancelled: dependency failed | `27382107` | No |
+
+B0 test metrics: KL **0.689281**, cosine **0.751309**, MRR **0.599569**, F1@1 **0.237624**, F1@3 **0.558669**. [Aggregate results](tier0_prior_results.json). No visual input or test-based fitting was used. Preserve this completed result when retrying the feature-dependent jobs with `bash scripts/submit_all.sh --skip-prior`.
 
 - [x] User requests review, then launch this batch.
-- [ ] Finish and validate the prerequisites above, then commit, push, and synchronize the selected code.
-- [ ] Submit B0/B1/B2/set/A5 and record each job ID; make learned predictors depend on the validated feature cache.
+- [x] Implement and validate the first-batch code, then commit, push, synchronize, and freeze it before submission.
+- [x] Submit B0/B1/B2/set/A5 and record each job ID; learned predictors depend on successful feature-cache completion.
 - [ ] Check startup, completion/failure, predictions, metrics, and output paths for every run.
 - [ ] Summarize the results here before selecting a later batch.
 
@@ -115,6 +119,8 @@ Every item below is unlaunched. Grouping is a proposed order, not a submission r
 
 Cluster root: `/scratch-shared/gmago/video2reaction`.
 
+First-batch release: `releases/e91a469f51ba-b53672620486`. Source snapshot SHA-256: `b53672620486` (prefix; full hash in each run's code manifest). The frozen release remains unchanged while the working-copy checklist is updated.
+
 | Record | Cluster path relative to project root |
 |---|---|
 | Shared registry | `results/experiment_registry.json` |
@@ -128,4 +134,7 @@ Read-only status commands on Snellius:
 cd /scratch-shared/gmago/video2reaction/code
 bash scripts/status_all.sh
 sacct -j 27381153 --format=JobIDRaw,JobName,State,ExitCode,Elapsed -X
+sacct -j 27381915,27382107,27382108,27382109,27382110,27382111,27382112 --format=JobIDRaw,JobName,State,ExitCode,Elapsed -X
+source configs/clusters/snellius.env
+python3 scripts/collect_results.py --reconcile
 ```

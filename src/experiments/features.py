@@ -31,8 +31,19 @@ class ImageFiles(Dataset):
         return rgb, hashlib.sha256(raw).hexdigest()
 
 
+def load_frozen_encoder(encoder_cfg, device, dtype):
+    # Images need no text tokenizer. AutoProcessor(use_fast=False) also selects
+    # Gemma's slow tokenizer, unnecessarily requiring SentencePiece.
+    from transformers import AutoImageProcessor, AutoModel
+    kwargs = {'revision': encoder_cfg['revision'], 'local_files_only': encoder_cfg['local_files_only']}
+    processor = AutoImageProcessor.from_pretrained(encoder_cfg['model'],
+                use_fast=encoder_cfg.get('use_fast', False), **kwargs)
+    encoder = AutoModel.from_pretrained(encoder_cfg['model'], torch_dtype=dtype, **kwargs).to(device).eval()
+    encoder.requires_grad_(False)
+    return processor, encoder
+
+
 def prepare_features(cfg, splits, out):
-    from transformers import AutoModel, AutoProcessor
     if not torch.cuda.is_available():
         raise RuntimeError('Feature preparation requires an allocated CUDA GPU')
     if not torch.cuda.is_bf16_supported():
@@ -47,11 +58,8 @@ def prepare_features(cfg, splits, out):
             raise ValueError('Cache specification mismatch')
         atomic_json(spec_path, spec)
         encoder_cfg = cfg['encoder']
-        kwargs = {'revision': encoder_cfg['revision'], 'local_files_only': encoder_cfg['local_files_only']}
-        processor = AutoProcessor.from_pretrained(encoder_cfg['model'], use_fast=encoder_cfg['use_fast'], **kwargs)
-        encoder = AutoModel.from_pretrained(encoder_cfg['model'], torch_dtype=torch.bfloat16, **kwargs).cuda().eval()
-        encoder.requires_grad_(False)
-        atomic_json(root / 'processor.json', processor.image_processor.to_dict())
+        processor, encoder = load_frozen_encoder(encoder_cfg, 'cuda', torch.bfloat16)
+        atomic_json(root / 'processor.json', processor.to_dict())
         complete = {}
         started = time.monotonic()
         for split, rows in splits.items():

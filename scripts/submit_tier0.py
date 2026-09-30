@@ -1,5 +1,6 @@
 """Submit the reviewed first batch once per frozen release, without login-node ML imports."""
 import fcntl
+import argparse
 import json
 import os
 from pathlib import Path
@@ -13,10 +14,12 @@ def command(*args):
     return subprocess.check_output(args, text=True).strip()
 
 
-def main():
+def main(skip_prior=False):
     root = Path(os.environ['V2R_ROOT'])
     manifest = json.loads(Path('code_version.json').read_text())
     names = ['feature_cache', 'b0_prior', 'b1_meanpool', 'b2_temporal', 'b2_set_control', 'a5_distribution']
+    if skip_prior:
+        names.remove('b0_prior')
     records = root / 'results' / 'submissions'
     records.mkdir(parents=True, exist_ok=True)
     (root / 'logs' / 'slurm').mkdir(parents=True, exist_ok=True)
@@ -77,4 +80,7 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--skip-prior', action='store_true', help='Keep a completed B0 when retrying feature-dependent jobs')
+    args = parser.parse_args()
+    main(args.skip_prior)

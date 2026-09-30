@@ -13,11 +13,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
 import torch
 import yaml
-from transformers import AutoModel, AutoProcessor
 from src.experiments.data import load_metadata, target_distribution, frame_index, read_images
 from src.experiments.losses import distribution_loss
 from src.experiments.metrics import evaluate
 from src.experiments.models import ReactionPredictor
+from src.experiments.features import load_frozen_encoder
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.taxonomy import REACTION_CLASSES
 from check_gpu import gpu_info
@@ -73,10 +73,7 @@ def main(args):
     device = torch.device('cuda')
     dtype = torch.bfloat16 if torch.cuda.is_bf16_supported() else torch.float32
     encoder_cfg = cfg['encoder']
-    kwargs = dict(revision=encoder_cfg['revision'],local_files_only=encoder_cfg['local_files_only'])
-    processor = AutoProcessor.from_pretrained(encoder_cfg['model'],**kwargs)
-    encoder = AutoModel.from_pretrained(encoder_cfg['model'],torch_dtype=dtype,**kwargs).to(device).eval()
-    encoder.requires_grad_(False)
+    processor, encoder = load_frozen_encoder(encoder_cfg, device, dtype)
     features=[]
     t0=time.monotonic()
     for vid, index in zip(ids,selected):
