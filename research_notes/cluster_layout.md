@@ -11,13 +11,15 @@ video2reaction/
     metadata/                   pinned official train/val/test JSON
     key_frames -> /gpfs/home3/gmago/video2reaction/.../key_frames
     archives/key_frames.zip -> /gpfs/home3/gmago/video2reaction/key_frames.zip
-    features/                   future shared frozen features
+    features/                   shared frozen SigLIP2 features
   cache/uv/                     uv download cache
+  cache/tools/                  inspected CodeGraph installer
   releases/<commit>-<hash>/    frozen tracked source; .venv links to existing uv environment
   outputs/experiments/<name_jobid>/  resolved config, provenance, resume/selected checkpoints, val/test results
   logs/experiments/<name_jobid>.log  full-run stdout/stderr
   outputs/smoke/<run_name>/     config, provenance, predictions, checkpoints, metrics
   logs/setup/environment.log   uv installation and import checks
+  logs/setup/codegraph.log     CodeGraph CLI installation
   logs/slurm/smoke-<jobid>.out  scheduler stdout/stderr
   logs/smoke/<run_name>/stdout.log
   results/
@@ -25,7 +27,7 @@ video2reaction/
     experiment_registry.json   shared, file-locked run status
 ```
 
-Original dataset files are preserved; links avoid duplicating 44 GiB. The temporary audit download directory `/scratch-shared/gmago/video2reaction-data` contains only metadata and audit JSON and is no longer the active data path. Existing home model cache is reused through `HF_HOME`; no model or dataset is transferred to the Mac.
+Original dataset files are preserved; links avoid duplicating 44 GiB. The temporary audit download directory `/scratch-shared/gmago/video2reaction-data` contains only metadata and audit JSON and is no longer the active data path. Existing home model cache is reused through `HF_HOME`. Raw frames, split files, pretrained model downloads, and shared feature tensors remain on the cluster. Generated run artifacts, including predictor checkpoints and predictions, are synchronized to the Mac at the user's request.
 
 ## Commands
 
@@ -34,6 +36,14 @@ From the Mac, synchronize code without deleting remote outputs:
 ```bash
 bash scripts/sync_cluster.sh
 ```
+
+Pull generated outputs, logs, and collected results from Snellius to the Mac:
+
+```bash
+bash scripts/sync_outputs.sh
+```
+
+This copies only `outputs/`, `logs/`, and `results/`, excludes feature tensors and transient files, and retains local history without deleting files. Log symlinks are copied as regular files so they remain readable locally. `results/sync_receipt.json` records the source, time, file counts, and sizes. Active logs are a snapshot; rerun the command to refresh them. Both sync scripts exclude environments and dataset storage; code sync also excludes machine-specific `.codegraph/` indexes.
 
 On Snellius:
 
@@ -60,7 +70,13 @@ uv run --frozen python scripts/setup_vad.py --output "$V2R_ROOT/data/lexicons" -
 
 The author website returned HTTP 406 from Snellius; the original archive was downloaded on the Mac and copied to the private cluster cache. Only this lexical resource was transferred from the Mac. Omitting `--archive` downloads directly where the website permits it.
 
-Do not synchronize over code while a job is using it. Subsequent full experiments should use a frozen release directory or the recorded revision. Collect summaries/logs back to the Mac; keep frames, split data, feature tensors and checkpoints on the cluster. Scratch is not a durable archive.
+Active full experiments use frozen release directories, so synchronizing the mutable `code/` working copy does not change their source. Do not modify a frozen release or its shared environment while jobs are active. Keep frames, split data, and feature tensors on the cluster; use output sync for generated run artifacts. Scratch is not a durable archive.
+
+## CodeGraph CLI
+
+Installed and verified on Snellius on **2026-09-30**: **v1.6.1**, at `/home/gmago/.local/bin/codegraph`, linked to `/home/gmago/.codegraph/versions/v1.6.1/bin/codegraph`. The official [CodeGraph installer](https://github.com/colbymchenry/codegraph#get-started) was inspected and run with `CODEGRAPH_VERSION=v1.6.1`. The Linux bundle includes its own Node runtime and does not change the cluster uv environment. Installation output is saved in `logs/setup/codegraph.log`.
+
+`codegraph --version` and `codegraph --help` both succeed in the login shell. The CLI is installed; this repository has not been indexed. Repository indexing remains a separate user decision under the project's CodeGraph instructions.
 
 ## Reviewed first batch
 

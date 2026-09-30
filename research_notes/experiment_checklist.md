@@ -1,12 +1,13 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 01:46:25 UTC**.
+Last cluster status check: **2026-09-30 01:54:10 UTC**.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
 - **Full benchmark experiments:** B0 completed; four replacement learned runs are submitted and waiting for the corrected feature-cache job.
-- **Snellius queue:** corrected feature job `27382293` running; learned jobs `27382294`–`27382297` pending successful cache completion. Extraction has checkpointed **94,208 / 317,950 training frames**, or **20.7% of all 455,226 frames**. No new failures are reported.
+- **Snellius queue:** corrected feature job `27382293` running; learned jobs `27382294`–`27382297` pending successful cache completion. Extraction has checkpointed **122,880 / 317,950 training frames**, or **27.0% of all 455,226 frames**. No new failures are reported.
+- **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Outputs, logs, and results were pulled to the Mac at **01:54:44 UTC** (130 files, 39.46 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
 - **Branch:** `research/video2reaction-experiments`; current tested/submitted source **`bbf8c1d`**; completed B0 source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
 
@@ -23,7 +24,9 @@ Checked boxes mean completed and verified. A model passing the three-video smoke
 - [x] Organize cluster code, data links, feature cache, outputs, logs, and results. [Layout](cluster_layout.md)
 - [x] Provision sourced NRC VAD coordinates privately on the cluster, with provenance.
 - [x] Implement the locked shared registry and test concurrent writers.
-- [x] Keep Video2Reaction data on the cluster; collect only aggregate audit/results files on the Mac.
+- [x] Keep Video2Reaction frames, split files, and feature tensors on the cluster.
+- [x] Install and verify CodeGraph v1.6.1 on Snellius without changing the uv environment. Project indexing remains a user decision.
+- [x] Synchronize generated outputs, checkpoints, predictions, logs, and collected results to the Mac; add a repeatable sync command and receipt. [Layout and commands](cluster_layout.md)
 
 ## 2. Three-video smoke checkpoint
 
@@ -67,7 +70,7 @@ Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected s
 | B2 set control — no positions | `27382296` | pending | successful `27382293` |
 | A5 — KL + cosine + ranking | `27382297` | pending | successful `27382293` |
 
-Verified extraction progress: cache `data/features/siglip2-so400m/b69db8858136c6a0`, `train/progress.json` reports `next_frame=94208` of `317950`. Saved chunks passed shape/finiteness checks and were flushed with image hashes. Validation/test extraction has not started. Recent throughput is about 71 frames/second (65,536 to 94,208 frames in 403.7 seconds). At that rate, allow roughly 1.5–2 hours for the remaining frames, split preparation, and cache validation; this is an estimate. The four learned jobs start after successful cache completion and scheduler allocation. Full cache completeness and learned-model results remain pending.
+Verified extraction progress: cache `data/features/siglip2-so400m/b69db8858136c6a0`, `train/progress.json` reports `next_frame=122880` of `317950`. Saved chunks passed shape/finiteness checks and were flushed with image hashes. Validation/test extraction has not started. Recent throughput is about 70 frames/second (110,592 to 122,880 frames in 176.2 seconds). At that rate, allow roughly 1.5 hours for the remaining frames, split preparation, and cache validation; this is an estimate. The four learned jobs start after successful cache completion and scheduler allocation. Full cache completeness and learned-model results remain pending.
 
 ### First attempt and recovery
 
