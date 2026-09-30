@@ -19,6 +19,6 @@ Use a common frozen backbone, identical frame preprocessing/order, AdamW, batch 
 
 Only submit to verified accounts and partitions. Keep one registry on Snellius; avoid unsynchronized registries across clusters. First use a small GPU smoke job, then a bounded batch of independent experiments with dependencies. Check queue and budget before expanding. Never overwrite existing datasets/checkpoints or synchronize with `--delete`.
 
-## Deliverables still required
+## Progress and remaining deliverables
 
-Dataset and metric audits; environment lock; runnable configs/jobs; safe registry; completed baselines and selected hypothesis experiments; diagnostics and qualitative examples; concise final report with exact reproduction commands. Track evidence and limitations as results arrive.
+Track completed work, job IDs, and pending batches in the [experiment checklist](experiment_checklist.md). Audits, the environment lock, registry, and three-video smoke checkpoint are complete. Full training/evaluation, per-experiment configs/jobs, baselines and hypothesis runs, diagnostics, qualitative examples, and the final report remain pending. Launch each new batch when requested by the user.

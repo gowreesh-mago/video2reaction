@@ -13,6 +13,8 @@
 
 > **Note:** the paper link above is a placeholder — it will be filled in once available.
 
+Research run status and pending batches: [Experiment checklist](research_notes/experiment_checklist.md).
+
 <p align="center">
     <img src="./assets/perceived_vs_induced.png" width="90%">
 </p>
