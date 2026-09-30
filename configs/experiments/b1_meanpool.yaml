@@ -1,0 +1,6 @@
+base: tier0_common.yaml
+experiment:
+  name: b1_meanpool
+  hypothesis: Frozen visual representations predict reactions beyond the training-distribution prior.
+  changed_component: frozen visual features and learned mean-pooling predictor
+  expected_outcome: Lower KL and stronger ranking metrics than B0 on held-out clips.

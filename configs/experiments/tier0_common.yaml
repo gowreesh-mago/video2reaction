@@ -1,0 +1,39 @@
+seed: 42
+data:
+  max_frames: null
+  split_sha256:
+    train: 22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0
+    val: c78e6ed759d449041d8c0ff468098d71b829cb5a4d7e457d4710b2c2386acc83
+    test: 58558f5694f3d038ac4c6af22e5a0f2b388b43236de9ab4ba74300adb0cc672d
+encoder:
+  model: google/siglip2-so400m-patch14-384
+  revision: e8e487298228002f3d8a82e0cd5c8ea9c567f57f
+  local_files_only: true
+  use_fast: false
+  batch_size: 32
+  workers: 6
+  feature_dim: 1152
+model:
+  input_dim: 1152
+  hidden_dim: 128
+  aggregation: mean
+  layers: 2
+  positional_encoding: true
+loss:
+  kind: kl
+  cosine_weight: 0.2
+  ranking_weight: 0.1
+  delta: 0.03
+  margin: 0.1
+training:
+  batch_size: 64
+  epochs: 50
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  clip_grad_norm: 1.0
+  patience: 8
+  min_delta: 0.0001
+  selection_metric: kl
+  scheduler: constant
+evaluation:
+  permutation_seed: 314159

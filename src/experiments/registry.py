@@ -39,6 +39,11 @@ def update_registry(path, experiment, **fields):
         # Corrupt JSON is an error; never silently discard other runs.
         registry = json.loads(path.read_text()) if path.exists() else {'experiments': {}}
         run = registry['experiments'].setdefault(experiment, {})
+        fields = {k: v for k, v in fields.items() if v is not None}
+        if run.get('job_id') and fields.get('job_id') and str(run['job_id']) != str(fields['job_id']):
+            raise ValueError('A run ID cannot be reused by another SLURM job')
+        if run.get('status') == 'completed' and fields['status'] not in {'completed', 'submitted'}:
+            raise ValueError('A completed run is immutable; use a new attempt ID')
         # A fast job may start/finish before the submitter records its job ID.
         if fields['status'] == 'submitted' and run.get('status') in {'running','completed','failed'}:
             fields = {k: v for k, v in fields.items() if k != 'status'}

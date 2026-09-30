@@ -13,6 +13,9 @@ video2reaction/
     archives/key_frames.zip -> /gpfs/home3/gmago/video2reaction/key_frames.zip
     features/                   future shared frozen features
   cache/uv/                     uv download cache
+  releases/<commit>-<hash>/    frozen tracked source; .venv links to existing uv environment
+  outputs/experiments/<name_jobid>/  resolved config, provenance, resume/selected checkpoints, val/test results
+  logs/experiments/<name_jobid>.log  full-run stdout/stderr
   outputs/smoke/<run_name>/     config, provenance, predictions, checkpoints, metrics
   logs/setup/environment.log   uv installation and import checks
   logs/slurm/smoke-<jobid>.out  scheduler stdout/stderr
@@ -58,3 +61,18 @@ uv run --frozen python scripts/setup_vad.py --output "$V2R_ROOT/data/lexicons" -
 The author website returned HTTP 406 from Snellius; the original archive was downloaded on the Mac and copied to the private cluster cache. Only this lexical resource was transferred from the Mac. Omitting `--archive` downloads directly where the website permits it.
 
 Do not synchronize over code while a job is using it. Subsequent full experiments should use a frozen release directory or the recorded revision. Collect summaries/logs back to the Mac; keep frames, split data, feature tensors and checkpoints on the cluster. Scratch is not a durable archive.
+
+## Reviewed first batch
+
+`bash scripts/submit_all.sh` freezes the committed source, validates all six resource requests, and submits the feature cache, B0, B1, B2, B2 set control, and A5 once per release. The four learned predictors depend on successful feature extraction. The cache encodes all 455,226 indexed frames and retains image-byte hashes and frame provenance. Training compares fixed seed 42, full keyframes, batch size 64, AdamW at .001, up to 50 epochs, and validation-KL patience 8.
+
+Feature extraction requests one A100 for at most 24 hours. B0 requests a MIG slice for 30 minutes; each learned predictor requests a MIG slice for two hours. The allocation ceiling is approximately 3,616 SBU (3,072 + 32 + 512), excluding regression smoke; actual billing follows elapsed allocations. No general CPU partition is assumed accessible for B0.
+
+Jobs use `uv run --frozen --no-sync` against the already provisioned environment. Do not change that environment while runs are active. A failed learned run can resume into a new attempt directory by exporting `V2R_RESUME_FROM` to its `last.pt` when submitting the same experiment from the same frozen release. The checkpoint restores epoch, selected weights, optimizer, RNG, and patience; changed config/source identities are rejected. Cache extraction resumes from its last flushed frame cursor.
+
+Collect or reconcile results on the cluster:
+
+```bash
+source configs/clusters/snellius.env
+python3 scripts/collect_results.py --reconcile
+```

@@ -1,14 +1,14 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 00:24:24 UTC**.
+Last cluster status check: **2026-09-30 00:42:39 UTC**. Implementation status updated after the code/hypothesis review; fresh launch status will be recorded below.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
-- **Full benchmark experiments:** zero submitted, zero completed. B0/B1/B2/A5 are the next proposed batch.
+- **Full benchmark experiments:** zero submitted, zero completed. B0/B1/B2/A5 plus the matched B2 set-transformer control are authorized as the first batch after review.
 - **Snellius queue:** empty at the check above. The shared registry contains only the completed smoke run.
-- **Launch control:** wait for the user to request the next batch. Updating this checklist or checking status does not authorize new submissions.
-- **Branch:** `research/video2reaction-experiments`; implementation/report revision before this checklist: `164e028`.
+- **Launch control:** the user requested code/adversarial review, then launch. Complete the cluster regression smoke, then submit the first batch. Later batches remain pending a new request.
+- **Branch:** `research/video2reaction-experiments`. [Code and hypothesis review](code_and_hypothesis_review.md)
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
 
@@ -42,28 +42,30 @@ Tested source revision: `08b8c30`. No full validation/test benchmark scores are 
 
 ## 3. Work required before the first full batch
 
-- [ ] Implement the full training/evaluation entrypoint, including validation checkpoint selection, resume, and final test evaluation.
+- [x] Implement the full training/evaluation entrypoint, including validation checkpoint selection, resume, and final test evaluation.
 - [ ] Build and validate the reusable frozen feature cache for the official splits on the cluster; only smoke features exist currently.
-- [ ] Add one reproducible config and independent SLURM job per selected experiment, including hypothesis and changed component.
-- [ ] Add bounded batch submission (`scripts/submit_all.sh`) and result collection (`scripts/collect_results.py`); `scripts/status_all.sh` already exists.
+- [x] Add one reproducible config and independent SLURM job per selected experiment, including hypothesis and changed component.
+- [x] Add bounded batch submission (`scripts/submit_all.sh`) and result collection (`scripts/collect_results.py`); `scripts/status_all.sh` already exists.
 - [ ] Save per-run config, code/model/split provenance, checkpoint where applicable, predictions with sample IDs/targets/top-k, metrics, and logs.
-- [ ] Verify full-run failure handling and resume behavior; registry locking and smoke resume are already tested.
-- [ ] Recheck authorized partition/account, queue, budget, storage, and resource requests before submission.
+- [x] Verify exact interrupted/resumed training, terminal registry protection, source isolation, cache integrity, and matched controls in synthetic tests: 21 local tests pass.
+- [ ] Pass the expanded test suite and three-video regression smoke in cluster uv.
+- [x] Recheck authorized partition/account, queue, budget, and storage. `sbatch --test-only` is also required for every job before submission.
 
 ## 4. First proposed batch — Tier 0
 
-All four full runs are **pending**. No job IDs have been assigned.
+All five full runs are **pending**. No job IDs have been assigned. Feature extraction is a separate prerequisite job.
 
 | Experiment | Question / change | Implementation readiness | Submitted | Completed |
 |---|---|---|---|---|
-| B0 — Dataset prior | Predict the mean training distribution | Full evaluation runner pending | No | No |
-| B1 — Frozen visual mean pooling | Establish a learned visual baseline | Model smoke-tested; full trainer/cache/config/job pending | No | No |
-| B2 — Temporal transformer | Test temporal aggregation against B1 with matched controls | Model smoke-tested; full trainer/cache/config/job pending | No | No |
-| A5 — KL + cosine + ranking | Test distribution shape and reaction ordering | Loss smoke-tested; full trainer/cache/config/job pending | No | No |
+| B0 — Dataset prior | Predict the mean training distribution | Implemented; cluster regression pending | No | No |
+| B1 — Frozen visual mean pooling | Establish a learned visual baseline | Implemented; cluster regression/cache pending | No | No |
+| B2 — Temporal transformer | Test chronology against matched set transformer | Implemented; cluster regression/cache pending | No | No |
+| B2 set control | Same transformer without positional encoding | Implemented; invariance/initialization tested locally | No | No |
+| A5 — KL + cosine + ranking | Test distribution shape and reaction ordering | Implemented; cluster regression/cache pending | No | No |
 
-- [ ] User requests this batch.
+- [x] User requests review, then launch this batch.
 - [ ] Finish and validate the prerequisites above, then commit, push, and synchronize the selected code.
-- [ ] Submit B0/B1/B2/A5 and record each job ID; make B1/B2/A5 depend on the validated feature cache.
+- [ ] Submit B0/B1/B2/set/A5 and record each job ID; make learned predictors depend on the validated feature cache.
 - [ ] Check startup, completion/failure, predictions, metrics, and output paths for every run.
 - [ ] Summarize the results here before selecting a later batch.
 

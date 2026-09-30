@@ -19,5 +19,5 @@ sbatch --test-only slurm/smoke_3videos.sbatch
 job=$(sbatch --parsable --output="$V2R_ROOT/logs/slurm/smoke-%j.out" slurm/smoke_3videos.sbatch)
 job=${job%%;*}
 printf '%s\n' "$job" > "$record"
-uv run --frozen python scripts/update_registry.py --experiment "smoke_3videos_$job" --status submitted --job-id "$job"
+python3 scripts/update_registry.py --experiment "smoke_3videos_$job" --status submitted --job-id "$job"
 echo "Submitted smoke job $job"

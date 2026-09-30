@@ -1,0 +1,6 @@
+base: tier0_common.yaml
+experiment:
+  name: b0_prior
+  hypothesis: Training label frequency alone explains some official benchmark performance.
+  changed_component: constant training-distribution prior
+  expected_outcome: A reference floor without visual inputs or fitted hyperparameters.

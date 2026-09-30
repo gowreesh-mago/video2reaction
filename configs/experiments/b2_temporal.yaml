@@ -1,0 +1,8 @@
+base: tier0_common.yaml
+experiment:
+  name: b2_temporal
+  hypothesis: Chronological frame-position information improves prediction beyond an otherwise identical set transformer.
+  changed_component: sinusoidal positions in a two-layer transformer; compare with b2_set_control
+  expected_outcome: Lower KL than the set control; shuffled-order sensitivity is a separate diagnostic.
+model:
+  aggregation: temporal

@@ -29,8 +29,8 @@ hostname
 if [[ "${V2R_WARM_IMPORTS:-1}" == 1 ]]; then
   bash scripts/warm_imports.sh
 fi
-uv run --frozen python scripts/check_gpu.py
-uv run --frozen python -c 'from src.dataset import REACTION_CLASSES, REACTION_VA_MATRIX; from src.metrics import compute_mean_reciprocal_rank; assert len(REACTION_CLASSES) == 21; assert REACTION_VA_MATRIX.shape == (21, 2); print("Legacy dataset/metrics imports passed")'
-uv run --frozen python -m pytest tests/test_experiments.py -q
-uv run --frozen python scripts/smoke_test.py --config configs/experiments/smoke_3videos.yaml --run-name "$EXP"
+uv run --frozen --no-sync python scripts/check_gpu.py
+uv run --frozen --no-sync python -c 'from src.dataset import REACTION_CLASSES, REACTION_VA_MATRIX; from src.metrics import compute_mean_reciprocal_rank; assert len(REACTION_CLASSES) == 21; assert REACTION_VA_MATRIX.shape == (21, 2); print("Legacy dataset/metrics imports passed")'
+uv run --frozen --no-sync python -m pytest tests -q
+uv run --frozen --no-sync python scripts/smoke_test.py --config configs/experiments/smoke_3videos.yaml --run-name "$EXP"
 ln -s "$V2R_ROOT/logs/smoke/$EXP/stdout.log" "$V2R_OUTPUT_DIR/smoke/$EXP/stdout.log"

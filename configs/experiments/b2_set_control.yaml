@@ -1,0 +1,9 @@
+base: tier0_common.yaml
+experiment:
+  name: b2_set_control
+  hypothesis: Attention and model capacity can improve on mean pooling without chronological information.
+  changed_component: same transformer as B2 with positional encoding disabled
+  expected_outcome: A capacity-matched, permutation-invariant reference for b2_temporal.
+model:
+  aggregation: temporal
+  positional_encoding: false

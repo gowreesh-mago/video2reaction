@@ -1,0 +1,6 @@
+base: tier0_common.yaml
+experiment:
+  name: feature_cache
+  hypothesis: All official keyframes can be encoded reproducibly once and shared by controlled comparisons.
+  changed_component: frozen feature preparation
+  expected_outcome: Complete validated features for all official splits, with frame identities and hashes.

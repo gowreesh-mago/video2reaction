@@ -1,0 +1,8 @@
+base: tier0_common.yaml
+experiment:
+  name: a5_distribution
+  hypothesis: Adding cosine and pairwise-ranking penalties improves distribution similarity and ordering relative to B1 KL.
+  changed_component: loss only; same mean-pooling architecture and initialization as B1
+  expected_outcome: Higher MRR and F1 at 3; report any KL tradeoff without treating coefficients as optimized.
+loss:
+  kind: composite

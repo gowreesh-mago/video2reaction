@@ -5,11 +5,12 @@ from torch import nn
 
 
 class ReactionPredictor(nn.Module):
-    def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2):
+    def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2, positional_encoding=True):
         super().__init__()
         if aggregation not in {'mean', 'temporal', 'query'}:
             raise ValueError(aggregation)
         self.aggregation = aggregation
+        self.positional_encoding = positional_encoding
         self.projection = nn.Sequential(nn.LayerNorm(input_dim), nn.Linear(input_dim, hidden_dim))
         self.head = nn.Sequential(nn.Linear(hidden_dim, hidden_dim), nn.GELU(), nn.Linear(hidden_dim, num_classes))
         if aggregation == 'temporal':
@@ -34,7 +35,7 @@ class ReactionPredictor(nn.Module):
             encoding = torch.zeros_like(h[0])
             encoding[:,0::2] = torch.sin(position*freq)
             encoding[:,1::2] = torch.cos(position*freq)
-            h = torch.cat([self.cls.expand(len(h),-1,-1),h+encoding],dim=1)
+            h = torch.cat([self.cls.expand(len(h),-1,-1),h+encoding if self.positional_encoding else h],dim=1)
             valid = torch.cat([torch.ones(len(mask),1,device=mask.device,dtype=torch.bool),mask],dim=1)
             pooled = self.temporal(h,src_key_padding_mask=~valid)[:,0]
             logits = self.head(pooled)
