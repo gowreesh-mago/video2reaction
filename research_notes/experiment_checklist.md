@@ -1,12 +1,12 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 01:25:32 UTC**.
+Last cluster status check: **2026-09-30 01:46:25 UTC**.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
 - **Full benchmark experiments:** B0 completed; four replacement learned runs are submitted and waiting for the corrected feature-cache job.
-- **Snellius queue:** corrected feature job `27382293` running; learned jobs `27382294`–`27382297` pending successful cache completion. Extraction has checkpointed **4,096 / 317,950 training frames**; full cache target is 455,226 frames across all splits.
+- **Snellius queue:** corrected feature job `27382293` running; learned jobs `27382294`–`27382297` pending successful cache completion. Extraction has checkpointed **94,208 / 317,950 training frames**, or **20.7% of all 455,226 frames**. No new failures are reported.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
 - **Branch:** `research/video2reaction-experiments`; current tested/submitted source **`bbf8c1d`**; completed B0 source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
 
@@ -45,7 +45,7 @@ Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected s
 ## 3. Work required before the first full batch
 
 - [x] Implement the full training/evaluation entrypoint, including validation checkpoint selection, resume, and final test evaluation.
-- [ ] Build and validate the reusable frozen feature cache for the official splits on the cluster; only smoke features exist currently.
+- [ ] Finish and validate the reusable frozen feature cache for the official splits on the cluster; full extraction is in progress.
 - [x] Add one reproducible config and independent SLURM job per selected experiment, including hypothesis and changed component.
 - [x] Add bounded batch submission (`scripts/submit_all.sh`) and result collection (`scripts/collect_results.py`); `scripts/status_all.sh` already exists.
 - [ ] Save per-run config, code/model/split provenance, checkpoint where applicable, predictions with sample IDs/targets/top-k, metrics, and logs.
@@ -67,7 +67,7 @@ Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected s
 | B2 set control — no positions | `27382296` | pending | successful `27382293` |
 | A5 — KL + cosine + ranking | `27382297` | pending | successful `27382293` |
 
-Verified extraction progress: cache `data/features/siglip2-so400m/b69db8858136c6a0`, `train/progress.json` reports `next_frame=4096`. The first cache chunk passed shape/finiteness checks and was flushed with image hashes. Full cache completeness and learned-model results remain pending.
+Verified extraction progress: cache `data/features/siglip2-so400m/b69db8858136c6a0`, `train/progress.json` reports `next_frame=94208` of `317950`. Saved chunks passed shape/finiteness checks and were flushed with image hashes. Validation/test extraction has not started. Recent throughput is about 71 frames/second (65,536 to 94,208 frames in 403.7 seconds). At that rate, allow roughly 1.5–2 hours for the remaining frames, split preparation, and cache validation; this is an estimate. The four learned jobs start after successful cache completion and scheduler allocation. Full cache completeness and learned-model results remain pending.
 
 ### First attempt and recovery
 
