@@ -2,6 +2,8 @@
 
 Reviewed 2026-09-30. Starting revision: `107f593`. Scope: the changes since upstream `0da6060`, the original experiment request, and the implementation added in response to this review.
 
+**Completion update, 2026-09-30 06:37 UTC:** the corrected cache and all five Tier 0 benchmark runs have completed successfully. See the [results and bounded hypothesis conclusions](tier0_report.md). The launch/startup notes below record the evidence available during the original review.
+
 ## Verdict
 
 The starting code correctly supported a three-video infrastructure smoke test. It did **not** implement full benchmark experiments, so its results could neither support nor reject the research hypotheses. The overfitting losses must not be compared as benchmark scores.

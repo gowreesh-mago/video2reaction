@@ -1,13 +1,14 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 01:54:10 UTC**.
+Last cluster status check: **2026-09-30 06:37:41 UTC**.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
-- **Full benchmark experiments:** B0 completed; four replacement learned runs are submitted and waiting for the corrected feature-cache job.
-- **Snellius queue:** corrected feature job `27382293` running; learned jobs `27382294`–`27382297` pending successful cache completion. Extraction has checkpointed **122,880 / 317,950 training frames**, or **27.0% of all 455,226 frames**. No new failures are reported.
-- **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Outputs, logs, and results were pulled to the Mac at **01:54:44 UTC** (130 files, 39.46 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
+- **Full benchmark experiments:** B0, B1, B2, B2 set control, and A5 all completed successfully. The all-keyframe feature cache is complete. [Tier 0 results and interpretation](tier0_report.md)
+- **Snellius queue:** no jobs remain in the queue. Corrected feature job `27382293` and learned jobs `27382294`–`27382297` all exited `0:0`; no new failures.
+- **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
+- **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
 - **Branch:** `research/video2reaction-experiments`; current tested/submitted source **`bbf8c1d`**; completed B0 source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
 
@@ -43,15 +44,15 @@ Checked boxes mean completed and verified. A model passing the three-video smoke
 | `smoke_3videos_27381915` | Snellius / `gpu_mig` | `27381915` | completed | `0:0` / `00:05:41` | Reviewed code: 21 tests plus the same 3-video GPU integration check |
 | `smoke_3videos_27382205` | Snellius / `gpu_mig` | `27382205` | completed | `0:0` / `00:03:31` | Corrected shared image-only loader: 22 tests and 3-video GPU integration check |
 
-Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected shared loader `bbf8c1d`. B0 has full validation/test results; learned-model results remain pending.
+Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected shared loader `bbf8c1d`. All five Tier 0 models now have full validation/test results.
 
 ## 3. Work required before the first full batch
 
 - [x] Implement the full training/evaluation entrypoint, including validation checkpoint selection, resume, and final test evaluation.
-- [ ] Finish and validate the reusable frozen feature cache for the official splits on the cluster; full extraction is in progress.
+- [x] Finish and validate the reusable frozen feature cache for all 455,226 official split frames on the cluster.
 - [x] Add one reproducible config and independent SLURM job per selected experiment, including hypothesis and changed component.
 - [x] Add bounded batch submission (`scripts/submit_all.sh`) and result collection (`scripts/collect_results.py`); `scripts/status_all.sh` already exists.
-- [ ] Save per-run config, code/model/split provenance, checkpoint where applicable, predictions with sample IDs/targets/top-k, metrics, and logs.
+- [x] Save per-run config, code/model/split provenance, checkpoint where applicable, predictions with sample IDs/targets/top-k, metrics, and logs for all Tier 0 runs.
 - [x] Verify exact interrupted/resumed training, terminal registry protection, source isolation, cache integrity, and matched controls in synthetic tests: 21 local tests pass.
 - [x] Pass all 21 tests and the three-video regression smoke in cluster uv (`27381915`, exit 0:0).
 - [x] Fix the production/smoke loader mismatch and pass all 22 tests plus the three-video smoke in cluster uv (`27382205`, exit 0:0).
@@ -63,14 +64,14 @@ Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected s
 
 | Experiment | Job ID | Scheduler state | Dependency |
 |---|---|---|---|
-| All-keyframe feature cache | `27382293` | running, A100 / gcn6 | none |
+| All-keyframe feature cache | `27382293` | completed, exit 0:0, 01:50:35 | none |
 | B0 — Dataset prior | `27382108` | completed, exit 0:0 | none |
-| B1 — Frozen visual mean pooling | `27382294` | pending | successful `27382293` |
-| B2 — Temporal transformer | `27382295` | pending | successful `27382293` |
-| B2 set control — no positions | `27382296` | pending | successful `27382293` |
-| A5 — KL + cosine + ranking | `27382297` | pending | successful `27382293` |
+| B1 — Frozen visual mean pooling | `27382294` | completed, exit 0:0, 00:02:42 | successful `27382293` |
+| B2 — Temporal transformer | `27382295` | completed, exit 0:0, 00:02:42 | successful `27382293` |
+| B2 set control — no positions | `27382296` | completed, exit 0:0, 00:02:43 | successful `27382293` |
+| A5 — KL + cosine + ranking | `27382297` | completed, exit 0:0, 00:02:42 | successful `27382293` |
 
-Verified extraction progress: cache `data/features/siglip2-so400m/b69db8858136c6a0`, `train/progress.json` reports `next_frame=122880` of `317950`. Saved chunks passed shape/finiteness checks and were flushed with image hashes. Validation/test extraction has not started. Recent throughput is about 70 frames/second (110,592 to 122,880 frames in 176.2 seconds). At that rate, allow roughly 1.5 hours for the remaining frames, split preparation, and cache validation; this is an estimate. The four learned jobs start after successful cache completion and scheduler allocation. Full cache completeness and learned-model results remain pending.
+Verified cache `data/features/siglip2-so400m/b69db8858136c6a0`: train **317,950/317,950**, validation **45,964/45,964**, and test **91,312/91,312** frames. Each split has its completion manifest, feature/image/index checksums, and 1,152-dimensional features. All four learned jobs consumed this cache and completed. They trained for 17/12/13/17 epochs (B1/B2/set/A5), selecting epochs 9/4/5/9 by validation KL.
 
 ### First attempt and recovery
 
@@ -90,8 +91,9 @@ B0 test metrics: KL **0.689281**, cosine **0.751309**, MRR **0.599569**, F1@1 **
 - [x] User requests review, then launch this batch.
 - [x] Implement and validate the first-batch code, then commit, push, synchronize, and freeze it before submission.
 - [x] Submit B0/B1/B2/set/A5 and record each job ID; learned predictors depend on successful feature-cache completion.
-- [ ] Check startup, completion/failure, predictions, metrics, and output paths for every run.
-- [ ] Summarize the results here before selecting a later batch.
+- [x] Check startup, completion/failure, predictions, metrics, and output paths for every Tier 0 run.
+- [x] Summarize Tier 0 results and bounded hypothesis conclusions before selecting a later batch. [Report](tier0_report.md)
+- [x] Recompute all saved validation/test metrics in the locked cluster uv environment, verify paired sample identities and checkpoint selection, and estimate paired KL intervals with 10,000 movie-cluster bootstrap resamples. B1 improves over B0; KL differences between learned models remain inconclusive.
 
 ## 5. Later batches — select after reviewing Tier 0
 
@@ -122,9 +124,9 @@ Every item below is unlaunched. Grouping is a proposed order, not a submission r
 
 ## 6. Evaluation and final report
 
-- [ ] Collect official distribution/ranking/Top-k metrics for each completed full run.
-- [ ] Collect per-class precision, recall, F1, target support, and prediction support.
-- [ ] Stratify results by target entropy quartile, frame count, and dominant target probability.
+- [x] Collect official distribution/ranking/Top-k metrics for all five completed Tier 0 runs.
+- [x] Collect Tier 0 per-class precision, recall, F1, target support, and prediction support.
+- [x] Save Tier 0 diagnostics by target entropy quartile, frame count, and dominant target probability, with cut points derived from training.
 - [ ] For peak/query experiments, save selected indices/timestamps, emotion/VAD scores, and attention weights as applicable.
 - [ ] Save 20 qualitative examples: 5 improvements, 5 failures, 5 high-entropy, and 5 low-entropy clips.
 - [ ] Write `research_notes/final_report.md` with results, supported/rejected/inconclusive hypotheses, failures, benchmark caveats, and reproduction commands.
