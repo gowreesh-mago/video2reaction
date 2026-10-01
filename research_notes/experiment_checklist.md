@@ -1,16 +1,16 @@
 # Experiment checklist
 
-Last cluster status check: **2026-10-01 00:38:00 UTC**.
+Last cluster status check: **2026-10-01 01:15:39 UTC**.
 
 ## Current status
 
 - **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
 - **Full benchmark experiments:** B0, B1, B2, B2 set control, and A5 all completed successfully. The all-keyframe feature cache is complete. [Tier 0 results and interpretation](tier0_report.md)
-- **Snellius queue:** no jobs remain in the queue. Corrected feature job `27382293` and learned jobs `27382294`–`27382297` all exited `0:0`; no new failures.
+- **Snellius queue:** updated three-video regression smoke `27438252` is pending on `gpu_mig`, submitted from frozen source `4fd4068`. Corrected feature job `27382293` and learned jobs `27382294`–`27382297` all exited `0:0`; no new benchmark jobs were submitted.
 - **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
 - **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
-- **Next-batch preparation (2026-10-01):** E reaction queries and a matched shared-attention control now have full-run configs, SLURM scripts, and frame-aligned attention export. All **27 local mock tests pass**. The EmoEditor ResNet-18 checkpoint was downloaded and hashed on Snellius; loading/inference remain pending. These are implementation checks, with no new benchmark results. [Tier 1 code and hypothesis review](tier1_attention_review.md)
-- **Current resources:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
+- **Next-batch preparation (2026-10-01):** E reaction queries and a matched shared-attention control now have full-run configs, SLURM scripts, and frame-aligned attention export. All **27 local mock tests pass**; cluster regression smoke `27438252` is pending. The EmoEditor ResNet-18 checkpoint was downloaded and hashed on Snellius; loading/inference remain pending. These are implementation checks, with no new benchmark results. [Tier 1 code and hypothesis review](tier1_attention_review.md)
+- **Resources at 00:38 UTC:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
 - **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
 - **Branch:** `research/video2reaction-experiments`; current tested/submitted source **`bbf8c1d`**; completed B0 source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
@@ -46,6 +46,7 @@ Checked boxes mean completed and verified. A model passing the three-video smoke
 | `smoke_3videos_27381153` | Snellius / `gpu_mig` | `27381153` | completed | `0:0` / `00:08:04` | Infrastructure validation on 3 training videos |
 | `smoke_3videos_27381915` | Snellius / `gpu_mig` | `27381915` | completed | `0:0` / `00:05:41` | Reviewed code: 21 tests plus the same 3-video GPU integration check |
 | `smoke_3videos_27382205` | Snellius / `gpu_mig` | `27382205` | completed | `0:0` / `00:03:31` | Corrected shared image-only loader: 22 tests and 3-video GPU integration check |
+| `smoke_3videos_27438252` | Snellius / `gpu_mig` | `27438252` | pending | — | 27 tests and 3-video regression including shared-query control and full attention recorder; source `4fd4068` |
 
 Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected shared loader `bbf8c1d`. All five Tier 0 models now have full validation/test results.
 
@@ -108,7 +109,7 @@ Every item below is unlaunched. Grouping is a proposed order, not a submission r
 - [ ] B-VAD1 — Add expected-VAD auxiliary regression. Coordinates are available; training experiment pending.
 - [ ] B-VAD2 — Add geometry regularization. Coordinates are available; training experiment pending.
 - [ ] D — Compare peak selection at K=1/2/4/8/all, using arousal, distance from neutral, and confidence-aware intensity. Depends on frame-emotion evidence.
-- [ ] E — Run reaction-specific frame attention and the matched shared-query control on the full benchmark. Configs/export and 27 local tests pass; updated cluster regression smoke and benchmarks pending.
+- [ ] E — Run reaction-specific frame attention and the matched shared-query control on the full benchmark. Configs/export and 27 local tests pass; cluster regression smoke `27438252` pending; benchmarks unlaunched.
 - [ ] F — Compare global context plus selected peaks with each component alone. Depends on global and peak baselines.
 
 ### Required description diagnostics

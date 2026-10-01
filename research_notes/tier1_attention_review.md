@@ -42,5 +42,6 @@ Loading and real-image inference remain unverified. Do not treat the download as
 ## Status
 
 - Implemented E and its control, configs, individual SLURM scripts, and full attention export.
-- All 27 local synthetic tests passed in conda `torch` (7.55 seconds); cluster regression smoke is pending. Warnings are confined to undefined-label metrics in the original reference implementation exercised by the equivalence test.
+- All 27 local synthetic tests passed in conda `torch` (7.55 seconds). Warnings are confined to undefined-label metrics in the original reference implementation exercised by the equivalence test.
+- Source `4fd4068` is pushed and synchronized. Three-video cluster regression smoke `27438252` was submitted after scheduler preflight, from frozen release `4fd4068f2733-b298ef71977d`. It is pending as of 2026-10-01 01:15:39 UTC, with a ten-minute limit on `gpu_mig` under account `gusr133332` (maximum 10.67 SBU at 64 SBU/GPU-hour). It tests five variants, including the shared-query control, and the attention recorder. Check its terminal scheduler state and artifacts before marking the new path cluster-validated.
 - Neither E benchmark has been submitted. C/D/F remain unlaunched.
