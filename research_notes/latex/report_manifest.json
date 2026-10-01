@@ -1,0 +1,19 @@
+{
+  "source_results_sha256": "a06f2eeae6ad1fe03ffbac8b2ae93b62b47696669badfece3c8513b9d8f0408a",
+  "run_ids": {
+    "b0_prior": "b0_prior_27382108",
+    "b1_meanpool": "b1_meanpool_27382294",
+    "b2_temporal": "b2_temporal_27382295",
+    "b2_set_control": "b2_set_control_27382296",
+    "a5_distribution": "a5_distribution_27382297"
+  },
+  "models": 5,
+  "examples": 20,
+  "unique_example_movies": 20,
+  "checks": [
+    "Per-class scores reproduce saved weighted F1.",
+    "Per-clip KL reproduces saved test KL.",
+    "Sample IDs, movie IDs, targets, class order, and frame counts agree across models.",
+    "Twenty unique example clips and movies; five clips per requested group."
+  ]
+}

@@ -1,0 +1,16 @@
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrcr}
+\toprule
+Split & Clips & Frames & Mean / median frames & Mean entropy \\
+\midrule
+train & 7,243 & 317,950 & 43.90 / 39 & 1.4592 \\
+val & 1,035 & 45,964 & 44.41 / 40 & 1.4528 \\
+test & 2,070 & 91,312 & 44.11 / 40 & 1.4595 \\
+\bottomrule
+\end{tabular}
+\caption{Audited official splits. Target entropy is measured in nats. All referenced frame paths exist and every frame was subsequently decoded during completed feature extraction.}
+\label{tab:dataset}
+\end{table}

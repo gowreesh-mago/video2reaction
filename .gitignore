@@ -17,3 +17,12 @@ data/**
 cluster.env
 code_version.json
 assets/emotion_vad.json
+/tmp/pdfs/
+/output/pdf/
+/research_notes/latex/*.aux
+/research_notes/latex/*.log
+/research_notes/latex/*.out
+/research_notes/latex/*.toc
+/research_notes/latex/*.fls
+/research_notes/latex/*.fdb_latexmk
+/research_notes/latex/video2reaction_report.pdf

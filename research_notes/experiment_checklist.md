@@ -1,6 +1,6 @@
 # Experiment checklist
 
-Last cluster status check: **2026-09-30 06:37:41 UTC**.
+Last cluster status check: **2026-10-01 00:38:00 UTC**.
 
 ## Current status
 
@@ -8,6 +8,8 @@ Last cluster status check: **2026-09-30 06:37:41 UTC**.
 - **Full benchmark experiments:** B0, B1, B2, B2 set control, and A5 all completed successfully. The all-keyframe feature cache is complete. [Tier 0 results and interpretation](tier0_report.md)
 - **Snellius queue:** no jobs remain in the queue. Corrected feature job `27382293` and learned jobs `27382294`–`27382297` all exited `0:0`; no new failures.
 - **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
+- **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
+- **Current resources:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
 - **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
 - **Branch:** `research/video2reaction-experiments`; current tested/submitted source **`bbf8c1d`**; completed B0 source **`e91a469`**. [Code and hypothesis review](code_and_hypothesis_review.md)
@@ -128,8 +130,8 @@ Every item below is unlaunched. Grouping is a proposed order, not a submission r
 - [x] Collect Tier 0 per-class precision, recall, F1, target support, and prediction support.
 - [x] Save Tier 0 diagnostics by target entropy quartile, frame count, and dominant target probability, with cut points derived from training.
 - [ ] For peak/query experiments, save selected indices/timestamps, emotion/VAD scores, and attention weights as applicable.
-- [ ] Save 20 qualitative examples: 5 improvements, 5 failures, 5 high-entropy, and 5 low-entropy clips.
-- [ ] Write `research_notes/final_report.md` with results, supported/rejected/inconclusive hypotheses, failures, benchmark caveats, and reproduction commands.
+- [x] Save 20 prediction examples: 5 improvements, 5 failures, 5 high-entropy, and 5 low-entropy clips, with distinct movie IDs and all five model distributions. The LaTeX appendix shows probabilities and IDs; visual scene explanations remain unverified.
+- [x] Write `research_notes/final_report.md` as the current report index, with completed results and hypothesis conclusions, and provide the self-contained LaTeX/PDF report. Later experiments and the central peak/VAD conclusions remain pending.
 - [ ] Answer whether peaks, global context, or both help, and whether VAD improves prediction, using completed controlled comparisons.
 
 ## Status update procedure

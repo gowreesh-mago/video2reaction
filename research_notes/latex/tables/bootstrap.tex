@@ -1,0 +1,19 @@
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrl}
+\toprule
+Comparison & $\Delta$ KL & 95\% interval \\
+\midrule
+B1 minus B0 & -0.144867 & [-0.157545, -0.131936] \\
+B2 minus B1 & +0.002490 & [-0.003218, +0.008202] \\
+B2 minus Set & +0.000428 & [-0.004238, +0.005015] \\
+Set minus B1 & +0.002062 & [-0.003571, +0.007822] \\
+A5 minus B1 & +0.000048 & [-0.001401, +0.001438] \\
+B2 shuffled minus ordered & +0.001936 & [+0.000493, +0.003416] \\
+\bottomrule
+\end{tabular}
+\caption{Paired movie-cluster bootstrap, 10,000 resamples of 1,183 test movies. Negative differences favor the first model. These are marginal percentile intervals, conditional on trained weights.}
+\label{tab:bootstrap}
+\end{table}

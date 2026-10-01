@@ -8,5 +8,6 @@ python3 scripts/write_code_manifest.py
 rsync -az --itemize-changes --exclude=.git --exclude=.venv --exclude=.codegraph --exclude=__pycache__ \
   --exclude=.pytest_cache --exclude=.DS_Store --exclude=.env --exclude=.aws --exclude=.codex --exclude=.agents \
   --exclude=outputs --exclude=results --exclude=logs --exclude=data --exclude=cluster.env \
+  --exclude=/tmp/pdfs/ --exclude=/output/pdf/ \
   --exclude=assets/emotion_vad.json \
   ./ "$host:$remote/"

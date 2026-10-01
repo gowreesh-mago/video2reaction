@@ -1,5 +1,13 @@
 # Cluster access and budget
 
+## Latest resource check
+
+**2026-10-01 00:38 UTC:** `budget-overview` reports **87,861:20 SBU** left for dispatch and submission on `gusr133332`, with no active or queued jobs. The completed Tier 0/cache job IDs still show `COMPLETED`, exit `0:0`. Home uses 40.4098% of its 200 GiB quota (about 119.18 GiB available); scratch uses 0.1124% of its 8 TiB quota. Home inode usage is 699,411/1,000,000; scratch inode usage is 1.2616% of 3,000,000. Features occupy about 2.1 GiB and outputs about 70 MiB. [Structured snapshot](cluster_status_20261001.json)
+
+The original access/storage audit below is preserved with its earlier measurements.
+
+## Initial audit
+
 Observed 2026-09-30. SSH aliases from the user's config were tested; account associations and partition allow-lists were inspected. No jobs have been submitted at this audit checkpoint.
 
 | Cluster | Verified account(s) | Verified candidate partitions |

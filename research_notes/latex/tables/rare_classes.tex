@@ -1,0 +1,18 @@
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Macro F1@1 & Nonzero F1@1 & Unpredicted@1 & Macro F1@3 & Nonzero F1@3 \\
+\midrule
+B0 & 0.0277 & 1 & 20 & 0.1155 & 3 \\
+B1 & 0.0979 & 4 & 14 & 0.1901 & 12 \\
+B2 & 0.1012 & 4 & 17 & 0.1719 & 8 \\
+Set & 0.1035 & 5 & 16 & 0.1850 & 11 \\
+A5 & 0.0998 & 4 & 14 & 0.1923 & 12 \\
+\bottomrule
+\end{tabular}
+\caption{Additional class-balanced diagnostics over all 21 classes. Undefined class scores are zero; classes absent from the target top-k sets are included. These are not replacements for official support-weighted F1.}
+\label{tab:rare}
+\end{table}

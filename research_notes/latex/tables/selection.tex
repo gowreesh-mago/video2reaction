@@ -1,0 +1,18 @@
+\begin{table}[!htbp]
+\centering
+\small
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrr}
+\toprule
+Model & Parameters & Epoch selected & Epochs run & Val KL $\downarrow$ \\
+\midrule
+B0 & 0 & -- & -- & 0.692247 \\
+B1 & 169,109 & 9 & 17 & 0.541493 \\
+B2 & 565,781 & 4 & 12 & 0.545500 \\
+Set & 565,781 & 5 & 13 & 0.547861 \\
+A5 & 169,109 & 9 & 17 & 0.542901 \\
+\bottomrule
+\end{tabular}
+\caption{Validation-only checkpoint selection. B0 has no optimized parameters or checkpoint selection.}
+\label{tab:selection}
+\end{table}

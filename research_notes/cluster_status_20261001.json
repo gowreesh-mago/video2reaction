@@ -1,0 +1,22 @@
+{
+  "checked_at_utc": "2026-10-01T00:38:00Z",
+  "cluster": "snellius.surf.nl",
+  "account": "gusr133332",
+  "registered_balance_at": "2026-09-30T23:59:59",
+  "remaining_sbu_hours_minutes": "87861:20",
+  "active_jobs": 0,
+  "queued_jobs": 0,
+  "home_quota_gib": 200,
+  "home_usage_percent": 40.4098,
+  "home_inode_quota": 1000000,
+  "home_inode_usage_percent": 69.9411,
+  "scratch_quota_tib": 8,
+  "scratch_usage_percent": 0.1124,
+  "scratch_inode_quota": 3000000,
+  "scratch_inode_usage_percent": 1.2616,
+  "feature_directory_du": "2.1G",
+  "output_directory_du": "70M",
+  "dataset_path": "/gpfs/home3/gmago/video2reaction/scratch4/workspace/sidongzhang_umass_edu-v2r/v2r_data/youtube_video/key_frames",
+  "completed_jobs_exit_0": [27382108, 27382293, 27382294, 27382295, 27382296, 27382297],
+  "commands": ["date -u", "squeue -u gmago", "budget-overview", "myquota", "readlink -f data/key_frames", "du -sh data/features outputs", "sacct -S 2026-09-29 -j 27382108,27382293,27382294,27382295,27382296,27382297 -X"]
+}
