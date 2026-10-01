@@ -1,0 +1,10 @@
+base: tier0_common.yaml
+experiment:
+  name: e_reaction_query
+  hypothesis: Each reaction benefits from its own distribution of attention over visual keyframes.
+  changed_component: Replace uniform mean pooling with one learned frame query per reaction.
+  expected_outcome: Lower validation-selected test KL than B1 and the capacity-matched shared-query control.
+model:
+  aggregation: query
+evaluation:
+  save_attention: true

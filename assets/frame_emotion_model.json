@@ -1,0 +1,26 @@
+{
+  "name": "EmoEditor emotion predictor",
+  "architecture": "torchvision.models.resnet18; fc=Linear(512,8)",
+  "training_dataset": "EmoSet",
+  "class_order": ["amusement", "anger", "awe", "contentment", "disgust", "excitement", "fear", "sadness"],
+  "preprocessing": "RGB; PIL bilinear resize to 224x224; ToTensor to [0,1]; no ImageNet normalization",
+  "inference": "float32 eval; softmax of the eight logits; frozen weights",
+  "repository": "https://github.com/ZhangLab-DeepNeuroCogLab/EmoEditor",
+  "revision": "9d989ae99e43bfe533f9b7fdccfe49f6c2f23253",
+  "architecture_source": "https://github.com/ZhangLab-DeepNeuroCogLab/EmoEditor/blob/9d989ae99e43bfe533f9b7fdccfe49f6c2f23253/utils.py",
+  "labels_and_preprocessing_source": "https://github.com/ZhangLab-DeepNeuroCogLab/EmoEditor/blob/9d989ae99e43bfe533f9b7fdccfe49f6c2f23253/test.py",
+  "training_provenance_source": "https://arxiv.org/html/2403.08255v3#S3.SS1",
+  "checkpoint_page": "https://drive.google.com/file/d/1LWcj-ENbgqefXjuz2aVB8ynzUpnQYnim/view",
+  "checkpoint_url": "https://drive.usercontent.google.com/download?id=1LWcj-ENbgqefXjuz2aVB8ynzUpnQYnim&export=download&confirm=t",
+  "checkpoint_bytes": 44801589,
+  "checkpoint_sha256": "2abdbddd4646d7da8134ecd7db51bd2405cc93070d7847a3c3cc451a6f2d31d5",
+  "checkpoint_cluster_path": "/scratch-shared/gmago/video2reaction/cache/models/emoeditor-resnet18/emo_predictor.pt.download",
+  "status": "Downloaded and hashed on Snellius; loading, inference, and frame-cache validation pending",
+  "limitations": [
+    "Eight image-evoked emotion categories are proxy evidence; they are not the 21 audience reaction targets.",
+    "The checkpoint's alphabetical label order differs from the EmoSet repository's info.json order.",
+    "No neutral class exists; use an explicitly declared neutral VAD reference for peak scoring.",
+    "Softmax confidence is uncalibrated on Video2Reaction.",
+    "Keep checkpoint private on the cluster; it is not included in the repository or report bundle."
+  ]
+}

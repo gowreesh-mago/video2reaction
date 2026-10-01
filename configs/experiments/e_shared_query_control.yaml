@@ -1,0 +1,8 @@
+base: e_reaction_query.yaml
+experiment:
+  name: e_shared_query_control
+  hypothesis: Shared learned salience may explain query-pooling gains without reaction-specific evidence.
+  changed_component: Average the 21 query attention distributions and use that shared map for every reaction; retain all query parameters.
+  expected_outcome: If reaction-specific evidence matters, sharing attention worsens KL relative to E with identical parameter count and initialization.
+model:
+  aggregation: shared_query

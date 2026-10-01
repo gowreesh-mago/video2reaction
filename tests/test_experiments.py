@@ -65,7 +65,7 @@ def test_ce_kl_same_gradient():
     torch.testing.assert_close(ce,kl)
 
 
-@pytest.mark.parametrize('aggregation',['mean','temporal','query'])
+@pytest.mark.parametrize('aggregation',['mean','temporal','query','shared_query'])
 def test_padding_does_not_change_prediction(aggregation):
     torch.manual_seed(42)
     model=ReactionPredictor(16,hidden_dim=32,aggregation=aggregation).eval()

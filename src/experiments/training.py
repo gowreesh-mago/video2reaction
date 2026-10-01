@@ -7,6 +7,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
+from .attention import AttentionRecorder
 from .features import collate_videos
 from .losses import distribution_loss
 from .metrics import evaluate
@@ -21,9 +22,12 @@ def loader(dataset, cfg, epoch=None):
                       generator=generator, collate_fn=collate_videos, num_workers=0)
 
 
-def predict(model, dataset, cfg, device, shuffle_frames=False):
+def predict(model, dataset, cfg, device, shuffle_frames=False, attention_output=None):
+    if shuffle_frames and attention_output is not None:
+        raise ValueError('Attention export requires the original chronological frame order')
     model.eval()
     prediction = np.empty((len(dataset), 21), dtype=np.float64)
+    recorder = AttentionRecorder(dataset) if attention_output is not None else None
     with torch.no_grad():
         for x, mask, _, indices in loader(dataset, cfg):
             if shuffle_frames:
@@ -31,8 +35,12 @@ def predict(model, dataset, cfg, device, shuffle_frames=False):
                     count = int(mask[row].sum())
                     rng = np.random.default_rng(cfg['evaluation']['permutation_seed'] + index)
                     x[row, :count] = x[row, rng.permutation(count)].clone()
-            logits, _ = model(x.to(device), mask.to(device))
+            logits, attention = model(x.to(device), mask.to(device))
             prediction[indices.numpy()] = logits.softmax(-1).cpu().numpy()
+            if recorder is not None:
+                recorder.add(indices, mask, attention)
+    if recorder is not None:
+        recorder.save(attention_output)
     return prediction
 
 

@@ -77,7 +77,9 @@ def run(args):
             for s in ('val', 'test'):
                 dataset = val if s == 'val' else CachedVideos(cfg, s, splits[s])
                 result[s] = save_evaluation(out, s, dataset.ids, splits[s], dataset.targets,
-                            predict(model, dataset, cfg, 'cuda'), dataset.counts, train_movies, bins,
+                            predict(model, dataset, cfg, 'cuda', attention_output=out / s
+                                    if cfg['evaluation'].get('save_attention', False) else None),
+                            dataset.counts, train_movies, bins,
                             shuffled=predict(model, dataset, cfg, 'cuda', shuffle_frames=True))
         summary = {'benchmark_result': True, 'experiment': cfg['experiment'], 'training': info,
                    'val': result['val']['metrics'], 'test': result['test']['metrics'],

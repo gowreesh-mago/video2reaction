@@ -7,7 +7,7 @@ from torch import nn
 class ReactionPredictor(nn.Module):
     def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2, positional_encoding=True):
         super().__init__()
-        if aggregation not in {'mean', 'temporal', 'query'}:
+        if aggregation not in {'mean', 'temporal', 'query', 'shared_query'}:
             raise ValueError(aggregation)
         self.aggregation = aggregation
         self.positional_encoding = positional_encoding
@@ -17,7 +17,7 @@ class ReactionPredictor(nn.Module):
             block = nn.TransformerEncoderLayer(hidden_dim, 4, hidden_dim*4, dropout=0., batch_first=True, norm_first=True)
             self.temporal = nn.TransformerEncoder(block, layers, enable_nested_tensor=False)
             self.cls = nn.Parameter(torch.zeros(1, 1, hidden_dim))
-        if aggregation == 'query':
+        if aggregation in {'query', 'shared_query'}:
             self.queries = nn.Parameter(torch.randn(num_classes, hidden_dim) / math.sqrt(hidden_dim))
         self.hidden_dim = hidden_dim
 
@@ -42,6 +42,10 @@ class ReactionPredictor(nn.Module):
         else:
             scores = torch.einsum('cd,btd->bct',self.queries,h)/math.sqrt(self.hidden_dim)
             attention = scores.masked_fill(~mask[:,None,:],-torch.inf).softmax(-1)
+            if self.aggregation == 'shared_query':
+                # Keep every learned query active and match query-model capacity.
+                # Only remove the association between a reaction and its own map.
+                attention = attention.mean(1, keepdim=True).expand_as(attention)
             pooled = torch.einsum('bct,btd->bcd',attention,h)
             logits = self.head(pooled).diagonal(dim1=1,dim2=2)
         return logits, attention

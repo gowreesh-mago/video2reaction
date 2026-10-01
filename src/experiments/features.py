@@ -144,6 +144,7 @@ class CachedVideos(Dataset):
         if index['split_sha256'] != cfg['data']['split_sha256'][split]:
             raise ValueError('Cached metadata split mismatch')
         self.ids = [video['sample_id'] for video in index['videos']]
+        self.frame_records = index['videos']
         if self.ids != sorted(rows):
             raise ValueError('Cache sample IDs differ from official split')
         self.offsets = index['offsets']

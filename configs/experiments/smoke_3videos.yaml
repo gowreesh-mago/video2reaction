@@ -25,3 +25,4 @@ variants:
   temporal_transformer: {aggregation: temporal, loss: kl}
   distribution_loss: {aggregation: mean, loss: composite}
   reaction_queries: {aggregation: query, loss: kl}
+  shared_reaction_queries: {aggregation: shared_query, loss: kl}

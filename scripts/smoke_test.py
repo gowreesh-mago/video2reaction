@@ -9,6 +9,7 @@ import socket
 import sys
 import time
 import traceback
+from types import SimpleNamespace
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 import numpy as np
 import torch
@@ -18,6 +19,7 @@ from src.experiments.losses import distribution_loss
 from src.experiments.metrics import evaluate
 from src.experiments.models import ReactionPredictor
 from src.experiments.features import load_frozen_encoder
+from src.experiments.attention import AttentionRecorder
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.taxonomy import REACTION_CLASSES
 from check_gpu import gpu_info
@@ -151,7 +153,13 @@ def main(args):
                             predicted_distribution=p,target_topk=np.argsort(y,axis=1)[:,-3:][:,::-1],
                             predicted_topk=np.argsort(p,axis=1)[:,-3:][:,::-1],class_order=np.asarray(REACTION_CLASSES))
         if attention is not None:
-            np.savez_compressed(path/'attention.npz',weights=attention.detach().cpu().numpy(),sample_id=np.asarray(ids))
+            inventory = SimpleNamespace(ids=ids, counts=[len(index) for index in selected],
+                frame_records=[dict(sample_id=vid, total_frames=count,
+                    frames=[{k: v for k, v in frame.items() if k != 'path'} for frame in index])
+                    for vid, count, index in zip(ids, counts, selected)])
+            recorder = AttentionRecorder(inventory)
+            recorder.add(torch.arange(len(ids)), mask, attention)
+            recorder.save(path)
         record=dict(initial_loss=first,final_loss=final,loss_decreased=True,checkpoint_reload_exact=True,
                     optimizer_resume_passed=True,steps=training['steps'],metrics=metrics,
                     benchmark_result=False,evaluation_split='same three training videos')

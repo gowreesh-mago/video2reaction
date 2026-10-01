@@ -9,6 +9,7 @@ Last cluster status check: **2026-10-01 00:38:00 UTC**.
 - **Snellius queue:** no jobs remain in the queue. Corrected feature job `27382293` and learned jobs `27382294`–`27382297` all exited `0:0`; no new failures.
 - **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
 - **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
+- **Next-batch preparation (2026-10-01):** E reaction queries and a matched shared-attention control now have full-run configs, SLURM scripts, and frame-aligned attention export. All **27 local mock tests pass**. The EmoEditor ResNet-18 checkpoint was downloaded and hashed on Snellius; loading/inference remain pending. These are implementation checks, with no new benchmark results. [Tier 1 code and hypothesis review](tier1_attention_review.md)
 - **Current resources:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
 - **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** the user requested review, then launch; the first batch is submitted. Later batches remain pending a new request.
@@ -103,11 +104,11 @@ Every item below is unlaunched. Grouping is a proposed order, not a submission r
 
 ### Tier 1 and VAD comparisons
 
-- [ ] C — Select a practical pretrained image-emotion model; compare visual, emotion, VAD, and fused evidence. Model/features pending.
+- [ ] C — Validate the sourced EmoEditor ResNet-18 checkpoint; compare visual, emotion, VAD, and fused evidence. Download/hash complete; inference and features pending.
 - [ ] B-VAD1 — Add expected-VAD auxiliary regression. Coordinates are available; training experiment pending.
 - [ ] B-VAD2 — Add geometry regularization. Coordinates are available; training experiment pending.
 - [ ] D — Compare peak selection at K=1/2/4/8/all, using arousal, distance from neutral, and confidence-aware intensity. Depends on frame-emotion evidence.
-- [ ] E — Run reaction-specific frame attention on the full benchmark. Query model is smoke-tested only.
+- [ ] E — Run reaction-specific frame attention and the matched shared-query control on the full benchmark. Configs/export and 27 local tests pass; updated cluster regression smoke and benchmarks pending.
 - [ ] F — Compare global context plus selected peaks with each component alone. Depends on global and peak baselines.
 
 ### Required description diagnostics
