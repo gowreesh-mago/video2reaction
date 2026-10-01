@@ -1,0 +1,6 @@
+base: emotion_common.yaml
+experiment:
+  name: emotion_cache
+  hypothesis: A frozen EmoSet-trained model can provide reproducible coarse-emotion evidence for every keyframe.
+  changed_component: Add eight frame-emotion logits aligned by exact image hashes to the completed visual cache.
+  expected_outcome: Complete normalized emotion evidence for all official frames; infrastructure artifact only.

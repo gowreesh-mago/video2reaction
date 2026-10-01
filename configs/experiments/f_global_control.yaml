@@ -1,0 +1,11 @@
+base: emotion_common.yaml
+experiment:
+  name: f_global_control
+  hypothesis: A capacity-matched global_global representation controls for the wider fusion head.
+  changed_component: Concatenate global and global pooled representations after the same shared frame projection.
+  expected_outcome: Compare with global-plus-peak using identical parameter count, initialization, optimizer, and selection.
+model:
+  fusion: global_global
+evidence:
+  selector: arousal
+  k: 4

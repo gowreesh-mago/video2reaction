@@ -38,3 +38,26 @@ def test_bad_or_forward_dependencies_fail_before_any_scheduler_command():
         submission.submit_batch(['model', 'cache'], 'mock', {'model': 'cache'})
     with pytest.raises(ValueError, match='distinct'):
         submission.submit_batch(['model', 'model'], 'mock')
+
+
+def test_throttle_uses_afterany_while_required_cache_uses_afterok(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setenv('V2R_ROOT', str(tmp_path))
+    monkeypatch.setenv('V2R_REGISTRY', str(tmp_path / 'registry.json'))
+    monkeypatch.setenv('USER', 'mock')
+    (tmp_path / 'code_version.json').write_text(json.dumps({
+        'dirty': False, 'source_sha256': 'c' * 64, 'git_commit': 'd' * 40}))
+    submits = []
+    monkeypatch.setattr(submission.subprocess, 'run', lambda *args, **kwargs: None)
+    def command(*args):
+        if args[0] == 'sbatch':
+            submits.append(args)
+            return str(200 + len(submits))
+        return ''
+    monkeypatch.setattr(submission, 'command', command)
+    names = ['cache', 'a', 'b', 'c', 'd']
+    submission.submit_batch(names, 'bounded', {n: 'cache' for n in names[1:]}, max_parallel=2)
+    assert '--dependency=afterok:201' in submits[1]
+    assert '--dependency=afterok:201' in submits[2]
+    assert '--dependency=afterok:201,afterany:202' in submits[3]
+    assert '--dependency=afterok:201,afterany:203' in submits[4]

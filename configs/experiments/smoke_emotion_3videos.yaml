@@ -1,0 +1,21 @@
+base: emotion_common.yaml
+experiment:
+  name: smoke_emotion_3videos
+  hypothesis: Three real training videos exercise the production emotion cache, selection, and fusion pipeline.
+  changed_component: Infrastructure validation only, including shared cache and per-frame evidence export.
+  expected_outcome: Valid image-aligned caches, finite normalized predictions, exact checkpoint reload, and aligned selected frames.
+data:
+  max_frames: 8
+  smoke_video_ids: [4nSkJZ3i2-g, eiqBbLVXbQg, iKp5ARBBpyc]
+encoder:
+  batch_size: 4
+  workers: 0
+emotion_encoder:
+  batch_size: 4
+  workers: 0
+  flush_batches: 1
+training:
+  epochs: 12
+  patience: 12
+  batch_size: 3
+  learning_rate: 0.003

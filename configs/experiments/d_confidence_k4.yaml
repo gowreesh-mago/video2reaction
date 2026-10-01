@@ -1,0 +1,9 @@
+base: emotion_common.yaml
+experiment:
+  name: d_confidence_k4
+  hypothesis: The 4 frames ranked highest by confidence retain more useful reaction evidence than matched non-affective subsets.
+  changed_component: Use confidence selection with K=4, preserving chronological order and the baseline head.
+  expected_outcome: Lower KL than equal-K uniform and random controls would support this scoring rule; compare the full K curve.
+evidence:
+  selector: confidence
+  k: 4

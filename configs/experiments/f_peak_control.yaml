@@ -1,0 +1,11 @@
+base: emotion_common.yaml
+experiment:
+  name: f_peak_control
+  hypothesis: A capacity-matched peak_peak representation controls for the wider fusion head.
+  changed_component: Concatenate peak and peak pooled representations after the same shared frame projection.
+  expected_outcome: Compare with global-plus-peak using identical parameter count, initialization, optimizer, and selection.
+model:
+  fusion: peak_peak
+evidence:
+  selector: arousal
+  k: 4

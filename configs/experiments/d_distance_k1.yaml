@@ -1,0 +1,9 @@
+base: emotion_common.yaml
+experiment:
+  name: d_distance_k1
+  hypothesis: The 1 frames ranked highest by distance retain more useful reaction evidence than matched non-affective subsets.
+  changed_component: Use distance selection with K=1, preserving chronological order and the baseline head.
+  expected_outcome: Lower KL than equal-K uniform and random controls would support this scoring rule; compare the full K curve.
+evidence:
+  selector: distance
+  k: 1

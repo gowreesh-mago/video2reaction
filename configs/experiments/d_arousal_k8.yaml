@@ -1,0 +1,9 @@
+base: emotion_common.yaml
+experiment:
+  name: d_arousal_k8
+  hypothesis: The 8 frames ranked highest by arousal retain more useful reaction evidence than matched non-affective subsets.
+  changed_component: Use arousal selection with K=8, preserving chronological order and the baseline head.
+  expected_outcome: Lower KL than equal-K uniform and random controls would support this scoring rule; compare the full K curve.
+evidence:
+  selector: arousal
+  k: 8

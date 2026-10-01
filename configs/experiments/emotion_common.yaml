@@ -1,0 +1,14 @@
+base: tier0_common.yaml
+emotion_encoder:
+  revision: 9d989ae99e43bfe533f9b7fdccfe49f6c2f23253
+  checkpoint_sha256: 2abdbddd4646d7da8134ecd7db51bd2405cc93070d7847a3c3cc451a6f2d31d5
+  batch_size: 128
+  workers: 4
+  flush_batches: 128
+emotion_vad_sha256: 54d3eeadc42df90e336bcbd409283b571b17bea57427ec9c6ff8d9e948f1984a
+evidence:
+  input_mode: none
+  selector: all
+  k: null
+  # Declared scale midpoint; not a measured NRC word or estimated from test data.
+  neutral: [0.5, 0.5, 0.5]

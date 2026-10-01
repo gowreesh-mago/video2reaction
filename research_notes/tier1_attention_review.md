@@ -1,6 +1,6 @@
 # Tier 1 preparation: reaction attention and frame emotion evidence
 
-Prepared on 2026-10-01. This is a code and hypothesis review; it contains no new benchmark results. The completed Tier 0 LaTeX report remains a snapshot of the five evaluated baselines.
+Prepared on 2026-10-01. This is a code and hypothesis review; it contains no new benchmark metric values. The completed Tier 0 LaTeX report remains a snapshot of the five evaluated baselines. E jobs `27438329` and `27438330` completed successfully at the scheduler level; their artifacts still need collection.
 
 ## E: what changes
 
@@ -45,6 +45,7 @@ Loading and real-image inference remain unverified. Do not treat the download as
 - All 27 local synthetic tests passed in conda `torch` (7.55 seconds). Warnings are confined to undefined-label metrics in the original reference implementation exercised by the equivalence test.
 - Source `4fd4068` is pushed and synchronized. Three-video cluster regression smoke `27438252` completed with exit `0:0` in 48 seconds, from frozen release `4fd4068f2733-b298ef71977d`. All 27 tests and five variants passed, including the shared-query control and attention recorder. Verified through `sacct` and the saved smoke log at 2026-10-01 01:20:54 UTC.
 - The bounded E batch contains exactly two independent MIG jobs, each capped at 30 minutes (combined maximum 64 SBU). `scripts/submit_attention.py` reuses the locked/idempotent submission logic and runs both scheduler preflights before submitting either job. Two new local scheduler tests pass. No predictor or evaluation changes were made after the successful cluster smoke.
+- Submitted E source is `a89ab3b`. `e_reaction_query_27438329` and `e_shared_query_control_27438330` were both confirmed `COMPLETED`, exit `0:0`, elapsed `00:01:10` by `sacct` at 2026-10-01 01:36:25 UTC. Subsequent SSH connections were refused, so metrics and attention artifacts remain uncollected. Do not infer performance from scheduler success.
 - C/D/F remain unlaunched. `scripts/setup_vad.py` now extracts exact NRC entries for the eight coarse labels; the original archive checksum matches the one used for the 21 reaction labels.
 
 Submission from a synchronized code directory on Snellius:

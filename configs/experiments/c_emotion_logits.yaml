@@ -1,0 +1,10 @@
+base: emotion_common.yaml
+experiment:
+  name: c_emotion_logits
+  hypothesis: Frozen frame-emotion logits provide evidence beyond the visual mean-pooling baseline.
+  changed_component: Add a linear projection of logits to each visual frame representation; keep the visual projection and output head fixed.
+  expected_outcome: Lower held-out KL or class-specific gains relative to B1; compare all three evidence variants.
+model:
+  evidence_dim: 11
+evidence:
+  input_mode: logits

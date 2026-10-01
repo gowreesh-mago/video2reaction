@@ -137,6 +137,7 @@ class CachedVideos(Dataset):
         if manifest.get('status') != 'completed' or manifest['spec_sha256'] != fingerprint(cache_spec(cfg)):
             raise ValueError('Feature cache is incomplete or incompatible')
         directory = root / split
+        self.directory, self.manifest, self.split = directory, manifest, split
         for filename, field in [('features.npy', 'features_sha256'), ('image_sha256.npy', 'image_hashes_sha256'), ('index.json', 'index_sha256')]:
             if digest_file(directory / filename) != manifest['splits'][split][field]:
                 raise ValueError(f'{split}: corrupted cache file {filename}')

@@ -14,6 +14,8 @@ import yaml
 from src.experiments.data import frame_index, target_distribution
 from src.experiments.diagnostics import boundaries, save_evaluation
 from src.experiments.features import CachedVideos, prepare_features
+from src.experiments.emotion import emotion_directory, prepare_emotion_cache
+from src.experiments.evidence import EvidenceVideos
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.runtime import cache_directory, digest_file, load_config, official_splits, seed_everything, verify_code
 from src.experiments.training import fit, predict
@@ -42,7 +44,7 @@ def run(args):
                     start_time=utc_now(), hostname=socket.gethostname(), git_commit=code['git_commit'],
                     source_sha256=code['source_sha256'], config=str(out / 'config.yaml'),
                     experiment_name=cfg['experiment']['name'], hypothesis=cfg['experiment']['hypothesis'],
-                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] == 'feature_cache' else 'benchmark')
+                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache'} else 'benchmark')
     torch.set_num_threads(min(4, int(os.environ.get('SLURM_CPUS_PER_TASK', '4'))))
     seed_everything(cfg['seed'])
     splits, split_hashes = official_splits(cfg)
@@ -50,6 +52,8 @@ def run(args):
     name = cfg['experiment']['name']
     if name == 'feature_cache':
         summary = prepare_features(cfg, splits, out)
+    elif name == 'emotion_cache':
+        summary = prepare_emotion_cache(cfg, splits, out)
     else:
         train_movies = {str(row['imdbid']) for row in splits['train'].values()}
         if name == 'b0_prior':
@@ -68,18 +72,28 @@ def run(args):
             # Load train/validation first. Test predictions are made only after checkpoint selection.
             train = CachedVideos(cfg, 'train', splits['train'])
             val = CachedVideos(cfg, 'val', splits['val'])
+            if 'evidence' in cfg:
+                train, val = EvidenceVideos(cfg, train), EvidenceVideos(cfg, val)
+                emotion_manifest = emotion_directory(cfg) / 'manifest.json'
+                atomic_json(out / 'emotion_cache.json', {'path': str(emotion_manifest.parent),
+                    'manifest_sha256': digest_file(emotion_manifest),
+                    'vad_sha256': cfg['emotion_vad_sha256'], 'manifest': json.loads(emotion_manifest.read_text())})
             manifest_path = cache_directory(cfg) / 'manifest.json'
             atomic_json(out / 'feature_cache.json', {'path': str(manifest_path.parent),
                         'manifest_sha256': digest_file(manifest_path), 'manifest': json.loads(manifest_path.read_text())})
             model, info = fit(cfg, train, val, out, 'cuda', code['source_sha256'], args.resume_from)
-            bins = boundaries(train.targets, train.counts)
+            bins = boundaries(train.targets, getattr(train, 'stratum_counts', train.counts))
             result = {}
             for s in ('val', 'test'):
                 dataset = val if s == 'val' else CachedVideos(cfg, s, splits[s])
+                if 'evidence' in cfg:
+                    if s == 'test':
+                        dataset = EvidenceVideos(cfg, dataset)
+                    dataset.save_evidence(out / s)
                 result[s] = save_evaluation(out, s, dataset.ids, splits[s], dataset.targets,
                             predict(model, dataset, cfg, 'cuda', attention_output=out / s
                                     if cfg['evaluation'].get('save_attention', False) else None),
-                            dataset.counts, train_movies, bins,
+                            getattr(dataset, 'stratum_counts', dataset.counts), train_movies, bins,
                             shuffled=predict(model, dataset, cfg, 'cuda', shuffle_frames=True))
         summary = {'benchmark_result': True, 'experiment': cfg['experiment'], 'training': info,
                    'val': result['val']['metrics'], 'test': result['test']['metrics'],

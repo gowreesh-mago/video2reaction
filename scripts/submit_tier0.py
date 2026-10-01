@@ -14,11 +14,13 @@ def command(*args):
     return subprocess.check_output(args, text=True).strip()
 
 
-def submit_batch(names, batch, dependencies=None):
+def submit_batch(names, batch, dependencies=None, max_parallel=None):
     """Submit a fixed reviewed batch; each dependency names an earlier batch member."""
     dependencies = dependencies or {}
     if not names or len(set(names)) != len(names):
         raise ValueError('Batch must contain distinct experiments')
+    if max_parallel is not None and (not isinstance(max_parallel, int) or max_parallel < 1):
+        raise ValueError('Parallel job bound must be positive')
     for name, dependency in dependencies.items():
         if name not in names or dependency not in names[:names.index(name)]:
             raise ValueError('Dependencies must name an earlier experiment in this batch')
@@ -40,7 +42,7 @@ def submit_batch(names, batch, dependencies=None):
             if name not in submissions:
                 subprocess.run(['sbatch', '--test-only', f'slurm/{name}.sbatch'], check=True)
         print(command('squeue', '-u', os.environ['USER']), flush=True)
-        for name in names:
+        for index, name in enumerate(names):
             if name in submissions:
                 print(f"Already recorded {name}: {submissions[name]}", flush=True)
                 continue
@@ -62,8 +64,15 @@ def submit_batch(names, batch, dependencies=None):
             else:
                 args = ['sbatch', '--parsable', f'--comment={token}',
                         f'--output={root}/logs/slurm/{name}-%j.out']
+                conditions = []
                 if name in dependencies:
-                    args += [f"--dependency=afterok:{submissions[dependencies[name]]}", '--kill-on-invalid-dep=yes']
+                    conditions.append(f"afterok:{submissions[dependencies[name]]}")
+                if max_parallel and index >= max_parallel:
+                    previous = names[index - max_parallel]
+                    if dependencies.get(name) != previous:
+                        conditions.append(f'afterany:{submissions[previous]}')
+                if conditions:
+                    args += ['--dependency=' + ','.join(conditions), '--kill-on-invalid-dep=yes']
                 intents[name] = utc_now()
                 atomic_json(intent_path, intents)
                 try:
@@ -80,7 +89,8 @@ def submit_batch(names, batch, dependencies=None):
                             experiment_name=name, submitted_at=utc_now(), source_sha256=manifest['source_sha256'],
                             git_commit=manifest['git_commit'], release_dir=str(Path.cwd()),
                             output_dir=str(root / 'outputs' / 'experiments' / f'{name}_{job}'),
-                            dependency=submissions[dependencies[name]] if name in dependencies else None)
+                            dependency=submissions[dependencies[name]] if name in dependencies else None,
+                            throttle_after=submissions[names[index-max_parallel]] if max_parallel and index >= max_parallel else None)
             print(f'Submitted {name}: {job}', flush=True)
         print(json.dumps(submissions, indent=2))
 

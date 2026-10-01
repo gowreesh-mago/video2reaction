@@ -14,8 +14,8 @@
   "checkpoint_url": "https://drive.usercontent.google.com/download?id=1LWcj-ENbgqefXjuz2aVB8ynzUpnQYnim&export=download&confirm=t",
   "checkpoint_bytes": 44801589,
   "checkpoint_sha256": "2abdbddd4646d7da8134ecd7db51bd2405cc93070d7847a3c3cc451a6f2d31d5",
-  "checkpoint_cluster_path": "/scratch-shared/gmago/video2reaction/cache/models/emoeditor-resnet18/emo_predictor.pt.download",
-  "status": "Downloaded and hashed on Snellius; loading, inference, and frame-cache validation pending",
+  "checkpoint_cluster_path": "/scratch-shared/gmago/video2reaction/cache/models/emoeditor-resnet18/emo_predictor.pt",
+  "status": "Downloaded and hashed as .pt.download on Snellius; setup_emotion_model.py verifies and promotes it to .pt. Real inference and frame-cache validation pending.",
   "limitations": [
     "Eight image-evoked emotion categories are proxy evidence; they are not the 21 audience reaction targets.",
     "The checkpoint's alphabetical label order differs from the EmoSet repository's info.json order.",

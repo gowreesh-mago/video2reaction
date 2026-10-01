@@ -1,0 +1,11 @@
+base: emotion_common.yaml
+experiment:
+  name: f_global_peak
+  hypothesis: Global context and four arousal-selected frames provide complementary reaction evidence.
+  changed_component: Concatenate global and peak pooled representations after the same shared frame projection.
+  expected_outcome: Lower KL than both equally sized single-source controls would support complementary context and peaks.
+model:
+  fusion: global_peak
+evidence:
+  selector: arousal
+  k: 4

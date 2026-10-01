@@ -1,0 +1,9 @@
+base: emotion_common.yaml
+experiment:
+  name: d_uniform_k1
+  hypothesis: A uniform subset of 1 frames controls for sparsity without affect-based selection.
+  changed_component: Use uniform selection with K=1, preserving chronological order and the baseline head.
+  expected_outcome: Provides the equal-K control needed to distinguish emotional selection from subsampling.
+evidence:
+  selector: uniform
+  k: 1

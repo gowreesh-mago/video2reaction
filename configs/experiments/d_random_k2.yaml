@@ -1,0 +1,9 @@
+base: emotion_common.yaml
+experiment:
+  name: d_random_k2
+  hypothesis: A random subset of 2 frames controls for sparsity without affect-based selection.
+  changed_component: Use random selection with K=2, preserving chronological order and the baseline head.
+  expected_outcome: Provides the equal-K control needed to distinguish emotional selection from subsampling.
+evidence:
+  selector: random
+  k: 2

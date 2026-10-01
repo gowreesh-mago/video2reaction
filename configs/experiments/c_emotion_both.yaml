@@ -1,0 +1,10 @@
+base: emotion_common.yaml
+experiment:
+  name: c_emotion_both
+  hypothesis: Frozen frame-emotion both provide evidence beyond the visual mean-pooling baseline.
+  changed_component: Add a linear projection of both to each visual frame representation; keep the visual projection and output head fixed.
+  expected_outcome: Lower held-out KL or class-specific gains relative to B1; compare all three evidence variants.
+model:
+  evidence_dim: 11
+evidence:
+  input_mode: both
