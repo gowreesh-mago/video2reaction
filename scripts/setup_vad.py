@@ -20,6 +20,8 @@ if __name__=='__main__':
     parser=argparse.ArgumentParser()
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--archive',type=Path,help='Previously downloaded original NRC archive; supports clusters blocked by the author website')
+    parser.add_argument('--coarse-model-manifest',type=Path,
+                        default=Path(__file__).resolve().parents[1]/'assets/frame_emotion_model.json')
     args=parser.parse_args()
     if args.archive:
         raw=args.archive.read_bytes()
@@ -28,16 +30,22 @@ if __name__=='__main__':
         raw=urllib.request.urlopen(request,timeout=120).read()
     archive=zipfile.ZipFile(io.BytesIO(raw))
     data=archive.read(MEMBER)
+    coarse_classes=json.loads(args.coarse_model_manifest.read_text())['class_order']
     lexicon={}
+    coarse={}
     for line in data.decode().splitlines():
         word,v,a,d=line.split('\t')
         if word in REACTION_CLASSES:
             lexicon[word]=dict(valence=float(v),arousal=float(a),dominance=float(d))
+        if word in coarse_classes:
+            coarse[word]=dict(valence=float(v),arousal=float(a),dominance=float(d))
     if set(lexicon)!=set(REACTION_CLASSES):
         raise ValueError('Missing exact reaction words; no synonym approximations allowed')
     order=sorted(lexicon,key=lambda c:(lexicon[c]['valence'],lexicon[c]['arousal']))
     if order!=REACTION_CLASSES:
         raise ValueError('NRC v1 order differs from the published benchmark order')
+    if set(coarse)!=set(coarse_classes):
+        raise ValueError('Missing exact coarse emotion words; no synonym approximations allowed')
     args.output.mkdir(parents=True,exist_ok=True)
     (args.output/'nrc_vad.json').write_text(json.dumps(lexicon,indent=2)+'\n')
     source=dict(url=URL,version='1 (2018; README updated August 2022)',member=MEMBER,
@@ -49,4 +57,9 @@ if __name__=='__main__':
         c:dict(**lexicon[c],source_word=c,approximation=False,provenance='Exact English NRC VAD v1 entry; all three coordinates from the same row.')
         for c in REACTION_CLASSES}),indent=2)+'\n')
     (args.output/'NRC_README.txt').write_bytes(archive.read('NRC-VAD-Lexicon/README.txt'))
+    (args.output/'frame_emotion_vad.json').write_text(json.dumps(dict(source=source,
+        class_order=coarse_classes,labels={
+            c:dict(**coarse[c],source_word=c,approximation=False,
+                   provenance='Exact English NRC VAD v1 entry; all three coordinates from the same row.')
+            for c in coarse_classes}),indent=2)+'\n')
     print(json.dumps(dict(label_count=len(lexicon),order_verified=True,source=source),indent=2))

@@ -14,18 +14,24 @@ def command(*args):
     return subprocess.check_output(args, text=True).strip()
 
 
-def main(skip_prior=False):
+def submit_batch(names, batch, dependencies=None):
+    """Submit a fixed reviewed batch; each dependency names an earlier batch member."""
+    dependencies = dependencies or {}
+    if not names or len(set(names)) != len(names):
+        raise ValueError('Batch must contain distinct experiments')
+    for name, dependency in dependencies.items():
+        if name not in names or dependency not in names[:names.index(name)]:
+            raise ValueError('Dependencies must name an earlier experiment in this batch')
     root = Path(os.environ['V2R_ROOT'])
     manifest = json.loads(Path('code_version.json').read_text())
-    names = ['feature_cache', 'b0_prior', 'b1_meanpool', 'b2_temporal', 'b2_set_control', 'a5_distribution']
-    if skip_prior:
-        names.remove('b0_prior')
+    if manifest['dirty']:
+        raise ValueError('Only committed, frozen releases may be submitted')
     records = root / 'results' / 'submissions'
     records.mkdir(parents=True, exist_ok=True)
     (root / 'logs' / 'slurm').mkdir(parents=True, exist_ok=True)
-    record = records / f"tier0-{manifest['source_sha256']}.json"
+    record = records / f"{batch}-{manifest['source_sha256']}.json"
     intent_path = record.with_suffix('.intent.json')
-    with (records / 'tier0.lock').open('a') as lock:
+    with (records / 'submit.lock').open('a') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
         submissions = json.loads(record.read_text()) if record.exists() else {}
         intents = json.loads(intent_path.read_text()) if intent_path.exists() else {}
@@ -56,8 +62,8 @@ def main(skip_prior=False):
             else:
                 args = ['sbatch', '--parsable', f'--comment={token}',
                         f'--output={root}/logs/slurm/{name}-%j.out']
-                if name not in {'feature_cache', 'b0_prior'}:
-                    args += [f"--dependency=afterok:{submissions['feature_cache']}", '--kill-on-invalid-dep=yes']
+                if name in dependencies:
+                    args += [f"--dependency=afterok:{submissions[dependencies[name]]}", '--kill-on-invalid-dep=yes']
                 intents[name] = utc_now()
                 atomic_json(intent_path, intents)
                 try:
@@ -74,9 +80,17 @@ def main(skip_prior=False):
                             experiment_name=name, submitted_at=utc_now(), source_sha256=manifest['source_sha256'],
                             git_commit=manifest['git_commit'], release_dir=str(Path.cwd()),
                             output_dir=str(root / 'outputs' / 'experiments' / f'{name}_{job}'),
-                            dependency=None if name in {'feature_cache', 'b0_prior'} else submissions['feature_cache'])
+                            dependency=submissions[dependencies[name]] if name in dependencies else None)
             print(f'Submitted {name}: {job}', flush=True)
         print(json.dumps(submissions, indent=2))
+
+
+def main(skip_prior=False):
+    names = ['feature_cache', 'b0_prior', 'b1_meanpool', 'b2_temporal', 'b2_set_control', 'a5_distribution']
+    if skip_prior:
+        names.remove('b0_prior')
+    dependencies = {name: 'feature_cache' for name in names if name not in {'feature_cache', 'b0_prior'}}
+    submit_batch(names, 'tier0', dependencies)
 
 
 if __name__ == '__main__':

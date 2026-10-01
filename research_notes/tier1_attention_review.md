@@ -43,5 +43,15 @@ Loading and real-image inference remain unverified. Do not treat the download as
 
 - Implemented E and its control, configs, individual SLURM scripts, and full attention export.
 - All 27 local synthetic tests passed in conda `torch` (7.55 seconds). Warnings are confined to undefined-label metrics in the original reference implementation exercised by the equivalence test.
-- Source `4fd4068` is pushed and synchronized. Three-video cluster regression smoke `27438252` was submitted after scheduler preflight, from frozen release `4fd4068f2733-b298ef71977d`. It is pending as of 2026-10-01 01:15:39 UTC, with a ten-minute limit on `gpu_mig` under account `gusr133332` (maximum 10.67 SBU at 64 SBU/GPU-hour). It tests five variants, including the shared-query control, and the attention recorder. Check its terminal scheduler state and artifacts before marking the new path cluster-validated.
-- Neither E benchmark has been submitted. C/D/F remain unlaunched.
+- Source `4fd4068` is pushed and synchronized. Three-video cluster regression smoke `27438252` completed with exit `0:0` in 48 seconds, from frozen release `4fd4068f2733-b298ef71977d`. All 27 tests and five variants passed, including the shared-query control and attention recorder. Verified through `sacct` and the saved smoke log at 2026-10-01 01:20:54 UTC.
+- The bounded E batch contains exactly two independent MIG jobs, each capped at 30 minutes (combined maximum 64 SBU). `scripts/submit_attention.py` reuses the locked/idempotent submission logic and runs both scheduler preflights before submitting either job. Two new local scheduler tests pass. No predictor or evaluation changes were made after the successful cluster smoke.
+- C/D/F remain unlaunched. `scripts/setup_vad.py` now extracts exact NRC entries for the eight coarse labels; the original archive checksum matches the one used for the 21 reaction labels.
+
+Submission from a synchronized code directory on Snellius:
+
+```bash
+source configs/clusters/snellius.env
+release=$(python3 scripts/freeze_release.py)
+cd "$release"
+python3 scripts/submit_attention.py
+```
