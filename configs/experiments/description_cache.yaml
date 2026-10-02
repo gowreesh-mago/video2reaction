@@ -1,0 +1,6 @@
+base: description_common.yaml
+experiment:
+  name: description_cache
+  hypothesis: Reusing the pinned SigLIP2 text encoder provides reproducible description evidence.
+  changed_component: Cache all description tokens in nonoverlapping windows without fitting on labels.
+  expected_outcome: Complete, checksum-verified description vectors and token-count provenance for each official split.

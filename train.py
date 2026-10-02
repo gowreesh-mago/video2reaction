@@ -13,6 +13,7 @@ import yaml
 
 from src.experiments.data import frame_index, target_distribution
 from src.experiments.diagnostics import boundaries, save_evaluation
+from src.experiments.descriptions import DescriptionVideos, description_directory, prepare_description_cache
 from src.experiments.features import CachedVideos, prepare_features
 from src.experiments.emotion import emotion_directory, prepare_emotion_cache
 from src.experiments.evidence import EvidenceVideos
@@ -44,7 +45,7 @@ def run(args):
                     start_time=utc_now(), hostname=socket.gethostname(), git_commit=code['git_commit'],
                     source_sha256=code['source_sha256'], config=str(out / 'config.yaml'),
                     experiment_name=cfg['experiment']['name'], hypothesis=cfg['experiment']['hypothesis'],
-                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache'} else 'benchmark')
+                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache', 'description_cache'} else 'benchmark')
     torch.set_num_threads(min(4, int(os.environ.get('SLURM_CPUS_PER_TASK', '4'))))
     seed_everything(cfg['seed'])
     splits, split_hashes = official_splits(cfg)
@@ -54,6 +55,8 @@ def run(args):
         summary = prepare_features(cfg, splits, out)
     elif name == 'emotion_cache':
         summary = prepare_emotion_cache(cfg, splits, out)
+    elif name == 'description_cache':
+        summary = prepare_description_cache(cfg, splits, out)
     else:
         train_movies = {str(row['imdbid']) for row in splits['train'].values()}
         if name == 'b0_prior':
@@ -72,6 +75,13 @@ def run(args):
             # Load train/validation first. Test predictions are made only after checkpoint selection.
             train = CachedVideos(cfg, 'train', splits['train'])
             val = CachedVideos(cfg, 'val', splits['val'])
+            if 'description' in cfg:
+                train = DescriptionVideos(cfg, train, splits['train'])
+                val = DescriptionVideos(cfg, val, splits['val'])
+                text_manifest = description_directory(cfg) / 'manifest.json'
+                atomic_json(out / 'description_cache.json', {'path': str(text_manifest.parent),
+                    'manifest_sha256': digest_file(text_manifest), 'manifest': json.loads(text_manifest.read_text()),
+                    'input_mode': cfg['description']['mode']})
             if 'evidence' in cfg:
                 train, val = EvidenceVideos(cfg, train), EvidenceVideos(cfg, val)
                 emotion_manifest = emotion_directory(cfg) / 'manifest.json'
@@ -86,6 +96,8 @@ def run(args):
             result = {}
             for s in ('val', 'test'):
                 dataset = val if s == 'val' else CachedVideos(cfg, s, splits[s])
+                if 'description' in cfg and s == 'test':
+                    dataset = DescriptionVideos(cfg, dataset, splits[s])
                 if 'evidence' in cfg:
                     if s == 'test':
                         dataset = EvidenceVideos(cfg, dataset)
@@ -98,6 +110,9 @@ def run(args):
         summary = {'benchmark_result': True, 'experiment': cfg['experiment'], 'training': info,
                    'val': result['val']['metrics'], 'test': result['test']['metrics'],
                    'seed': cfg['seed'], 'selection': cfg['training']['selection_metric'] if name != 'b0_prior' else 'none'}
+        if 'description' in cfg:
+            summary['input_mode'] = cfg['description']['mode']
+            summary['uses_description'] = cfg['description']['mode'] != 'visual_visual'
     atomic_json(out / 'metrics.json', summary)
     update_registry(args.registry, args.run_name, status='completed', end_time=utc_now(),
                     benchmark_result=summary['benchmark_result'], metrics=summary)

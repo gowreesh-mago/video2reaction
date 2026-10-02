@@ -1,0 +1,20 @@
+base: description_common.yaml
+experiment:
+  name: smoke_descriptions_3videos
+  hypothesis: Three training clips validate frozen text encoding and controlled modality inputs.
+  changed_component: Infrastructure check on the same three clips used by earlier smoke tests.
+  expected_outcome: Complete text features, finite normalized predictions, reduced fitting loss, and exact checkpoint reload.
+data:
+  max_frames: 8
+  smoke_video_ids: [4nSkJZ3i2-g, eiqBbLVXbQg, iKp5ARBBpyc]
+encoder:
+  batch_size: 4
+  workers: 0
+description_encoder:
+  chunk_batch_size: 4
+  video_batch_size: 3
+training:
+  epochs: 12
+  patience: 12
+  batch_size: 3
+  learning_rate: 0.003

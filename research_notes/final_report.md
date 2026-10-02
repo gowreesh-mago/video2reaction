@@ -4,6 +4,13 @@ Report date: 2026-10-01. This is the report for completed work; the full researc
 programme remains incomplete because the peak, VAD, and description experiments
 have not yet been conducted.
 
+Implementation update, 2026-10-02: C/D/F, VAD, and description comparisons are
+prepared locally; 61 synthetic tests pass. See the [live checklist](experiment_checklist.md),
+[VAD review](vad_review.md), and [description review](description_review.md).
+E jobs `27438329` and `27438330` completed in the last successful scheduler
+snapshot, but their results remain uncollected because SSH is unavailable.
+The PDF and result table below still cover the five verified Tier 0 experiments.
+
 The **self-contained 27-page report** is authored in
 [LaTeX](latex/video2reaction_report.tex), with build instructions in
 [latex/README.md](latex/README.md). It includes method equations, all official

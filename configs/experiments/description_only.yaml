@@ -1,0 +1,8 @@
+base: description_common.yaml
+experiment:
+  name: description_only
+  hypothesis: Human-provided descriptions contain predictive reaction information beyond a training-set prior.
+  changed_component: Replace visual features with frozen description vectors in the unchanged B1 predictor.
+  expected_outcome: Compare description-only performance to B0 and B1 without treating it as video-only forecasting.
+description:
+  mode: text

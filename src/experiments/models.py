@@ -6,7 +6,7 @@ from torch import nn
 
 class ReactionPredictor(nn.Module):
     def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2,
-                 positional_encoding=True, evidence_dim=0, fusion=None, auxiliary_vad=False):
+                 positional_encoding=True, evidence_dim=0, fusion=None, auxiliary_vad=False, description_dim=0):
         super().__init__()
         if aggregation not in {'mean', 'temporal', 'query', 'shared_query'}:
             raise ValueError(aggregation)
@@ -19,8 +19,12 @@ class ReactionPredictor(nn.Module):
         self.input_dim, self.evidence_dim, self.fusion = input_dim, evidence_dim, fusion
         if auxiliary_vad and (aggregation != 'mean' or fusion is not None):
             raise ValueError('The initial VAD auxiliary comparison uses the B1 pooled representation')
+        if description_dim and (description_dim != input_dim or aggregation != 'mean'
+                                or evidence_dim or fusion or auxiliary_vad):
+            raise ValueError('Description fusion requires two equally sized inputs and plain mean pooling')
+        self.description_dim = description_dim
         self.projection = nn.Sequential(nn.LayerNorm(input_dim), nn.Linear(input_dim, hidden_dim))
-        self.head = nn.Sequential(nn.Linear(hidden_dim * (2 if fusion else 1), hidden_dim), nn.GELU(), nn.Linear(hidden_dim, num_classes))
+        self.head = nn.Sequential(nn.Linear(hidden_dim * (2 if fusion or description_dim else 1), hidden_dim), nn.GELU(), nn.Linear(hidden_dim, num_classes))
         if aggregation == 'temporal':
             block = nn.TransformerEncoderLayer(hidden_dim, 4, hidden_dim*4, dropout=0., batch_first=True, norm_first=True)
             self.temporal = nn.TransformerEncoder(block, layers, enable_nested_tensor=False)
@@ -34,18 +38,24 @@ class ReactionPredictor(nn.Module):
         self.auxiliary_vad = auxiliary_vad
         if auxiliary_vad:
             self.vad_head = nn.Linear(hidden_dim, 3)
+        if description_dim:
+            self.description_projection = nn.Sequential(nn.LayerNorm(description_dim), nn.Linear(description_dim, hidden_dim))
 
     def forward(self, frames, mask, return_vad=False):
         if frames.ndim != 3 or mask.shape != frames.shape[:2] or not mask.any(1).all():
             raise ValueError('Each sequence needs at least one valid frame')
-        expected_width = self.input_dim + self.evidence_dim + int(self.fusion is not None)
+        expected_width = self.input_dim + self.evidence_dim + int(self.fusion is not None) + self.description_dim
         if frames.shape[-1] != expected_width:
             raise ValueError('Input packet width differs from visual/evidence/fusion configuration')
         h = self.projection(frames[..., :self.input_dim])
         if self.evidence_dim:
             h = h + self.evidence_projection(frames[..., self.input_dim:self.input_dim + self.evidence_dim])
         attention = None
-        if self.fusion:
+        if self.description_dim:
+            other = self.description_projection(frames[..., self.input_dim:])
+            pooled = (torch.cat([h, other], dim=-1) * mask.unsqueeze(-1)).sum(1) / mask.sum(1, keepdim=True)
+            logits = self.head(pooled)
+        elif self.fusion:
             indicator = frames[..., -1]
             if not ((indicator == 0) | (indicator == 1)).all():
                 raise ValueError('Peak mask must contain only zero or one')

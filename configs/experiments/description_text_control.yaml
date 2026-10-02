@@ -1,0 +1,8 @@
+base: visual_description.yaml
+experiment:
+  name: description_text_control
+  hypothesis: A larger text-only model alone may explain a visual-plus-description improvement.
+  changed_component: Feed the description representation into both branches of the matched fusion architecture.
+  expected_outcome: Distinguish model capacity from complementary visual evidence.
+description:
+  mode: text_text

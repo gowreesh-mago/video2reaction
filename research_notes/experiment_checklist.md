@@ -11,6 +11,8 @@ Last successful cluster status check: **2026-10-01 01:36:25 UTC**. Latest SSH at
 - **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
 - **Next-batch preparation:** C emotion/VAD features, D peak selection, F fusion, controls, configs, and bounded submission are implemented and pushed in `c607b6a`, but not synced to Snellius. The emotion checkpoint and exact NRC coordinates are sourced. The new three-video emotion smoke, full cache, and C/D/F benchmarks are unlaunched while SSH is unavailable. [Peak implementation and adversarial review](tier1_peak_review.md)
 - **VAD preparation (2026-10-02):** both VAD objectives and their matched semantic-permutation controls are implemented; **45 local mock tests pass**. Four configs/SLURM jobs and a bounded launcher are ready for the cluster smoke gate. No dataset VAD run has been launched. [Code and adversarial hypothesis review](vad_review.md)
+- **Description preparation (2026-10-02):** description-only, visual+description, and two capacity-matched controls are implemented, with a resumable frozen text cache and a separate three-video smoke. The complete local suite now has **61 passing tests**. VAD source `457ac30` is pushed; no new code has reached Snellius since `a89ab3b`. [Description code and adversarial review](description_review.md)
+- **Access issue:** SURF documents IP whitelisting and an institutional VPN as standard remedies for this refusal pattern. The cause here is not confirmed. [Official SSH troubleshooting](https://servicedesk.surf.nl/wiki/spaces/WIKI/pages/154239005/SSH+Troubleshooting+Guide) · [User IP whitelist portal](https://portal.cua.surf.nl/user/whitelist/)
 - **Resources at 00:38 UTC:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
 - **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** follow the active goal's Tier 0 → Tier 1 sequence, with code/hypothesis review and a small smoke test before each new model pipeline. Submit bounded batches to verified accounts/partitions and record every job here.
@@ -116,8 +118,9 @@ E's two benchmark jobs have completed at the scheduler level; artifact verificat
 
 ### Required description diagnostics
 
-- [ ] Evaluate description-only prediction.
-- [ ] Evaluate visual + description prediction against the visual-only control.
+- [ ] Run the implemented description three-video cluster smoke and verify the real tokenizer/text encoder.
+- [ ] Extract the full description cache and evaluate description-only prediction.
+- [ ] Evaluate visual + description prediction against B1 and both implemented capacity-matched single-modality controls.
 - [ ] Report text-assisted and video-only results separately, including the observed cross-split movie overlap.
 
 ### Additional controlled comparisons and optional Tier 2

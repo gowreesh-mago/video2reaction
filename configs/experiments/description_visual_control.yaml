@@ -1,0 +1,8 @@
+base: visual_description.yaml
+experiment:
+  name: description_visual_control
+  hypothesis: A larger prediction model alone may explain a visual-plus-description improvement.
+  changed_component: Feed the visual representation into both branches of the matched fusion architecture.
+  expected_outcome: Distinguish model capacity from complementary text evidence.
+description:
+  mode: visual_visual

@@ -1,0 +1,9 @@
+base: tier0_common.yaml
+description_encoder:
+  model: google/siglip2-so400m-patch14-384
+  revision: e8e487298228002f3d8a82e0cd5c8ea9c567f57f
+  local_files_only: true
+  feature_dim: 1152
+  max_length: 64
+  chunk_batch_size: 32
+  video_batch_size: 64

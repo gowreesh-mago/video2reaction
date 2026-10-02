@@ -1,0 +1,10 @@
+base: description_common.yaml
+experiment:
+  name: visual_description
+  hypothesis: Descriptions and visual appearance contain complementary reaction information.
+  changed_component: Concatenate separately projected visual and description representations.
+  expected_outcome: Lower KL than visual-only and description-only models and both matched fusion controls.
+description:
+  mode: visual_text
+model:
+  description_dim: 1152
