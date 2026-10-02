@@ -1,0 +1,14 @@
+base: tier0_common.yaml
+experiment:
+  name: b_vad_aux
+  hypothesis: Predicting expected VAD provides useful structured supervision for reaction distributions.
+  changed_component: Add a three-output auxiliary head to B1 and a squared Euclidean regression loss.
+  expected_outcome: Lower KL than B1 and the semantically permuted VAD control, with fewer affectively distant errors.
+model:
+  auxiliary_vad: true
+vad_objective:
+  kind: auxiliary
+  weight: 1.0
+  mapping: sourced
+  permutation_seed: 271828
+  asset_sha256: 07b3c9d4b521177b297f12e1e9ee68448a2da5c39c7b74f525113f82d2161128

@@ -1,0 +1,8 @@
+base: b_vad_geometry.yaml
+experiment:
+  name: b_vad_geometry_permuted
+  hypothesis: Classifier smoothing may help without semantically correct VAD neighbors.
+  changed_component: Permute VAD-to-label assignment while preserving the coordinate set, regularizer weight, and gamma.
+  expected_outcome: A reliable sourced-over-permuted advantage supports the semantic structure of the regularizer.
+vad_objective:
+  mapping: permuted

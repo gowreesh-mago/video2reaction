@@ -1,0 +1,8 @@
+base: b_vad_aux.yaml
+experiment:
+  name: b_vad_aux_permuted
+  hypothesis: Auxiliary prediction may help through generic regularization without the correct emotion geometry.
+  changed_component: Permute the assignment of sourced VAD points to reaction labels; retain the same head and loss weight.
+  expected_outcome: A reliable advantage of sourced VAD over this control supports the semantic assignment of coordinates.
+vad_objective:
+  mapping: permuted

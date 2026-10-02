@@ -14,6 +14,7 @@ from .metrics import evaluate
 from .models import ReactionPredictor
 from .registry import atomic_json
 from .runtime import atomic_torch, fingerprint, restore_rng, rng_state, seed_everything
+from .vad import reaction_vad, vad_objective
 
 
 def loader(dataset, cfg, epoch=None):
@@ -50,6 +51,11 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
     out.mkdir(parents=True, exist_ok=True)
     seed_everything(cfg['seed'])
     model = ReactionPredictor(**cfg['model']).to(device)
+    vad_options = cfg.get('vad_objective')
+    vad_matrix = None
+    if vad_options:
+        vad_matrix, provenance = reaction_vad(vad_options, device)
+        atomic_json(out / 'vad_provenance.json', provenance)
     options = cfg['training']
     if options['selection_metric'] != 'kl' or options['scheduler'] != 'constant':
         raise ValueError('This runner supports validation KL and a constant learning rate')
@@ -70,10 +76,20 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
         for epoch in range(start, options['epochs']):
             model.train()
             total = 0.
+            total_reaction = total_vad = 0.
             for x, mask, target, _ in loader(train, cfg, epoch=epoch):
                 optimizer.zero_grad(set_to_none=True)
-                logits, _ = model(x.to(device), mask.to(device))
-                loss = distribution_loss(logits, target.to(device), **cfg['loss'])
+                target = target.to(device)
+                if vad_options:
+                    logits, _, predicted_vad = model(x.to(device), mask.to(device), return_vad=True)
+                else:
+                    logits, _ = model(x.to(device), mask.to(device))
+                loss = distribution_loss(logits, target, **cfg['loss'])
+                if vad_options:
+                    regularization = vad_objective(model, predicted_vad, target, vad_matrix, vad_options)
+                    total_reaction += loss.item() * len(x)
+                    total_vad += regularization.item() * len(x)
+                    loss = loss + vad_options['weight'] * regularization
                 if not torch.isfinite(loss):
                     raise FloatingPointError('Nonfinite training objective')
                 loss.backward()
@@ -88,6 +104,9 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
             else:
                 stale += 1
             history.append({'epoch': epoch + 1, 'train_objective': total / len(train), 'val': validation})
+            if vad_options:
+                history[-1].update(train_reaction_loss=total_reaction / len(train),
+                                   train_vad_loss_unweighted=total_vad / len(train))
             atomic_torch(out / 'last.pt', {'identity': identity, 'model': model.state_dict(),
                          'optimizer': optimizer.state_dict(), 'epoch': epoch + 1, 'best_kl': best,
                          'best_epoch': best_epoch, 'best_model': best_state, 'stale': stale,

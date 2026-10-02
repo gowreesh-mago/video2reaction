@@ -6,7 +6,7 @@ from torch import nn
 
 class ReactionPredictor(nn.Module):
     def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2,
-                 positional_encoding=True, evidence_dim=0, fusion=None):
+                 positional_encoding=True, evidence_dim=0, fusion=None, auxiliary_vad=False):
         super().__init__()
         if aggregation not in {'mean', 'temporal', 'query', 'shared_query'}:
             raise ValueError(aggregation)
@@ -17,6 +17,8 @@ class ReactionPredictor(nn.Module):
         if fusion is not None and aggregation != 'mean':
             raise ValueError('Global/peak fusion uses the shared mean-pooling projection')
         self.input_dim, self.evidence_dim, self.fusion = input_dim, evidence_dim, fusion
+        if auxiliary_vad and (aggregation != 'mean' or fusion is not None):
+            raise ValueError('The initial VAD auxiliary comparison uses the B1 pooled representation')
         self.projection = nn.Sequential(nn.LayerNorm(input_dim), nn.Linear(input_dim, hidden_dim))
         self.head = nn.Sequential(nn.Linear(hidden_dim * (2 if fusion else 1), hidden_dim), nn.GELU(), nn.Linear(hidden_dim, num_classes))
         if aggregation == 'temporal':
@@ -29,8 +31,11 @@ class ReactionPredictor(nn.Module):
         if evidence_dim:
             # Add this after all common parameters to preserve their initialization.
             self.evidence_projection = nn.Linear(evidence_dim, hidden_dim, bias=False)
+        self.auxiliary_vad = auxiliary_vad
+        if auxiliary_vad:
+            self.vad_head = nn.Linear(hidden_dim, 3)
 
-    def forward(self, frames, mask):
+    def forward(self, frames, mask, return_vad=False):
         if frames.ndim != 3 or mask.shape != frames.shape[:2] or not mask.any(1).all():
             raise ValueError('Each sequence needs at least one valid frame')
         expected_width = self.input_dim + self.evidence_dim + int(self.fusion is not None)
@@ -74,4 +79,6 @@ class ReactionPredictor(nn.Module):
                 attention = attention.mean(1, keepdim=True).expand_as(attention)
             pooled = torch.einsum('bct,btd->bcd',attention,h)
             logits = self.head(pooled).diagonal(dim1=1,dim2=2)
+        if return_vad:
+            return logits, attention, self.vad_head(pooled) if self.auxiliary_vad else None
         return logits, attention

@@ -1,6 +1,6 @@
 # Experiment checklist
 
-Last successful cluster status check: **2026-10-01 01:36:25 UTC**. Latest SSH attempts at **21:13 UTC** failed with connection refused, including an IPv4 check; current queue/budget and new artifacts could not be refreshed.
+Last successful cluster status check: **2026-10-01 01:36:25 UTC**. Latest SSH attempt on **2026-10-02 at 06:31 UTC** failed with connection refused before authentication, outside the sandbox; current queue/budget and new artifacts could not be refreshed.
 
 ## Current status
 
@@ -9,7 +9,8 @@ Last successful cluster status check: **2026-10-01 01:36:25 UTC**. Latest SSH at
 - **Snellius jobs:** E reaction-query job `27438329` and shared-query control `27438330` both completed with exit `0:0` in 70 seconds. Their metrics and attention artifacts still need collection/inspection. No jobs remained queued at the last successful snapshot. Smoke `27438252` also completed (`0:0`, 48 seconds).
 - **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
 - **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
-- **Next-batch preparation (2026-10-01):** C emotion/VAD features, D peak selection, F fusion, controls, configs, and bounded submission are implemented locally; **37 mock tests pass**. The emotion checkpoint and exact NRC coordinates are sourced. The new three-video emotion smoke, full cache, and C/D/F benchmarks are unlaunched while SSH is unavailable. [Peak implementation and adversarial review](tier1_peak_review.md)
+- **Next-batch preparation:** C emotion/VAD features, D peak selection, F fusion, controls, configs, and bounded submission are implemented and pushed in `c607b6a`, but not synced to Snellius. The emotion checkpoint and exact NRC coordinates are sourced. The new three-video emotion smoke, full cache, and C/D/F benchmarks are unlaunched while SSH is unavailable. [Peak implementation and adversarial review](tier1_peak_review.md)
+- **VAD preparation (2026-10-02):** both VAD objectives and their matched semantic-permutation controls are implemented; **45 local mock tests pass**. Four configs/SLURM jobs and a bounded launcher are ready for the cluster smoke gate. No dataset VAD run has been launched. [Code and adversarial hypothesis review](vad_review.md)
 - **Resources at 00:38 UTC:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
 - **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** follow the active goal's Tier 0 → Tier 1 sequence, with code/hypothesis review and a small smoke test before each new model pipeline. Submit bounded batches to verified accounts/partitions and record every job here.
@@ -107,8 +108,8 @@ E's two benchmark jobs have completed at the scheduler level; artifact verificat
 
 - [x] Implement C/D/F, sourced coarse VAD, exact image alignment, interrupted cache recovery, selected-frame diagnostics, and capacity/equal-K controls; pass 37 local mock tests. [Review](tier1_peak_review.md)
 - [ ] C — Validate the sourced EmoEditor ResNet-18 checkpoint through the new three-video GPU smoke; then compute full features and run the three evidence variants. Download/hash and local implementation complete; real inference and full features pending.
-- [ ] B-VAD1 — Add expected-VAD auxiliary regression. Coordinates are available; training experiment pending.
-- [ ] B-VAD2 — Add geometry regularization. Coordinates are available; training experiment pending.
+- [ ] B-VAD1 — Run the implemented expected-VAD auxiliary regression and semantic-permutation control after the cluster smoke.
+- [ ] B-VAD2 — Run the implemented classifier geometry regularization and semantic-permutation control after the cluster smoke.
 - [ ] D — Run the implemented K=1/2/4/8 grid for arousal, distance, confidence, uniform, and random selectors; B1 is the shared all-frame reference. Depends on the emotion cache and smoke.
 - [ ] E — Collect and verify metrics/attention from completed jobs `27438329` and `27438330`; compare against B1 with paired uncertainty. Scheduler completion alone has not supplied those result values locally.
 - [ ] F — Run the implemented global+peak, global+global, and peak+peak comparisons, all predeclared at arousal K=4. Depends on the emotion cache and smoke.
@@ -142,7 +143,7 @@ E's two benchmark jobs have completed at the scheduler level; artifact verificat
 1. Refresh Snellius `squeue`, `sacct` for recorded jobs, and the shared JSON registry. Compare scheduler state with per-run artifacts before marking completion.
 2. Update this file's timestamp, checkboxes, job table, failures/blockers, and next proposed batch. Keep failed attempts and replacement job IDs visible.
 3. Report what is implemented, submitted, running, completed, failed, and still pending. Record unavailable checks explicitly rather than treating stale state as current.
-4. Launch only the batch requested by the user. Keep one seed (42), fixed official splits, validation-based selection, and matched controls. Use uv on the cluster; local conda `torch` is for mock tests.
+4. Follow the active goal's authorized experiment sequence, with review, smoke, and live resource checks before each new pipeline. Keep one seed (42), fixed official splits, validation-based selection, and matched controls. Use uv on the cluster; local conda `torch` is for mock tests.
 
 Cluster root: `/scratch-shared/gmago/video2reaction`.
 

@@ -53,7 +53,7 @@ The alphabetical checkpoint label order differs from the EmoSet dataset reposito
 
 All 37 local tests pass in conda `torch` (5.09 seconds). New tests cover interrupted-cache recovery, unchanged completed-cache reuse, image mismatch rejection, exact frame/diagnostic alignment, selection independence from targets, all three score equations, equal-K controls, K beyond clip length, zero-evidence baseline equivalence, and the fusion controls' responses to selected/unselected frames. Config tests verify all 26 conditions retain the baseline data/encoder/training/loss/evaluation settings. Scheduler tests distinguish required-cache `afterok` dependencies from four-lane `afterany` throttling.
 
-The remaining cluster gate is `smoke_emotion_3videos`: three official training clips, eight frames each, both production cache builders, and 14 representative C/D/F variants using the production fitting/checkpoint/evidence-export code. Its metrics are fitting checks on those training clips, never benchmark evidence. The actual pretrained adapter is not yet inference-validated.
+The remaining cluster gate is `smoke_emotion_3videos`: three official training clips, eight frames each, both production cache builders, and 14 representative C/D/F variants using the production fitting/checkpoint/evidence-export code. Four additional B-VAD variants now share this smoke (18 variants total; see [VAD review](vad_review.md)). Its metrics are fitting checks on those training clips, never benchmark evidence. The actual pretrained adapter is not yet inference-validated.
 
 ## Predeclared interpretation
 

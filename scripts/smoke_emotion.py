@@ -29,7 +29,8 @@ from src.experiments.training import fit, predict
 VARIANTS = ['c_emotion_logits', 'c_emotion_vad', 'c_emotion_both',
     'd_arousal_k1', 'd_arousal_k2', 'd_arousal_k4', 'd_arousal_k8',
     'd_distance_k4', 'd_confidence_k4', 'd_uniform_k4', 'd_random_k4',
-    'f_global_peak', 'f_global_control', 'f_peak_control']
+    'f_global_peak', 'f_global_control', 'f_peak_control',
+    'b_vad_aux', 'b_vad_aux_permuted', 'b_vad_geometry', 'b_vad_geometry_permuted']
 
 
 def main(args):
@@ -75,8 +76,9 @@ def main(args):
     for name in VARIANTS:
         variant = load_config(root / f'configs/experiments/{name}.yaml')
         options = copy.deepcopy(cfg)
-        for key in ('experiment', 'model', 'evidence'):
-            options[key] = copy.deepcopy(variant[key])
+        for key in ('experiment', 'model', 'evidence', 'vad_objective'):
+            if key in variant:
+                options[key] = copy.deepcopy(variant[key])
         dataset = EvidenceVideos(options, visual)
         path = out / name
         dataset.save_evidence(path)
