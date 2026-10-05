@@ -1,22 +1,20 @@
 # Experiment checklist
 
-Last successful cluster status check: **2026-10-01 01:36:25 UTC**. Latest SSH attempt on **2026-10-02 at 07:21 UTC** failed with connection refused before authentication, including outside the sandbox; current queue/budget and new artifacts could not be refreshed.
+Last successful cluster status check: **2026-10-05 14:05:25 UTC (16:05 Amsterdam)**. SSH access has recovered after maintenance. Both newly submitted smoke jobs are **pending for resources**; neither has started. SLURM currently provides no start estimate.
 
 ## Current status
 
-- **Completed:** repository/dataset/metric audits, cluster uv setup, and the three-video GPU smoke test.
-- **Full benchmark experiments:** B0, B1, B2, B2 set control, and A5 all completed successfully. The all-keyframe feature cache is complete. [Tier 0 results and interpretation](tier0_report.md)
-- **Snellius jobs:** E reaction-query job `27438329` and shared-query control `27438330` both completed with exit `0:0` in 70 seconds. Their metrics and attention artifacts still need collection/inspection. No jobs remained queued at the last successful snapshot. Smoke `27438252` also completed (`0:0`, 48 seconds).
-- **Results:** B1 has the lowest validation and test KL (test **0.544414**, versus B0 **0.689281**, a **21.0%** reduction). B2 has the highest MRR/F1@1; A5 has the highest cosine/F1@3. Small differences between learned models require cautious interpretation.
-- **Self-contained report:** [LaTeX source](latex/video2reaction_report.tex), [report index](final_report.md), and [20 selected examples](qualitative_examples.json) now explain the completed experiments, all metrics, class-level limitations, and untested hypotheses. Compiled PDF and standalone source ZIP are under `output/pdf/`.
-- **Next-batch preparation:** C emotion/VAD features, D peak selection, F fusion, controls, configs, and bounded submission are implemented and pushed in `c607b6a`, but not synced to Snellius. The emotion checkpoint and exact NRC coordinates are sourced. The new three-video emotion smoke, full cache, and C/D/F benchmarks are unlaunched while SSH is unavailable. [Peak implementation and adversarial review](tier1_peak_review.md)
-- **VAD preparation (2026-10-02):** both VAD objectives and their matched semantic-permutation controls are implemented; **45 local mock tests pass**. Four configs/SLURM jobs and a bounded launcher are ready for the cluster smoke gate. No dataset VAD run has been launched. [Code and adversarial hypothesis review](vad_review.md)
-- **Description preparation (2026-10-02):** description-only, visual+description, and two capacity-matched controls are implemented, with a resumable frozen text cache and a separate three-video smoke. The complete local suite now has **61 passing tests**. VAD source `457ac30` and description source `d97d3ec` are committed and pushed; no new code has reached Snellius since `a89ab3b`. [Description code and adversarial review](description_review.md)
-- **Access issue:** SSH refuses connections before authentication. At **06:51–06:53 UTC on 2026-10-02**, the alternate OpenOnDemand portal redirected to a [public maintenance notice](https://ondemand.snellius.surf.nl/public/maintenance/index.html), whose HTML states that OpenOnDemand is offline for maintenance. This confirms the web fallback is unavailable; it does not establish the cause of the SSH refusal. SURF also documents IP whitelisting and an institutional VPN as standard remedies for that SSH pattern. [Official SSH troubleshooting](https://servicedesk.surf.nl/wiki/spaces/WIKI/pages/154239005/SSH+Troubleshooting+Guide) · [User IP whitelist portal](https://portal.cua.surf.nl/user/whitelist/)
-- **Resources at 00:38 UTC:** 87,861:20 SBU remaining; home quota has about 119.18 GiB free; scratch usage is 0.1124% of 8 TiB. [Timestamped cluster snapshot](cluster_status_20261001.json)
-- **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius. Completed outputs, logs, and results, including the uncertainty analysis, were pulled to the Mac at **06:47:21 UTC** (205 files, 72.12 MB); raw data and feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
+- **Completed:** repository/dataset/metric audits, cluster uv setup, four prior three-video GPU smoke runs, and seven full benchmarks (B0/B1/B2/set/A5 plus the two E models). The all-keyframe visual cache is complete. [Tier 0 results and interpretation](tier0_report.md)
+- **New submissions:** emotion/VAD/peak smoke **`27611469`** and description smoke **`27611475`**, both on authorized account `gusr133332`, partition `gpu_mig`, after successful `sbatch --test-only`. Each uses exactly three videos, four CPUs, one GPU, 24 GiB, and a 15-minute limit. Frozen source: `releases/99b59ad10207-2f524d3cd694`. Full VAD/C/D/F/description benchmarks remain unlaunched until their smoke gate passes.
+- **Verified E results:** reaction-query job `27438329` and shared-query control `27438330` completed with exit `0:0` in 70 seconds. Outputs, checkpoints, predictions, and attention maps are now local. Test KL is **0.542404** for reaction queries and **0.540655** for shared attention, compared with B1 **0.544414**. All seven runs' metrics recompute in locked cluster uv. Shared attention improves over B1 by **−0.003759 KL**, with paired movie-bootstrap 95% interval **[−0.006582, −0.000933]**. Reaction-specific versus shared attention remains inconclusive: **+0.001749 [−0.000422, +0.003881]**. These are single-seed comparisons without multiple-comparison correction. [Verified results and attention diagnostics](attention_results.json)
+- **Post-maintenance verification:** locked uv imports pass with Python **3.11.16**, PyTorch **2.8.0**, and NumPy **2.2.6**. The real SigLIP2 fast tokenizer loads with the expected BOS/EOS/padding configuration. Train/validation/test metadata hashes match, the frame symlink resolves, and the sourced emotion checkpoint passed SHA-256 verification. Post-maintenance GPU execution is pending the smoke allocations.
+- **Self-contained report:** the [LaTeX source](latex/video2reaction_report.tex) and compiled PDF under `output/pdf/` currently cover **five Tier 0 runs**. The [report index](final_report.md) and this checklist carry newer status; the PDF still needs the E results and later experiments. [20 selected examples](qualitative_examples.json)
+- **Peak and VAD pipelines:** C emotion/VAD features, D peak selectors, F global/peak fusion, both VAD objectives, and matched controls are implemented, reviewed, pushed, and synced. The new emotion smoke exercises 18 variants, including all four VAD conditions. [Peak review](tier1_peak_review.md) · [VAD review](vad_review.md)
+- **Description pipeline:** description-only, visual+description, and two capacity-matched controls are implemented and synced, with a resumable text cache and separate smoke. The complete local suite has **61 passing tests**; both new GPU smoke jobs rerun it in cluster uv. [Description review](description_review.md)
+- **Resources at 13:53:35 UTC:** **87,857:59 SBU** available; home quota has about **119.18 GiB** free; scratch usage is **0.1146% of 8 TiB**. [Timestamped cluster snapshot](cluster_status_20261005.json)
+- **Tools and artifact sync:** CodeGraph v1.6.1 is installed on Snellius; neither checkout is indexed. Completed artifacts were pulled at **14:05:17 UTC** (245 output files, 167.42 MB, plus logs/results). Raw data and shared feature tensors remain on the cluster. Repeat with `bash scripts/sync_outputs.sh`.
 - **Launch control:** follow the active goal's Tier 0 → Tier 1 sequence, with code/hypothesis review and a small smoke test before each new model pipeline. Submit bounded batches to verified accounts/partitions and record every job here.
-- **Branch:** `research/video2reaction-experiments`; submitted E source **`a89ab3b`**, with predictor/evaluation code tested by smoke source `4fd4068`. Completed Tier 0 sources remain `bbf8c1d` / B0 `e91a469`. [Code and hypothesis review](code_and_hypothesis_review.md)
+- **Branch:** `research/video2reaction-experiments`; new smoke source **`99b59ad`** is pushed and frozen. Analysis source **`1777b6d`** is pushed and synced independently. E source remains `a89ab3b`; Tier 0 sources remain `bbf8c1d` / B0 `e91a469`. [Code and hypothesis review](code_and_hypothesis_review.md)
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
 
@@ -50,6 +48,8 @@ Checked boxes mean completed and verified. A model passing the three-video smoke
 | `smoke_3videos_27381915` | Snellius / `gpu_mig` | `27381915` | completed | `0:0` / `00:05:41` | Reviewed code: 21 tests plus the same 3-video GPU integration check |
 | `smoke_3videos_27382205` | Snellius / `gpu_mig` | `27382205` | completed | `0:0` / `00:03:31` | Corrected shared image-only loader: 22 tests and 3-video GPU integration check |
 | `smoke_3videos_27438252` | Snellius / `gpu_mig` | `27438252` | completed | `0:0` / `00:00:48` | 27 tests and 3-video regression including shared-query control and full attention recorder; source `4fd4068` |
+| `smoke_emotion_3videos_27611469` | Snellius / `gpu_mig` | `27611469` | pending: resources | not started | 61 tests and 3-video C/D/F/VAD integration; source `99b59ad` |
+| `smoke_descriptions_3videos_27611475` | Snellius / `gpu_mig` | `27611475` | pending: resources | not started | 61 tests and 3-video description/fusion/control integration; source `99b59ad` |
 
 Tested revisions: original `08b8c30`, expanded regression `e91a469`, corrected shared loader `bbf8c1d`. All five Tier 0 models now have full validation/test results.
 
@@ -104,21 +104,21 @@ B0 test metrics: KL **0.689281**, cosine **0.751309**, MRR **0.599569**, F1@1 **
 
 ## 5. Later batches — select after reviewing Tier 0
 
-E's two benchmark jobs have completed at the scheduler level; artifact verification remains pending. Other comparisons below are unlaunched.
+E's two benchmark jobs and their artifact checks are complete, including official metric recomputation and 10,000 paired movie-bootstrap resamples in cluster uv. The C/D/F/VAD and description smoke jobs are queued; their full benchmarks remain unlaunched.
 
 ### Tier 1 and VAD comparisons
 
 - [x] Implement C/D/F, sourced coarse VAD, exact image alignment, interrupted cache recovery, selected-frame diagnostics, and capacity/equal-K controls; pass 37 local mock tests. [Review](tier1_peak_review.md)
-- [ ] C — Validate the sourced EmoEditor ResNet-18 checkpoint through the new three-video GPU smoke; then compute full features and run the three evidence variants. Download/hash and local implementation complete; real inference and full features pending.
+- [ ] C — Validate the sourced EmoEditor ResNet-18 checkpoint through smoke `27611469`; then compute full features and run the three evidence variants. Checkpoint download/hash and local implementation complete; real inference and full features pending.
 - [ ] B-VAD1 — Run the implemented expected-VAD auxiliary regression and semantic-permutation control after the cluster smoke.
 - [ ] B-VAD2 — Run the implemented classifier geometry regularization and semantic-permutation control after the cluster smoke.
 - [ ] D — Run the implemented K=1/2/4/8 grid for arousal, distance, confidence, uniform, and random selectors; B1 is the shared all-frame reference. Depends on the emotion cache and smoke.
-- [ ] E — Collect and verify metrics/attention from completed jobs `27438329` and `27438330`; compare against B1 with paired uncertainty. Scheduler completion alone has not supplied those result values locally.
+- [x] E — Collect and verify jobs `27438329` and `27438330`, recompute official metrics in cluster uv, and compare with B1 using paired uncertainty. Checksummed attention weights, frame alignment, normalization, entropy, and shared-map equality also pass. Shared attention improves over B1; reaction-specific attention has no established advantage over its shared control. [Results](attention_results.json)
 - [ ] F — Run the implemented global+peak, global+global, and peak+peak comparisons, all predeclared at arousal K=4. Depends on the emotion cache and smoke.
 
 ### Required description diagnostics
 
-- [ ] Run the implemented description three-video cluster smoke and verify the real tokenizer/text encoder.
+- [ ] Complete description smoke `27611475` and verify real text-encoder inference; tokenizer configuration passed on the login node.
 - [ ] Extract the full description cache and evaluate description-only prediction.
 - [ ] Evaluate visual + description prediction against B1 and both implemented capacity-matched single-modality controls.
 - [ ] Report text-assisted and video-only results separately, including the observed cross-split movie overlap.

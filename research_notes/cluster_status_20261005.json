@@ -1,0 +1,71 @@
+{
+  "checked_at_utc": "2026-10-05T14:05:25Z",
+  "cluster": "snellius.surf.nl",
+  "account": "gusr133332",
+  "ssh_reachable": true,
+  "resource_checked_at_utc": "2026-10-05T13:53:35Z",
+  "registered_balance_at": "2026-10-04T23:59:59",
+  "remaining_sbu_hours_minutes": "87857:59",
+  "active_jobs": 0,
+  "queued_jobs": 2,
+  "queue": [
+    {
+      "job_id": "27611469",
+      "name": "v2r-smoke-emotion",
+      "state": "PENDING",
+      "reason": "Resources",
+      "partition": "gpu_mig",
+      "start_estimate": null
+    },
+    {
+      "job_id": "27611475",
+      "name": "v2r-smoke-descriptions",
+      "state": "PENDING",
+      "reason": "Resources",
+      "partition": "gpu_mig",
+      "start_estimate": null
+    }
+  ],
+  "smoke_release": "releases/99b59ad10207-2f524d3cd694",
+  "home_quota_gib": 200,
+  "home_usage_percent": 40.408,
+  "home_inode_quota": 1000000,
+  "home_inode_usage_percent": 69.9406,
+  "scratch_quota_tib": 8,
+  "scratch_usage_percent": 0.1146,
+  "scratch_inode_quota": 3000000,
+  "scratch_inode_usage_percent": 1.2621,
+  "dataset_path": "/gpfs/home3/gmago/video2reaction/scratch4/workspace/sidongzhang_umass_edu-v2r/v2r_data/youtube_video/key_frames",
+  "verified_metadata_sha256": {
+    "train": "22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0",
+    "val": "c78e6ed759d449041d8c0ff468098d71b829cb5a4d7e457d4710b2c2386acc83",
+    "test": "58558f5694f3d038ac4c6af22e5a0f2b388b43236de9ab4ba74300adb0cc672d"
+  },
+  "emotion_checkpoint_sha256": "2abdbddd4646d7da8134ecd7db51bd2405cc93070d7847a3c3cc451a6f2d31d5",
+  "post_maintenance_checks": {
+    "uv": "0.12.5",
+    "python": "3.11.16",
+    "torch": "2.8.0",
+    "numpy": "2.2.6",
+    "locked_imports": "passed",
+    "siglip2_tokenizer": "GemmaTokenizerFast; BOS false; EOS true; right padding; input_ids only",
+    "gpu_execution": "pending smoke allocations"
+  },
+  "newly_collected_completed_jobs": [
+    "27438329",
+    "27438330"
+  ],
+  "commands": [
+    "squeue -u gmago",
+    "squeue --start -j 27611469,27611475",
+    "sacct -j 27611469,27611475,27438329,27438330 -X -n -P --format=JobIDRaw,JobName%32,State,ExitCode,Elapsed",
+    "budget-overview",
+    "myquota",
+    "readlink -f data/key_frames",
+    "sha256sum data/metadata/{train,val,test}.json",
+    "uv run --frozen --no-sync python scripts/check_env.py",
+    "python3 scripts/setup_emotion_model.py"
+  ],
+  "artifact_sync_at_utc": "2026-10-05T14:05:17.304330Z",
+  "attention_analysis_verified": true
+}
