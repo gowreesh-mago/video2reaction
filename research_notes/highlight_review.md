@@ -49,3 +49,9 @@ The image path follows the author's `video_helper.py`: RGB, resize 256, center c
 - Full jobs: `joint_highlight_sparse`, `joint_highlight_soft_control`, and `pretrained_dsnet_k4` (the latter depends on `highlight_cache`). Launch helper: `scripts/submit_highlights.py --completed-smoke-job ID`.
 
 Current execution state is maintained in [the checklist](experiment_checklist.md).
+
+## Completed GPU smoke
+
+Job **27623258** passed on H100 in **1m08s**, exit `0:0`, using frozen `71b3b610e96d-6dd469fd221b`. All 80 tests passed in cluster uv. B1, sparse selection, soft attention, and frozen DSNet K=4 each decreased three-video fitting loss, reloaded exactly, and resumed the optimizer. Saved frame identities, weights and DSNet ranking were independently checked after sync. [Results](highlight_smoke_results.json).
+
+After 25 fitting steps the sparse model retained **8/7/8** of the eight input frames; the soft control retained **8/8/8**. Thus the smoke establishes executable joint learning, not useful sparse localization. DSNet scores were nonconstant on all three clips and selected four distinct frames each. No full-split score exists for these new baselines yet.

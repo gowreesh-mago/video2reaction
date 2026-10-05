@@ -1,0 +1,10 @@
+{
+  "submitted_at_utc": "2026-10-05T17:47:00.167110+00:00",
+  "job_id": "27623258",
+  "replaces_cancelled_pending_job": "27622854",
+  "partition_request": "gpu_h100",
+  "release": "/gpfs/scratch1/shared/gmago/video2reaction/releases/71b3b610e96d-6dd469fd221b",
+  "source_sha256": "6dd469fd221b27f974b616eb9251c8d785bcc1036efe04ba777187e562958b13",
+  "git_commit": "71b3b610e96da72fd586ceac69500cd1c6bc81df",
+  "scheduler_notes": "Snellius denied in-place partition changes and multi-partition shared requests; separate gpu_h100 preflight passed."
+}

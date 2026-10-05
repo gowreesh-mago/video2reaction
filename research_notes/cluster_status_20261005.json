@@ -1,11 +1,11 @@
 {
-  "checked_at_utc": "2026-10-05T16:28:48Z",
+  "checked_at_utc": "2026-10-05T17:54:06Z",
   "cluster": "snellius.surf.nl",
   "account": "gusr133332",
   "ssh_reachable": true,
-  "resource_checked_at_utc": "2026-10-05T16:12:26Z",
+  "resource_checked_at_utc": "2026-10-05T17:54:06Z",
   "registered_balance_at": "2026-10-04T23:59:59",
-  "remaining_sbu_hours_minutes": "87784:56",
+  "remaining_sbu_hours_minutes": "87781:19",
   "active_jobs": 0,
   "queued_jobs": 0,
   "queue": [],
@@ -13,11 +13,11 @@
   "home_quota_gib": 200,
   "home_usage_percent": 40.408,
   "home_inode_quota": 1000000,
-  "home_inode_usage_percent": 69.9408,
+  "home_inode_usage_percent": 69.9412,
   "scratch_quota_tib": 8,
-  "scratch_usage_percent": 0.1346,
+  "scratch_usage_percent": 0.1376,
   "scratch_inode_quota": 3000000,
-  "scratch_inode_usage_percent": 1.3357,
+  "scratch_inode_usage_percent": 1.3627,
   "dataset_path": "/gpfs/home3/gmago/video2reaction/scratch4/workspace/sidongzhang_umass_edu-v2r/v2r_data/youtube_video/key_frames",
   "verified_metadata_sha256": {
     "train": "22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0",
@@ -49,12 +49,23 @@
     "uv run --frozen --no-sync python scripts/check_env.py",
     "python3 scripts/setup_emotion_model.py"
   ],
-  "artifact_sync_at_utc": "2026-10-05T17:16:45.987449Z",
+  "artifact_sync_at_utc": "2026-10-05T17:52:24.144765Z",
   "attention_analysis_verified": true,
-  "new_batch_finished_jobs": 38,
-  "new_batch_cost_sbu_hours_minutes": "73:03",
+  "new_batch_finished_jobs": 40,
+  "new_batch_cost_sbu_hours_minutes": "76:41",
   "verified_benchmark_runs": 41,
   "verified_frame_evidence_runs": 26,
-  "queue_checked_at_utc": "2026-10-05T16:28:48Z",
-  "registry_reconciliation": "registry_reconciliation_20261005.json"
+  "queue_checked_at_utc": "2026-10-05T17:54:06Z",
+  "registry_reconciliation": "registry_reconciliation_20261005.json",
+  "highlight_smoke": {
+    "job_id": "27623258",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:01:08",
+    "partition": "gpu_h100",
+    "tests_passed": 80,
+    "replaced_pending_job": "27622854"
+  },
+  "highlight_followup_benchmarks": "implemented and listed; not submitted",
+  "terminal_job_count_note": "Includes 39 successful new jobs and the cancelled-before-start MIG smoke; the H100 replacement passed."
 }

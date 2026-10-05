@@ -1,0 +1,154 @@
+{
+  "job_id": "27623258",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:01:08",
+  "partition": "gpu_h100",
+  "source_commit": "71b3b610e96da72fd586ceac69500cd1c6bc81df",
+  "source_sha256": "6dd469fd221b27f974b616eb9251c8d785bcc1036efe04ba777187e562958b13",
+  "cluster_tests_passed": 80,
+  "benchmark_result": false,
+  "video_count": 3,
+  "frame_count": 24,
+  "variants": {
+    "meanpool": {
+      "initial_loss": 1.6434247493743896,
+      "final_loss": 0.048358626663684845,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.09602416306734085,
+        "kl": 0.048358604879393724,
+        "clark": 2.105487416548662,
+        "cad": 0.8571415607565042,
+        "cosine": 0.9820812713654835,
+        "intersection": 0.8826857960472504,
+        "mrr": 1.0,
+        "tpe": 0.09523500005404155,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.8518518518518517
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "joint_highlight_sparse": {
+      "initial_loss": 1.6372437477111816,
+      "final_loss": 0.05409547686576843,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.07572855800390244,
+        "kl": 0.05409549681358228,
+        "clark": 2.2551584574190717,
+        "cad": 0.8105424812883931,
+        "cosine": 0.9834896466826176,
+        "intersection": 0.8922733897343278,
+        "mrr": 1.0,
+        "tpe": 0.030168116092681885,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.7777777777777778
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "joint_highlight_soft_control": {
+      "initial_loss": 1.6426317691802979,
+      "final_loss": 0.022241678088903427,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.03679684177041054,
+        "kl": 0.02224168351887952,
+        "clark": 2.1181285580726867,
+        "cad": 0.30822991449663245,
+        "cosine": 0.9961807341830465,
+        "intersection": 0.9449261905004581,
+        "mrr": 1.0,
+        "tpe": 0.00587765375773112,
+        "f1_top1": 1.0,
+        "f1_top2": 1.0,
+        "f1_top3": 0.8518518518518517
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    },
+    "pretrained_dsnet_k4": {
+      "initial_loss": 1.6428887844085693,
+      "final_loss": 0.09142836928367615,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "steps": 25,
+      "metrics": {
+        "chebyshev": 0.11929042885700862,
+        "kl": 0.09142841149105478,
+        "clark": 2.2815835306242014,
+        "cad": 0.635211057830449,
+        "cosine": 0.9594159695417689,
+        "intersection": 0.8315862085049351,
+        "mrr": 1.0,
+        "tpe": 0.11413335800170898,
+        "f1_top1": 1.0,
+        "f1_top2": 0.8888888888888888,
+        "f1_top3": 0.7037037037037037
+      },
+      "benchmark_result": false,
+      "evaluation_split": "same three training videos"
+    }
+  },
+  "highlight_support": {
+    "joint_highlight_sparse": [
+      8,
+      7,
+      8
+    ],
+    "joint_highlight_soft_control": [
+      8,
+      8,
+      8
+    ]
+  },
+  "teacher_selection": [
+    {
+      "sample_id": "4nSkJZ3i2-g",
+      "selected_positions": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "score_min": 0.8969894647598267,
+      "score_max": 0.9999998807907104
+    },
+    {
+      "sample_id": "eiqBbLVXbQg",
+      "selected_positions": [
+        0,
+        1,
+        4,
+        6
+      ],
+      "score_min": 0.7045428156852722,
+      "score_max": 0.9999999403953552
+    },
+    {
+      "sample_id": "iKp5ARBBpyc",
+      "selected_positions": [
+        1,
+        2,
+        3,
+        6
+      ],
+      "score_min": 0.8609609603881836,
+      "score_max": 0.9999999403953552
+    }
+  ]
+}

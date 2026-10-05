@@ -45,3 +45,5 @@ Benchmark sources: B0 `e91a469`; other Tier 0 `bbf8c1d`; E `a89ab3b`; all 34 new
 Full verifier: `cc69100`; launcher-only SLURM parser fix: `2f542f1`.
 Report date: 2026-10-05. Budget/storage snapshot: 16:12 UTC.
 All prioritized baseline, C/D/E/F, VAD, and description comparisons are complete and verified. The 50-page report includes every run's metrics, selected epoch, job ID, and per-class scores. Optional Tier 2 G/H/I/J and separate A1–A4 benchmark runs remain deferred.
+
+The PDF reports the completed 41-condition benchmark matrix. The source archive's evidence also includes the subsequently requested joint-highlight and pretrained-DSNet implementation review and three-video smoke results; those follow-up full benchmarks are pending.

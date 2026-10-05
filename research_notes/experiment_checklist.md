@@ -1,10 +1,10 @@
 # Experiment checklist
 
-Last successful cluster check: **2026-10-05 17:35:53 UTC (19:35 Amsterdam)**. **No queued or running jobs.** All 41 benchmark configurations are complete; full artifact verification passed.
+Last successful cluster check: **2026-10-05 17:54:06 UTC (19:54 Amsterdam)**. **No queued or running jobs.** All 41 benchmark configurations are complete; full artifact verification passed.
 
 ## Current status
 
-- **Completed:** audits, locked cluster uv environment, six three-video GPU smoke runs, three full feature caches, and **41 benchmark configurations** (7 reference models + 34 recommended conditions).
+- **Completed:** audits, locked cluster uv environment, seven three-video GPU smoke runs, three full feature caches, and **41 benchmark configurations** (7 reference models + 34 recommended conditions).
 - **Smoke gates:** `27611469` (18 emotion/peak/VAD variants, 2m53s) and `27611475` (five description/visual variants, 1m36s) both passed **61 tests**, exact reloads, and three-video fitting checks on A100 MIG GPUs. They exited `0:0`.
 - **Primary batch:** all 19 predictors and two caches completed with exit `0:0`. [Launch receipt](recommended_primary_launch.json)
 - **Peak curve:** all 15 remaining K=1/2/8 conditions completed with exit `0:0`. The full K=1/2/4/8 grid includes three emotion scores plus equal-K uniform/random controls. [Curve receipt](emotion_curve_launch.json)
@@ -12,10 +12,11 @@ Last successful cluster check: **2026-10-05 17:35:53 UTC (19:35 Amsterdam)**. **
 - **Strongest result:** visual+description KL **0.509952**, versus B1 **0.544414** (6.33% lower), with gains over both capacity-matched controls. This is text-assisted prediction. Best visual-only test KL remains shared attention at **0.540655**.
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
-- **Resources:** **87,784:56 SBU** left; today's 38 new jobs cost **73:03 SBU**. Home has about 119.18 GiB free; scratch usage is 0.1346% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,188 output files (1.85 GB), 106 logs, and the registry/results are local, synced at 17:16:45 UTC. The dataset and shared feature caches remain on Snellius.
+- **Resources:** **87,781:19 SBU** left; today's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home has about 119.18 GiB free; scratch usage is 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
+- **Sync:** 1,224 output files (1.86 GB), 109 logs, and the registry/results are local, synced at 17:52:24 UTC. The dataset and shared feature caches remain on Snellius.
 - **Source:** all new models used smoke-tested frozen `99b59ad`; launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
 - **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
+- **New highlight work:** three predictors implemented, reviewed, and pushed; all 80 local tests pass. GPU smoke `27623258` passed on H100 (80 tests, 3 videos, four predictors, 1m08s, exit 0:0). Full follow-up benchmarks remain on the experiment list.
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
@@ -191,10 +192,21 @@ Added 2026-10-05; these are separate from the 41 completed configurations. [Meth
 - [x] Pin and download DSNet TVSum split-0 and its GoogLeNet backbone on Snellius; verify source and weight hashes.
 - [x] Implement frozen DSNet Top-4 pseudo-label selection and the unchanged B1 predictor (`pretrained_dsnet_k4`), with aligned resumable cache extraction.
 - [x] Add configs, independent SLURM jobs, frame diagnostics, and a three-video smoke covering all new predictors; all 80 local mock tests pass.
-- [ ] Push, sync, freeze and pass the new three-video GPU smoke in uv.
+- [x] Push `71b3b61`, synchronize, verify DSNet assets, and freeze `71b3b610e96d-6dd469fd221b`.
+- [x] Pass the new three-video GPU smoke in uv: job `27623258`, `gpu_h100`, 1m08s, exit `0:0`; 80 tests plus four predictor fits/reloads/resumes passed. It replaces cancelled-pending MIG job `27622854`, which did not train. [Smoke evidence](highlight_smoke_results.json) · [Launch receipt](highlight_smoke_launch.json)
 - [ ] Full joint sparse/soft benchmark runs.
 - [ ] Full DSNet score cache and Top-4 benchmark run.
 - [ ] Verify metrics, selectors, support/collapse statistics, matched comparisons, and update the report with new results.
+
+The new full benchmark runs are listed as pending. Exact launch command for this smoke-tested source when launching the follow-up batch:
+
+```bash
+cd /scratch-shared/gmago/video2reaction/releases/71b3b610e96d-6dd469fd221b
+source configs/clusters/snellius.env
+python3 scripts/submit_highlights.py --completed-smoke-job 27623258
+```
+
+This submits three predictors and the DSNet cache, with at most two concurrent jobs. The original 41 benchmark results remain unchanged.
 
 ## 7. Evaluation and final report
 
