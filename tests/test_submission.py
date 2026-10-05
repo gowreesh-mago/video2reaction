@@ -61,3 +61,19 @@ def test_throttle_uses_afterany_while_required_cache_uses_afterok(tmp_path, monk
     assert '--dependency=afterok:201' in submits[2]
     assert '--dependency=afterok:201,afterany:202' in submits[3]
     assert '--dependency=afterok:201,afterany:203' in submits[4]
+
+
+@pytest.mark.parametrize('output', ['COMPLETED|0:0', 'COMPLETED|0:0|', ' COMPLETED|0:0|\n'])
+def test_completed_cache_accepts_slurm_separator_variants(monkeypatch, output):
+    from scripts import submit_emotion
+    monkeypatch.setattr(submit_emotion, 'command', lambda *args: output)
+    submit_emotion.require_completed_cache('123')
+
+
+@pytest.mark.parametrize('output', ['', 'RUNNING|0:0', 'COMPLETED|1:0', 'FAILED|0:0',
+                                  'COMPLETED|0:0\nCOMPLETED|0:0', 'COMPLETED|0:0|unexpected'])
+def test_completed_cache_rejects_non_success_or_ambiguous_rows(monkeypatch, output):
+    from scripts import submit_emotion
+    monkeypatch.setattr(submit_emotion, 'command', lambda *args: output)
+    with pytest.raises(RuntimeError, match='not verified completed'):
+        submit_emotion.require_completed_cache('123')

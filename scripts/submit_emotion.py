@@ -14,6 +14,14 @@ CURVE = [f'd_{method}_k{k}' for k in [1, 2, 8]
          for method in ['arousal', 'distance', 'confidence', 'uniform', 'random']]
 
 
+def require_completed_cache(job_id):
+    state = command('sacct', '-j', job_id, '-X', '-n', '-P', '--format=State,ExitCode')
+    # Slurm versions differ on whether parsable output has a trailing separator.
+    rows = [line.strip().rstrip('|').split('|') for line in state.splitlines() if line.strip()]
+    if rows != [['COMPLETED', '0:0']]:
+        raise RuntimeError(f'Emotion cache is not verified completed: {state}')
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--phase', choices=['primary', 'curve'], required=True)
@@ -25,7 +33,5 @@ if __name__ == '__main__':
     else:
         if not args.completed_cache_job or not args.completed_cache_job.isdigit():
             parser.error('Curve phase requires --completed-cache-job ID')
-        state = command('sacct', '-j', args.completed_cache_job, '-X', '-n', '-P', '--format=State,ExitCode')
-        if state.strip() != 'COMPLETED|0:0|':
-            raise RuntimeError(f'Emotion cache is not verified completed: {state}')
+        require_completed_cache(args.completed_cache_job)
         submit_batch(CURVE, 'emotion_curve', max_parallel=4)
