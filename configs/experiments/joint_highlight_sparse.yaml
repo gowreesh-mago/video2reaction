@@ -1,0 +1,13 @@
+base: tier0_common.yaml
+experiment:
+  name: joint_highlight_sparse
+  hypothesis: Reaction supervision can learn predictive highlights without external
+    emotion scores.
+  changed_component: Replace mean pooling with a learned frame scorer and sparsemax;
+    reaction KL jointly trains selection and classification.
+  expected_outcome: Lower KL than the matched soft-attention model with fewer active
+    frames.
+model:
+  aggregation: highlight_sparse
+evaluation:
+  save_attention: true

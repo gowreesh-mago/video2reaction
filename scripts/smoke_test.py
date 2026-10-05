@@ -20,6 +20,8 @@ from src.experiments.metrics import evaluate
 from src.experiments.models import ReactionPredictor
 from src.experiments.features import load_frozen_encoder
 from src.experiments.attention import AttentionRecorder
+from src.experiments.highlights import export_highlights
+from src.experiments.pretrained_highlights import load_highlight_teacher, teacher_scores, ranked_positions
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.taxonomy import REACTION_CLASSES
 from check_gpu import gpu_info
@@ -102,7 +104,28 @@ def main(args):
     target=torch.tensor(np.stack([target_distribution(rows[v]) for v in ids]),device=device)
     records={}
     training=cfg['training']
+    original_mask = mask.clone()
+    teacher_selection = None
+    if any('pretrained_highlight_k' in variant for variant in cfg['variants'].values()):
+        teacher_parts = load_highlight_teacher(device)
+        teacher_selection = []
+        teacher_records = []
+        for vid, index in zip(ids, selected):
+            scores, boxes = teacher_scores(read_images(index), teacher_parts, device)
+            teacher_selection.append(scores)
+            teacher_records.append({'sample_id':vid,'scores':scores.tolist(),'boxes_keyframe_positions':boxes.tolist(),
+                'frames':[{k:v for k,v in frame.items() if k!='path'} for frame in index]})
+        atomic_json(out/'pretrained_highlight_pseudo_labels.json', {'videos':teacher_records,'uses_reaction_targets':False})
+        del teacher_parts
+        torch.cuda.empty_cache()
     for name,variant in cfg['variants'].items():
+        mask = original_mask.clone()
+        selected_teacher = None
+        if 'pretrained_highlight_k' in variant:
+            mask.zero_()
+            selected_teacher = [ranked_positions(scores, variant['pretrained_highlight_k']) for scores in teacher_selection]
+            for i, chosen in enumerate(selected_teacher):
+                mask[i, chosen] = True
         seed_everything(cfg['seed'])
         model=ReactionPredictor(width,training['hidden_dim'],aggregation=variant['aggregation']).to(device)
         optimizer=torch.optim.AdamW(model.parameters(),lr=training['learning_rate'],weight_decay=training['weight_decay'])
@@ -129,6 +152,11 @@ def main(args):
             raise AssertionError(f'{name}: training loss did not decrease ({first} -> {final})')
         path=out/name
         path.mkdir()
+        if selected_teacher is not None:
+            atomic_json(path/'selected_frames.json', {'uses_reaction_targets':False,
+                'videos':[{'sample_id':vid,'selected_positions':chosen.tolist(),
+                    'selected_frames':[{k:v for k,v in selected[i][int(j)].items() if k!='path'} for j in chosen]}
+                    for i,(vid,chosen) in enumerate(zip(ids,selected_teacher))]})
         torch.save(dict(model=model.state_dict(),optimizer=optimizer.state_dict(),step=training['steps'],
                         seed=cfg['seed'],variant=variant,input_dim=width,config=cfg),path/'checkpoint.pt')
         restored=ReactionPredictor(width,training['hidden_dim'],aggregation=variant['aggregation']).to(device)
@@ -160,6 +188,8 @@ def main(args):
             recorder = AttentionRecorder(inventory)
             recorder.add(torch.arange(len(ids)), mask, attention)
             recorder.save(path)
+            if model.aggregation in {'highlight_sparse', 'highlight_soft'}:
+                export_highlights(path, 'sparsemax' if model.aggregation == 'highlight_sparse' else 'softmax')
         record=dict(initial_loss=first,final_loss=final,loss_decreased=True,checkpoint_reload_exact=True,
                     optimizer_resume_passed=True,steps=training['steps'],metrics=metrics,
                     benchmark_result=False,evaluation_split='same three training videos')
@@ -168,7 +198,7 @@ def main(args):
         atomic_json(path/'loss_history.json',losses)
         records[name]=record
         print(name,json.dumps(record),flush=True)
-    result=dict(status='completed',benchmark_result=False,video_count=len(ids),frame_count=int(mask.sum()),
+    result=dict(status='completed',benchmark_result=False,video_count=len(ids),frame_count=int(original_mask.sum()),
                 encoder_seconds=encoder_seconds,variants=records,environment=info)
     atomic_json(out/'metrics.json',result)
     update_registry(args.registry,args.run_name,status='completed',end_time=utc_now(),metrics=result)

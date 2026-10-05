@@ -378,6 +378,8 @@ Home quota usage at 16:12 UTC was 40.4080\% of 200 GiB: about 80.82 GiB used and
 
 Snellius GPU A100/H100/MIG and relevant build/staging products were verified under the account; only Snellius was used for these experiments. UvA access was inspected earlier but no project job was submitted there. New submissions still require a current account/partition check and \code{sbatch --test-only}. Each new pipeline passed a three-video smoke before full submission. New jobs ran in batches capped at four concurrent allocations.
 
+\textbf{Registry reconciliation.} The final audit found one stale running entry for completed VAD geometry job 27612816. SLURM exit 0:0, source identity, metrics, and prediction checksum were verified before restoring its completed state through the locked API. The cause is unresolved; cross-node registry visibility should be audited before another large concurrent batch. Per-run artifacts and scheduler records remain the evidence for completion.
+
 \Needspace{22\baselineskip}
 \section{Conclusions}
 \textbf{Reference and strongest result.} B1 remains the fixed mean-pooling reference. Shared attention gives a small visual-only KL improvement. Visual+description gives the strongest improvement in both validation and test KL, with evidence of complementarity beyond added capacity. It requires description input and is not a video-only result.

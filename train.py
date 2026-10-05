@@ -17,6 +17,7 @@ from src.experiments.descriptions import DescriptionVideos, description_director
 from src.experiments.features import CachedVideos, prepare_features
 from src.experiments.emotion import emotion_directory, prepare_emotion_cache
 from src.experiments.evidence import EvidenceVideos
+from src.experiments.pretrained_highlights import PretrainedHighlightVideos, prepare_highlight_cache, highlight_directory
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.runtime import cache_directory, digest_file, load_config, official_splits, seed_everything, verify_code
 from src.experiments.training import fit, predict
@@ -45,7 +46,7 @@ def run(args):
                     start_time=utc_now(), hostname=socket.gethostname(), git_commit=code['git_commit'],
                     source_sha256=code['source_sha256'], config=str(out / 'config.yaml'),
                     experiment_name=cfg['experiment']['name'], hypothesis=cfg['experiment']['hypothesis'],
-                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache', 'description_cache'} else 'benchmark')
+                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache', 'description_cache', 'highlight_cache'} else 'benchmark')
     torch.set_num_threads(min(4, int(os.environ.get('SLURM_CPUS_PER_TASK', '4'))))
     seed_everything(cfg['seed'])
     splits, split_hashes = official_splits(cfg)
@@ -57,6 +58,8 @@ def run(args):
         summary = prepare_emotion_cache(cfg, splits, out)
     elif name == 'description_cache':
         summary = prepare_description_cache(cfg, splits, out)
+    elif name == 'highlight_cache':
+        summary = prepare_highlight_cache(cfg, splits, out)
     else:
         train_movies = {str(row['imdbid']) for row in splits['train'].values()}
         if name == 'b0_prior':
@@ -75,6 +78,13 @@ def run(args):
             # Load train/validation first. Test predictions are made only after checkpoint selection.
             train = CachedVideos(cfg, 'train', splits['train'])
             val = CachedVideos(cfg, 'val', splits['val'])
+            if 'pretrained_highlight' in cfg:
+                if any(key in cfg for key in ('description', 'evidence', 'vad_objective')) or cfg['model']['aggregation'] != 'mean':
+                    raise ValueError('The frozen highlight baseline changes selection only')
+                train, val = PretrainedHighlightVideos(cfg, train), PretrainedHighlightVideos(cfg, val)
+                manifest = highlight_directory(cfg) / 'manifest.json'
+                atomic_json(out / 'highlight_cache.json', {'path': str(manifest.parent),
+                    'manifest_sha256': digest_file(manifest), 'spec': train.manifest['spec']})
             if 'description' in cfg:
                 train = DescriptionVideos(cfg, train, splits['train'])
                 val = DescriptionVideos(cfg, val, splits['val'])
@@ -96,6 +106,10 @@ def run(args):
             result = {}
             for s in ('val', 'test'):
                 dataset = val if s == 'val' else CachedVideos(cfg, s, splits[s])
+                if 'pretrained_highlight' in cfg:
+                    if s == 'test':
+                        dataset = PretrainedHighlightVideos(cfg, dataset)
+                    dataset.save_evidence(out / s)
                 if 'description' in cfg and s == 'test':
                     dataset = DescriptionVideos(cfg, dataset, splits[s])
                 if 'evidence' in cfg:

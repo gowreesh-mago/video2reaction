@@ -1,0 +1,12 @@
+base: tier0_common.yaml
+experiment:
+  name: joint_highlight_soft_control
+  hypothesis: Reaction supervision can learn predictive highlights without external
+    emotion scores.
+  changed_component: Use softmax instead of sparsemax with exactly the same frame
+    scorer, head, parameters and initialization.
+  expected_outcome: Isolate sparsity from learned attention and added capacity.
+model:
+  aggregation: highlight_soft
+evaluation:
+  save_attention: true

@@ -1,0 +1,7 @@
+base: tier0_common.yaml
+experiment:
+  name: highlight_cache
+  hypothesis: External summary confidence provides a target-independent salience proxy.
+  changed_component: Cache frozen DSNet TVSum split-0 center confidence on the exact
+    visual-cache frames.
+  expected_outcome: Verified aligned pseudo-labels.

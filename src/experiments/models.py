@@ -2,13 +2,14 @@
 import math
 import torch
 from torch import nn
+from .highlights import masked_sparsemax
 
 
 class ReactionPredictor(nn.Module):
     def __init__(self, input_dim, hidden_dim=128, num_classes=21, aggregation='mean', layers=2,
                  positional_encoding=True, evidence_dim=0, fusion=None, auxiliary_vad=False, description_dim=0):
         super().__init__()
-        if aggregation not in {'mean', 'temporal', 'query', 'shared_query'}:
+        if aggregation not in {'mean', 'temporal', 'query', 'shared_query', 'highlight_sparse', 'highlight_soft'}:
             raise ValueError(aggregation)
         self.aggregation = aggregation
         self.positional_encoding = positional_encoding
@@ -31,6 +32,13 @@ class ReactionPredictor(nn.Module):
             self.cls = nn.Parameter(torch.zeros(1, 1, hidden_dim))
         if aggregation in {'query', 'shared_query'}:
             self.queries = nn.Parameter(torch.randn(num_classes, hidden_dim) / math.sqrt(hidden_dim))
+        if aggregation in {'highlight_sparse', 'highlight_soft'}:
+            if evidence_dim or fusion or auxiliary_vad or description_dim:
+                raise ValueError('Joint highlight baseline uses visual input and reaction loss only')
+            # Appended after the common projection/head so initialization matches B1.
+            self.highlight_scorer = nn.Sequential(nn.Linear(hidden_dim, 32), nn.Tanh(),
+                                                  nn.Linear(32, 1, bias=False))
+        self.num_classes = num_classes
         self.hidden_dim = hidden_dim
         if evidence_dim:
             # Add this after all common parameters to preserve their initialization.
@@ -80,6 +88,14 @@ class ReactionPredictor(nn.Module):
             valid = torch.cat([torch.ones(len(mask),1,device=mask.device,dtype=torch.bool),mask],dim=1)
             pooled = self.temporal(h,src_key_padding_mask=~valid)[:,0]
             logits = self.head(pooled)
+        elif self.aggregation in {'highlight_sparse', 'highlight_soft'}:
+            scores = self.highlight_scorer(h).squeeze(-1)
+            weights = (masked_sparsemax(scores, mask) if self.aggregation == 'highlight_sparse'
+                       else scores.masked_fill(~mask, -torch.inf).softmax(-1))
+            pooled = (h * weights.unsqueeze(-1)).sum(1)
+            logits = self.head(pooled)
+            # Reuse the established recorder; all reactions receive the same map.
+            attention = weights[:, None, :].expand(-1, self.num_classes, -1)
         else:
             scores = torch.einsum('cd,btd->bct',self.queries,h)/math.sqrt(self.hidden_dim)
             attention = scores.masked_fill(~mask[:,None,:],-torch.inf).softmax(-1)

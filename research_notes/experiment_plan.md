@@ -21,4 +21,8 @@ Only submit to verified accounts and partitions. Keep one registry on Snellius; 
 
 ## Progress and remaining deliverables
 
-Track completed work, job IDs, and pending batches in the [experiment checklist](experiment_checklist.md). All five Tier 0 benchmarks and the corrected full feature cache completed successfully. All 22 mock tests and the three-video shared-loader smoke passed. Paired movie-cluster KL intervals, per-class diagnostics, and 20 selected prediction examples are collected. The [self-contained LaTeX report](latex/video2reaction_report.tex) and [report index](final_report.md) explain the current evidence. Tier 1, VAD, description diagnostics, and optional Tier 2 work remain unlaunched; the main peak/context/VAD questions are still unanswered.
+Track completed work, job IDs, and pending batches in the [experiment checklist](experiment_checklist.md). All 41 prioritized baseline/C/D/E/F/VAD/description conditions are complete and verified. Their results and limits are in the [report](final_report.md).
+
+## Added highlight baselines (2026-10-05)
+
+The user's new request adds jointly learned sparse highlights, their matched soft-attention control, and frozen pretrained DSNet Top-4 selection followed by B1 reaction prediction. [Methods, sources, controls and adversarial review](highlight_review.md). These are separate from the 41 completed conditions. Use the three-video highlight smoke before full runs; reuse the existing uniform/random K=4 controls. No human highlight labels or localization-accuracy claims are introduced.

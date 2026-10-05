@@ -1,0 +1,18 @@
+{
+  "checked_at_utc": "2026-10-05T16:34:22.635368+00:00",
+  "run_id": "b_vad_geometry_27612816",
+  "previous_status": "running",
+  "scheduler": [
+    "27612816",
+    "COMPLETED",
+    "0:0",
+    "2026-10-05T14:45:53"
+  ],
+  "verified_aggregate": "results/recommended_results.json",
+  "metrics_match": true,
+  "test_predictions_sha256": "c96a650ccdd156859c78ed3c42a14a487088a27594103073e966801ddae4a649",
+  "source_commit": "99b59ad1020729750dc2a788ebcef5d759abb3fd",
+  "cause": "Unknown. The run printed its final summary after the registry completion call, but the final registry retained its earlier running entry. No training or output artifacts were modified.",
+  "action": "Restored completed state through the locked registry API using successful SLURM state and independently verified artifacts.",
+  "follow_up": "Before a future large concurrent batch, audit cross-node registry visibility; continue reconciling scheduler state with per-run artifacts."
+}

@@ -9,6 +9,7 @@ from torch.utils.data import DataLoader
 
 from .attention import AttentionRecorder
 from .features import collate_videos
+from .highlights import export_highlights
 from .losses import distribution_loss
 from .metrics import evaluate
 from .models import ReactionPredictor
@@ -42,6 +43,8 @@ def predict(model, dataset, cfg, device, shuffle_frames=False, attention_output=
                 recorder.add(indices, mask, attention)
     if recorder is not None:
         recorder.save(attention_output)
+        if model.aggregation in {'highlight_sparse', 'highlight_soft'}:
+            export_highlights(attention_output, 'sparsemax' if model.aggregation == 'highlight_sparse' else 'softmax')
     return prediction
 
 

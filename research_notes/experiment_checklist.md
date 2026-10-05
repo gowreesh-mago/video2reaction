@@ -1,6 +1,6 @@
 # Experiment checklist
 
-Last successful cluster check: **2026-10-05 16:28:48 UTC (18:28 Amsterdam)**. **No queued or running jobs.** All 41 benchmark configurations are complete; full artifact verification passed.
+Last successful cluster check: **2026-10-05 17:35:53 UTC (19:35 Amsterdam)**. **No queued or running jobs.** All 41 benchmark configurations are complete; full artifact verification passed.
 
 ## Current status
 
@@ -13,8 +13,9 @@ Last successful cluster check: **2026-10-05 16:28:48 UTC (18:28 Amsterdam)**. **
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
 - **Resources:** **87,784:56 SBU** left; today's 38 new jobs cost **73:03 SBU**. Home has about 119.18 GiB free; scratch usage is 0.1346% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,188 output files (1.85 GB), 105 logs, and the registry/results are local, synced at 16:12:38 UTC. The dataset and shared feature caches remain on Snellius.
+- **Sync:** 1,188 output files (1.85 GB), 106 logs, and the registry/results are local, synced at 17:16:45 UTC. The dataset and shared feature caches remain on Snellius.
 - **Source:** all new models used smoke-tested frozen `99b59ad`; launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
+- **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
@@ -181,7 +182,21 @@ At most four jobs in this entire table can run concurrently. Cache dependencies 
 - [ ] I — Hierarchical reaction prediction.
 - [ ] J — Entropy-aware auxiliary prediction.
 
-## 6. Evaluation and final report
+## 6. Newly requested highlight baselines
+
+Added 2026-10-05; these are separate from the 41 completed configurations. [Methods and adversarial review](highlight_review.md).
+
+- [x] Implement jointly trained sparsemax highlight selection plus reaction prediction (`joint_highlight_sparse`).
+- [x] Implement an identical softmax scorer/control (`joint_highlight_soft_control`).
+- [x] Pin and download DSNet TVSum split-0 and its GoogLeNet backbone on Snellius; verify source and weight hashes.
+- [x] Implement frozen DSNet Top-4 pseudo-label selection and the unchanged B1 predictor (`pretrained_dsnet_k4`), with aligned resumable cache extraction.
+- [x] Add configs, independent SLURM jobs, frame diagnostics, and a three-video smoke covering all new predictors; all 80 local mock tests pass.
+- [ ] Push, sync, freeze and pass the new three-video GPU smoke in uv.
+- [ ] Full joint sparse/soft benchmark runs.
+- [ ] Full DSNet score cache and Top-4 benchmark run.
+- [ ] Verify metrics, selectors, support/collapse statistics, matched comparisons, and update the report with new results.
+
+## 7. Evaluation and final report
 
 - [x] Collect and recompute official distribution/ranking/Top-k metrics for all 41 completed benchmark runs.
 - [x] Collect all runs' per-class precision, recall, F1, target support, and prediction support.

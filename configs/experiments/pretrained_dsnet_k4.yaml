@@ -1,0 +1,11 @@
+base: tier0_common.yaml
+experiment:
+  name: pretrained_dsnet_k4
+  hypothesis: Externally learned highlight confidence selects frames useful for audience-reaction
+    prediction.
+  changed_component: Retain Top-4 DSNet-scored keyframes before the unchanged B1 head;
+    compare with uniform/random K=4 and B1.
+  expected_outcome: Lower KL than equal-K uniform/random controls; a B1 gain tests
+    sparse transfer utility.
+pretrained_highlight:
+  k: 4

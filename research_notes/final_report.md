@@ -81,13 +81,15 @@ Both new three-video smoke jobs passed 61 cluster tests, real pretrained inferen
 
 ## 5. Limits and comparison with the paper
 
+The final registry audit found one stale `running` entry for completed VAD geometry job `27612816`. Its SLURM exit `0:0`, source identity, metrics, and prediction checksum were verified before restoring `completed` through the locked API. The cause remains unresolved; audit cross-node registry visibility before another large concurrent batch. [Reconciliation record](registry_reconciliation_20261005.json). All 41 model artifacts remain valid.
+
 95.94% of test clips share a movie with training. Visual+description has KL 0.581016 on the 84 unseen-movie clips versus B1 0.600715, but this small subset has no separate uncertainty analysis. No claim of movie-disjoint generalization follows. Support-weighted F1 can conceal rare-class failure; per-class scores accompany every run. Official top-k ties depend on NumPy, so the locked cluster convention was preserved.
 
 We do **not** beat the paper overall. Our visual+description KL 0.509952 is numerically lower than the paper's SA-BFGS 0.5976, but our MRR 0.747897 and F1@1 0.563316 remain below LLaVA's 0.7833/0.6521 and Qwen's F1@1 0.6577. Inputs, backbones, and training regimes differ. [Paper Tables 5–6](https://arxiv.org/html/2607.06875v1)
 
 ## 6. What remains and next research decisions
 
-The prioritized baseline, C/D/E/F, VAD, and description comparisons are complete. Optional G/H/I/J and separate A1–A4 full runs remain deferred under the original prioritization. No new experiment is required to interpret this declared matrix. A next batch should target a distinct uncertainty—such as movie familiarity or a stronger salience proxy—and be declared before looking at its test results.
+The prioritized baseline, C/D/E/F, VAD, and description comparisons are complete. Optional G/H/I/J and separate A1–A4 full runs remain deferred under the original prioritization. The user subsequently requested joint highlight/reaction learning and a pretrained highlight teacher. These new baselines are implemented separately from the completed matrix; their execution status is in the checklist and their [review](highlight_review.md). A next batch should target a distinct uncertainty—such as movie familiarity or a stronger salience proxy—and be declared before looking at its test results.
 
 **Answer to the central questions:** this setup favors broad visual aggregation over the tested sparse emotional peaks. Adding supplied descriptions helps beyond added capacity. It does not establish narrative understanding. VAD geometry has a control-relative KL benefit but no established improvement over B1, while auxiliary regression harms KL.
 

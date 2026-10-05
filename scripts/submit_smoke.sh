@@ -8,6 +8,7 @@ case "$name" in
   smoke_3videos) prefix=smoke ;;
   smoke_emotion_3videos) prefix=smoke_emotion ;;
   smoke_descriptions_3videos) prefix=smoke_descriptions ;;
+  smoke_highlights_3videos) prefix=smoke_highlights ;;
   *) echo "Unknown smoke test: $name" >&2; exit 2 ;;
 esac
 mkdir -p "$V2R_ROOT/logs/slurm"

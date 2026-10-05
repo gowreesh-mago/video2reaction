@@ -1,0 +1,26 @@
+{
+  "name": "DSNet anchor-free TVSum split 0",
+  "repository": "https://github.com/li-plus/DSNet",
+  "revision": "1804176e2e8b57846beb063667448982273fca89",
+  "source_url": "https://codeload.github.com/li-plus/DSNet/zip/1804176e2e8b57846beb063667448982273fca89",
+  "source_archive_sha256": "4cb6b0ed7b70849975a3f444f6546168e4e7f86574848ec31659cb77a78d1ad4",
+  "source_files": {
+    "src/anchor_free/dsnet_af.py": "5c3735031f6b37577dcad4361f8ef43bee48bef5fabd698c62a40c878675aa53",
+    "src/anchor_free/anchor_free_helper.py": "4e08ce0a90f1a3ed5d08e56ff67ebf6cf0b710c14703c04aa5b54c8bb45eafbb",
+    "src/helpers/bbox_helper.py": "249d05a8a108985bfd49408477f6734b86e77fc77bd8b2e1c66e92ea16d8e9c1",
+    "src/modules/models.py": "30ec8f21d483a2d44791c684f0eafe3643aca0e11be30f5569605ce83c40956d",
+    "LICENSE": "ce7fc04fa665409abbfef562eed98dd22d9bbed07fad0202f0079b585f4c044f"
+  },
+  "checkpoint_archive_url": "https://www.dropbox.com/s/2hjngmb0f97nxj0/pretrain_af_basic.zip?dl=1",
+  "checkpoint_archive_sha256": "8941bf7973f8f896117947df7f506f1612a7e2da2bceb491f7b53bf959f67866",
+  "checkpoint_member": "pretrain_af_basic/checkpoint/tvsum.yml.0.pt",
+  "checkpoint_sha256": "78fdfe7e43809dc2f39a927f6797461854ca6f56669c02bfe99789d7d1ca89fc",
+  "checkpoint_choice": "TVSum split 0 fixed before Video2Reaction evaluation; no checkpoint or split sweep",
+  "backbone_url": "https://download.pytorch.org/models/googlenet-1378be20.pth",
+  "backbone_sha256": "1378be20a8e875cf1568b8a71654e704449655e34711a959a38b04fb34905cef",
+  "preprocessing": "Published DSNet video_helper: RGB, resize shorter side to 256, center crop 224, ImageNet normalization, sequential GoogLeNet pool5, L2 normalize with norm+1e-10; float32",
+  "score": "Published DSNetAF.predict per-position sigmoid classification times sigmoid centerness, divided by clip maximum + 1e-8",
+  "adaptation": "Apply to the supplied chronological scene keyframes. Use per-position confidence for Top-K, retain predicted boxes as diagnostics. This is a keyframe transfer of a video summarization model, not its original dense-video knapsack summary protocol.",
+  "supervision": "Frozen external TVSum model; scores are pseudo-labels, never Video2Reaction highlight ground truth",
+  "license": "MIT; upstream LICENSE is retained in the verified source cache"
+}
