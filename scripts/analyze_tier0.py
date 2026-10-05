@@ -29,10 +29,11 @@ def kl_per_clip(target, prediction):
     return (p * np.log(p / (q + 1e-10) + 1e-10)).sum(1)
 
 
-def analyze(root, resamples, seed):
+def analyze(root, resamples, seed, runs=None, additional_pairs=()):
+    runs = RUNS if runs is None else runs
     report = {'runs': {}, 'checks': [], 'paired_kl': {}}
     arrays, losses = {}, {}
-    for name, run_id in RUNS.items():
+    for name, run_id in runs.items():
         directory = root / run_id
         summary = json.loads((directory / 'metrics.json').read_text())
         expected_numpy = json.loads((directory / 'environment.json').read_text())['packages']['numpy']
@@ -90,7 +91,7 @@ def analyze(root, resamples, seed):
 
     for candidate, reference in [('b1_meanpool', 'b0_prior'), ('b2_temporal', 'b1_meanpool'),
                                  ('b2_temporal', 'b2_set_control'), ('b2_set_control', 'b1_meanpool'),
-                                 ('a5_distribution', 'b1_meanpool')]:
+                                 ('a5_distribution', 'b1_meanpool'), *additional_pairs]:
         interval(f'{candidate} minus {reference}', losses[candidate] - losses[reference])
     temporal = arrays[('b2_temporal', 'test')]
     interval('b2_shuffled minus b2_ordered',
@@ -104,7 +105,7 @@ def analyze(root, resamples, seed):
     }
     report['checks'] = [
         'All validation/test metrics recompute from saved predictions to absolute tolerance 1e-10.',
-        'All five runs have identical sample IDs, movie IDs, class order, targets, and frame counts.',
+        f'All {len(runs)} runs have identical sample IDs, movie IDs, class order, targets, and frame counts.',
         'Validation/test contain 1035/2070 unique clips respectively.',
         'Learned runs have best/last checkpoints, exact reload flags, and selected validation KL matching training history.',
         'Every run has saved validation/test per-class results.',
