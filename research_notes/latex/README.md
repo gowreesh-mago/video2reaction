@@ -1,7 +1,7 @@
 # Video2Reaction report source
 
 This folder is a standalone LaTeX document once its `tables/` and `figures/`
-subfolders are included. It covers the completed Tier 0 experiments, the dataset
+subfolders and `recommended_experiments.tex` are included. It covers all 41 completed benchmark configurations, the dataset
 and code audits, hypothesis limits, all official metrics, uncertainty checks,
 per-class diagnostics, and 20 selected prediction examples.
 
@@ -29,7 +29,7 @@ From the repository root, using Python with NumPy and Matplotlib:
 python scripts/build_report_assets.py
 ```
 
-This reads the existing `research_notes/tier0_results.json`, dataset audit, and
+This reads `research_notes/attention_results.json`, `research_notes/recommended_results.json`, the dataset audit, and
 `outputs/experiments/*/` artifacts. It does not run training or model inference.
 Official scores and top-k memberships are read from cluster outputs rather than
 recomputed with a potentially different NumPy tie convention.
@@ -41,8 +41,7 @@ and needs no regeneration to compile.
 
 ## Scope
 
-Benchmark source: B0 `e91a469`; learned runs `bbf8c1d`.
-Aggregate analysis source: `2a7548e`.
-Report date: 2026-10-01. Budget/storage snapshot: 00:38 UTC.
-The peak, VAD, and description experiments remain unlaunched. This report does
-not imply that the original full research programme is complete.
+Benchmark sources: B0 `e91a469`; other Tier 0 `bbf8c1d`; E `a89ab3b`; all 34 new VAD/emotion/peak/description models `99b59ad`.
+Full verifier: `cc69100`; launcher-only SLURM parser fix: `2f542f1`.
+Report date: 2026-10-05. Budget/storage snapshot: 16:12 UTC.
+All prioritized baseline, C/D/E/F, VAD, and description comparisons are complete and verified. The 50-page report includes every run's metrics, selected epoch, job ID, and per-class scores. Optional Tier 2 G/H/I/J and separate A1–A4 benchmark runs remain deferred.

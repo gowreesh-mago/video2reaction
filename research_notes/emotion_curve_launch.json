@@ -1,0 +1,25 @@
+{
+  "source_commit": "99b59ad1020729750dc2a788ebcef5d759abb3fd",
+  "launcher_fix_commit": "2f542f1",
+  "required_completed_cache_job": "27612820",
+  "max_parallel": 4,
+  "all_completed_exit": "0:0",
+  "verified_at_utc": "2026-10-05T16:07:44Z",
+  "jobs": {
+    "d_arousal_k1": "27614365",
+    "d_distance_k1": "27614367",
+    "d_confidence_k1": "27614368",
+    "d_uniform_k1": "27614371",
+    "d_random_k1": "27614372",
+    "d_arousal_k2": "27614373",
+    "d_distance_k2": "27614374",
+    "d_confidence_k2": "27614375",
+    "d_uniform_k2": "27614376",
+    "d_random_k2": "27614377",
+    "d_arousal_k8": "27614378",
+    "d_distance_k8": "27614379",
+    "d_confidence_k8": "27614380",
+    "d_uniform_k8": "27614381",
+    "d_random_k8": "27614382"
+  }
+}

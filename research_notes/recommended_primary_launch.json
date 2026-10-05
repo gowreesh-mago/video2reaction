@@ -1,0 +1,143 @@
+{
+  "batch": "recommended_primary",
+  "source_commit": "99b59ad1020729750dc2a788ebcef5d759abb3fd",
+  "source_sha256": "2f524d3cd694a0fbf1f5df45b42471b06218c9dc88b21c3666a204711bcdaeab",
+  "release": "/scratch-shared/gmago/video2reaction/releases/99b59ad10207-2f524d3cd694",
+  "max_parallel": 4,
+  "partition": "gpu_mig",
+  "account": "gusr133332",
+  "budget_before_submit_sbu": "87853:12",
+  "worst_case_sbu_cap": 832,
+  "smoke_jobs": [
+    "27611469",
+    "27611475"
+  ],
+  "jobs": {
+    "b_vad_aux": {
+      "job_id": "27612811",
+      "submitted_at": "2026-10-05T14:43:02.151043+00:00",
+      "dependency": null,
+      "throttle_after": null
+    },
+    "b_vad_aux_permuted": {
+      "job_id": "27612813",
+      "submitted_at": "2026-10-05T14:43:03.104737+00:00",
+      "dependency": null,
+      "throttle_after": null
+    },
+    "b_vad_geometry": {
+      "job_id": "27612816",
+      "submitted_at": "2026-10-05T14:43:04.576224+00:00",
+      "dependency": null,
+      "throttle_after": null
+    },
+    "b_vad_geometry_permuted": {
+      "job_id": "27612819",
+      "submitted_at": "2026-10-05T14:43:05.941864+00:00",
+      "dependency": null,
+      "throttle_after": null
+    },
+    "emotion_cache": {
+      "job_id": "27612820",
+      "submitted_at": "2026-10-05T14:43:06.576959+00:00",
+      "dependency": null,
+      "throttle_after": "27612811"
+    },
+    "description_cache": {
+      "job_id": "27612822",
+      "submitted_at": "2026-10-05T14:43:09.136728+00:00",
+      "dependency": null,
+      "throttle_after": "27612813"
+    },
+    "c_emotion_logits": {
+      "job_id": "27612828",
+      "submitted_at": "2026-10-05T14:43:11.071983+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612816"
+    },
+    "c_emotion_vad": {
+      "job_id": "27612829",
+      "submitted_at": "2026-10-05T14:43:12.628424+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612819"
+    },
+    "c_emotion_both": {
+      "job_id": "27612830",
+      "submitted_at": "2026-10-05T14:43:15.188035+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612820"
+    },
+    "f_global_peak": {
+      "job_id": "27612832",
+      "submitted_at": "2026-10-05T14:43:16.923495+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612822"
+    },
+    "f_global_control": {
+      "job_id": "27612834",
+      "submitted_at": "2026-10-05T14:43:18.488537+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612828"
+    },
+    "f_peak_control": {
+      "job_id": "27612836",
+      "submitted_at": "2026-10-05T14:43:21.483063+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612829"
+    },
+    "d_arousal_k4": {
+      "job_id": "27612842",
+      "submitted_at": "2026-10-05T14:43:24.069742+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612830"
+    },
+    "d_distance_k4": {
+      "job_id": "27612844",
+      "submitted_at": "2026-10-05T14:43:25.019308+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612832"
+    },
+    "d_confidence_k4": {
+      "job_id": "27612847",
+      "submitted_at": "2026-10-05T14:43:26.575735+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612834"
+    },
+    "d_uniform_k4": {
+      "job_id": "27612848",
+      "submitted_at": "2026-10-05T14:43:29.182798+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612836"
+    },
+    "d_random_k4": {
+      "job_id": "27612849",
+      "submitted_at": "2026-10-05T14:43:30.742443+00:00",
+      "dependency": "27612820",
+      "throttle_after": "27612842"
+    },
+    "description_only": {
+      "job_id": "27612851",
+      "submitted_at": "2026-10-05T14:43:33.364711+00:00",
+      "dependency": "27612822",
+      "throttle_after": "27612844"
+    },
+    "visual_description": {
+      "job_id": "27612852",
+      "submitted_at": "2026-10-05T14:43:35.347535+00:00",
+      "dependency": "27612822",
+      "throttle_after": "27612847"
+    },
+    "description_visual_control": {
+      "job_id": "27612854",
+      "submitted_at": "2026-10-05T14:43:36.921290+00:00",
+      "dependency": "27612822",
+      "throttle_after": "27612848"
+    },
+    "description_text_control": {
+      "job_id": "27612856",
+      "submitted_at": "2026-10-05T14:43:38.480440+00:00",
+      "dependency": "27612822",
+      "throttle_after": "27612849"
+    }
+  }
+}

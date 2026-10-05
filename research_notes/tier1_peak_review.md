@@ -1,5 +1,9 @@
 # Emotion evidence, peaks, and context: implementation and adversarial review
 
+**Result update, 2026-10-05:** all relevant benchmarks are completed and verified. See the [full results and interpretation](final_report.md) and [41-run JSON](recommended_results.json). Historical launch status below is retained as review history.
+
+**Launch update, 2026-10-05:** GPU smoke `27611469` passed (61 tests, 18 variants, 2m53s). The primary C/D/F batch is submitted; the K=1/2/8 curve awaits cache completion. The review below records the pre-launch design; the [live checklist](experiment_checklist.md) supersedes its historical pending status.
+
 Status on 2026-10-01: implemented locally; **37 synthetic tests pass**. These comparisons have not been run on the dataset. A three-video cluster smoke must pass before the full cache and benchmark batch.
 
 ## Scientific comparisons

@@ -1,0 +1,34 @@
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+Class & $P_1$ & $R_1$ & $F_1$ & $P_3$ & $R_3$ & $F_3$ & $S_1$ & $N_1$ & $S_3$ & $N_3$ \\
+\midrule
+sadness & 0.333 & 0.036 & 0.065 & 0.430 & 0.255 & 0.320 & 28 & 3 & 145 & 86 \\
+disgust & 0.250 & 0.043 & 0.074 & 0.347 & 0.145 & 0.205 & 23 & 4 & 179 & 75 \\
+grief & 0.000 & 0.000 & 0.000 & 0.286 & 0.051 & 0.087 & 6 & 0 & 39 & 7 \\
+fear & 0.463 & 0.374 & 0.413 & 0.554 & 0.493 & 0.522 & 99 & 80 & 290 & 258 \\
+disapproval & 0.415 & 0.520 & 0.462 & 0.715 & 0.988 & 0.830 & 517 & 648 & 1472 & 2036 \\
+disappointment & 0.000 & 0.000 & 0.000 & 0.338 & 0.095 & 0.148 & 16 & 0 & 264 & 74 \\
+embarrassment & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 6 & 0 \\
+nervousness & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 8 & 0 \\
+annoyance & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 2 & 0 \\
+anger & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 4 & 0 & 18 & 0 \\
+confusion & 0.000 & 0.000 & 0.000 & 0.257 & 0.083 & 0.125 & 21 & 0 & 314 & 101 \\
+realization & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 8 & 0 \\
+caring & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 14 & 0 \\
+curiosity & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 33 & 0 \\
+relief & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0 & 0 & 10 & 0 \\
+approval & 0.000 & 0.000 & 0.000 & 0.667 & 0.015 & 0.029 & 4 & 0 & 136 & 3 \\
+surprise & 0.000 & 0.000 & 0.000 & 0.300 & 0.011 & 0.020 & 8 & 0 & 285 & 10 \\
+excitement & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 0.000 & 1 & 0 & 118 & 2 \\
+amusement & 0.655 & 0.735 & 0.693 & 0.653 & 0.899 & 0.757 & 491 & 551 & 1161 & 1599 \\
+admiration & 0.611 & 0.566 & 0.587 & 0.803 & 0.971 & 0.879 & 847 & 784 & 1612 & 1950 \\
+joy & 0.000 & 0.000 & 0.000 & 0.444 & 0.042 & 0.076 & 5 & 0 & 96 & 9 \\
+\bottomrule
+\end{tabular}
+\caption{E shared test per-class scores. Subscripts denote top-k. $P$: precision; $R$: recall; $F$: F1; $S$: target support; $N$: prediction support. The support counts follow locked NumPy top-k ties and need not match metadata dominant-label counts.}
+\label{tab:classes-e_shared_query_control}
+\end{table}

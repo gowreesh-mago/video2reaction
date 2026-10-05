@@ -1,40 +1,23 @@
 {
-  "checked_at_utc": "2026-10-05T14:05:25Z",
+  "checked_at_utc": "2026-10-05T16:28:48Z",
   "cluster": "snellius.surf.nl",
   "account": "gusr133332",
   "ssh_reachable": true,
-  "resource_checked_at_utc": "2026-10-05T13:53:35Z",
+  "resource_checked_at_utc": "2026-10-05T16:12:26Z",
   "registered_balance_at": "2026-10-04T23:59:59",
-  "remaining_sbu_hours_minutes": "87857:59",
+  "remaining_sbu_hours_minutes": "87784:56",
   "active_jobs": 0,
-  "queued_jobs": 2,
-  "queue": [
-    {
-      "job_id": "27611469",
-      "name": "v2r-smoke-emotion",
-      "state": "PENDING",
-      "reason": "Resources",
-      "partition": "gpu_mig",
-      "start_estimate": null
-    },
-    {
-      "job_id": "27611475",
-      "name": "v2r-smoke-descriptions",
-      "state": "PENDING",
-      "reason": "Resources",
-      "partition": "gpu_mig",
-      "start_estimate": null
-    }
-  ],
+  "queued_jobs": 0,
+  "queue": [],
   "smoke_release": "releases/99b59ad10207-2f524d3cd694",
   "home_quota_gib": 200,
   "home_usage_percent": 40.408,
   "home_inode_quota": 1000000,
-  "home_inode_usage_percent": 69.9406,
+  "home_inode_usage_percent": 69.9408,
   "scratch_quota_tib": 8,
-  "scratch_usage_percent": 0.1146,
+  "scratch_usage_percent": 0.1346,
   "scratch_inode_quota": 3000000,
-  "scratch_inode_usage_percent": 1.2621,
+  "scratch_inode_usage_percent": 1.3357,
   "dataset_path": "/gpfs/home3/gmago/video2reaction/scratch4/workspace/sidongzhang_umass_edu-v2r/v2r_data/youtube_video/key_frames",
   "verified_metadata_sha256": {
     "train": "22f73252c6886449cd91d35989fa15b2b19e0067abcf2dfab624fcadff0fccd0",
@@ -49,7 +32,7 @@
     "numpy": "2.2.6",
     "locked_imports": "passed",
     "siglip2_tokenizer": "GemmaTokenizerFast; BOS false; EOS true; right padding; input_ids only",
-    "gpu_execution": "pending smoke allocations"
+    "gpu_execution": "Two three-video smoke jobs passed; 61 tests each; A100 MIG 3g.20gb; all 34 new predictors and two caches completed."
   },
   "newly_collected_completed_jobs": [
     "27438329",
@@ -66,6 +49,11 @@
     "uv run --frozen --no-sync python scripts/check_env.py",
     "python3 scripts/setup_emotion_model.py"
   ],
-  "artifact_sync_at_utc": "2026-10-05T14:05:17.304330Z",
-  "attention_analysis_verified": true
+  "artifact_sync_at_utc": "2026-10-05T16:12:38.100023Z",
+  "attention_analysis_verified": true,
+  "new_batch_finished_jobs": 38,
+  "new_batch_cost_sbu_hours_minutes": "73:03",
+  "verified_benchmark_runs": 41,
+  "verified_frame_evidence_runs": 26,
+  "queue_checked_at_utc": "2026-10-05T16:28:48Z"
 }

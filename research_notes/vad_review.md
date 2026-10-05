@@ -1,5 +1,9 @@
 # VAD objectives: code and hypothesis review
 
+**Result update, 2026-10-05:** all relevant benchmarks are completed and verified. See the [full results and interpretation](final_report.md) and [41-run JSON](recommended_results.json). Historical launch status below is retained as review history.
+
+**Launch update, 2026-10-05:** GPU smoke `27611469` passed. Four full VAD jobs are submitted: `27612811`, `27612813`, `27612816`, `27612819`. The review below records the pre-launch design; the [live checklist](experiment_checklist.md) supersedes its historical pending status.
+
 Status: implemented locally on 2026-10-02; dataset experiments and the cluster smoke are pending SSH access. No VAD result is claimed.
 
 ## What changes

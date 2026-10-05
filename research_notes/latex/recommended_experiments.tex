@@ -1,0 +1,39 @@
+\section{Recommended experiments: methods and controlled results}
+The primary batch contained 19 predictors and two cache jobs; the remaining 15 peak-grid conditions followed. All 36 jobs completed with exit 0:0 on 5 October. Together with the seven reference models, this gives 41 benchmark configurations. The full analysis recomputes official metrics, matches clip identities, checks selected checkpoints, and verifies every saved peak score and selected frame \cite{extendedresults}. All training uses seed 42; the test set did not select coefficients, K, or checkpoints.
+
+\subsection{Perceived-emotion features and peak definitions}
+C uses a frozen EmoEditor ResNet-18 trained on EmoSet, pinned at source revision \nolinkurl{9d989ae99e43bfe533f9b7fdccfe49f6c2f23253}. Its checkpoint SHA-256 is \nolinkurl{2abdbddd4646d7da8134ecd7db51bd2405cc93070d7847a3c3cc451a6f2d31d5}. RGB frames are resized bilinearly to $224\times224$, then converted to [0,1] tensors without ImageNet normalization, matching the released inference code. Its output order is amusement, anger, awe, contentment, disgust, excitement, fear, sadness. The cache covers all 455,226 frames and verifies their hashes against the visual cache.
+
+The model and preprocessing follow the pinned EmoEditor release \cite{emoeditor}. Let $q_t$ be the untempered softmax of the eight logits. Exact NRC v1 coarse-word coordinates give $v_t=q_tE_{\rm coarse}$ \cite{nrc}. C adds a bias-free $11\to128$ projection of logits, VAD, or both to the visual projection; unused columns receive zeros. These models have equal parameter shapes but different active inputs, so they do not isolate semantic geometry from dimensionality or conditioning.
+
+D retains only the Top-K frames before the unchanged B1 predictor. The declared scores are
+\begin{equation}
+s_t^{(1)}=A_t,\quad s_t^{(2)}=\|v_t-v_0\|_2,\quad
+s_t^{(3)}=\left(1-\frac{H(q_t)}{\log8}\right)\|v_t-v_0\|_2,
+\end{equation}
+where $v_0=(0.5,0.5,0.5)$ is an explicit modeling choice, not a measured neutral word. Each score is tested at $K=1,2,4,8$. B1 supplies the shared all-frame reference. Equal-K controls use bin-midpoint uniform sampling and deterministic sampling without replacement, seeded by clip ID and seed 42. Score ties favor earlier frames; selected frames retain chronological order. Selection never receives reaction labels. Scores are proxy emotion estimates, not human annotations of emotional peaks. The predictor is uncalibrated on this dataset and has no neutral class.
+
+F concatenates global and arousal-K4 pooled representations. The primary comparison is against equally sized global+global and peak+peak controls, each with 185,493 parameters and matched initialization. Global pooling summarizes appearance; it does not encode narrative order.
+
+\subsection{VAD auxiliary supervision and geometry}
+All 21 reaction words have exact sourced NRC v1 coordinates. No reaction is collapsed onto the eight-class frame taxonomy. The private coordinate file is checksum-verified and not redistributed. Auxiliary regression adds a linear $128\to3$ head (387 parameters) and mean squared Euclidean error to $y_{\rm VAD}=pE$, with coefficient 1.0. Geometry regularization adds no parameters and uses
+\begin{equation}
+L=L_{\rm KL}+\frac{0.1}{210}\sum_{c<d}
+\left[\cos(w_c,w_d)-\exp(-2\|e_c-e_d\|_2^2)\right]^2.
+\end{equation}
+Each objective has a matched control with coordinate assignments permuted using seed 271828. This preserves the coordinate cloud, but not class-frequency-weighted regression difficulty. One permutation and one coefficient limit conclusions. Official CAD is an ordinal cumulative metric, not a VAD error. A separate diagnostic computes squared distance between the expected VAD of target and predicted reaction distributions using the same sourced coordinates for every model.
+
+\subsection{Description-only and text-assisted prediction}
+The frozen SigLIP2 text tower uses the same pinned checkpoint as the image tower and outputs 1,152 dimensions. Descriptions are lowercased and tokenized with the fast Gemma tokenizer, no BOS, EOS enabled, right padding, and 64 positions. Long descriptions use nonoverlapping 63-content-token windows plus EOS. Every token is retained; frozen bf16 window features are converted to float32 and pooled by content-token count with float64 accumulation. This rule discards cross-window relationships. No movie-title, genre, or reaction-label prompt is added.
+
+Description-only uses the B1 head and 169,109 parameters, with no visual input values. Visual+description applies independent projections and concatenates the two pooled representations, using 335,381 parameters. Visual+visual and text+text controls have the same capacity and initialization. Original frame counts are preserved for evaluation strata. Results using supplied descriptions are text-assisted and must not be presented as video-only forecasting. Strong text-assisted scores do not by themselves establish label leakage or unseen-movie generalization.
+
+\input{tables/recommended_results.tex}
+
+\subsection{Comparison with the paper and movie overlap}
+Our visual+description KL of 0.509952 is numerically lower than the paper's SA-BFGS KL of 0.5976. This is not an overall win: our MRR/F1@1 are 0.747897/0.563316, below the paper's LLaVA values 0.7833/0.6521; Qwen F1@1 is 0.6577 (Tables 5--6, \cite{paper}). Inputs, backbones, and training regimes differ, so these are score comparisons rather than a controlled reproduction.
+
+On the 84 test clips from movies absent from training, visual+description KL is 0.581016 versus B1's 0.600715. This small subset has no separate uncertainty analysis and does not establish movie-disjoint generalization. The fusion result also does not prove that descriptions leak targets; descriptions can supply legitimate semantic context while retaining movie familiarity and pretraining-overlap concerns.
+
+\subsection{Remaining scope}
+The optional Tier 2 directions have not been launched: semantic reaction prototypes; training-only retrieval with same-movie exclusion; sentiment-family hierarchy; and entropy-aware auxiliary prediction. The completed comparisons address the prioritized peak, context, VAD, and description questions. They do not exhaust the broader search space. Separate A1--A4 full runs were not conducted; CE/KL gradient equivalence is already checked.

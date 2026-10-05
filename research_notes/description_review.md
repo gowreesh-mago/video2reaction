@@ -1,5 +1,9 @@
 # Description diagnostic: implementation and adversarial review
 
+**Result update, 2026-10-05:** all relevant benchmarks are completed and verified. See the [full results and interpretation](final_report.md) and [41-run JSON](recommended_results.json). Historical launch status below is retained as review history.
+
+**Launch update, 2026-10-05:** GPU smoke `27611475` passed (61 tests, five variants, 1m36s). Full cache `27612822` and four dependent predictors are submitted. The review below records the pre-launch design; the [live checklist](experiment_checklist.md) supersedes its historical pending status.
+
 Status on 2026-10-02: implemented and tested on synthetic inputs locally. No description cache, smoke, or benchmark job has run on Snellius. SSH currently refuses connections before authentication.
 
 ## Question and controlled comparisons

@@ -4,7 +4,7 @@
 \usepackage{lmodern}
 \usepackage[margin=23mm,headheight=15pt]{geometry}
 \usepackage{microtype,amsmath,amssymb,booktabs,longtable,tabularx,array}
-\usepackage{graphicx,xcolor,enumitem,fancyhdr,placeins,xurl}
+\usepackage{graphicx,xcolor,enumitem,fancyhdr,placeins,xurl,needspace}
 \usepackage{hyperref}
 \definecolor{ink}{HTML}{183444}
 \definecolor{accent}{HTML}{087F8C}
@@ -15,7 +15,7 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\small\textcolor{ink}{Video2Reaction research report}}
-\fancyhead[R]{\small 1 October 2026}
+\fancyhead[R]{\small 5 October 2026}
 \fancyfoot[C]{\small\thepage}
 \renewcommand{\headrulewidth}{0.3pt}
 \setlength{\parindent}{0pt}
@@ -34,20 +34,20 @@
 
 \title{\textcolor{ink}{\textbf{Video2Reaction}}\\[5pt]
 Experiments, Results, and Interpretation\\[5pt]
-\large Controlled visual baselines and an audit of the research hypotheses}
+\large Controlled visual baselines, reaction attention, and hypothesis tests}
 \author{Research branch: \texttt{research/video2reaction-experiments}}
-\date{1 October 2026\\\small Experiment results: 30 September 2026; cluster rechecked 00:38 UTC, 1 October}
+\date{5 October 2026\\\small 41 verified benchmark configurations, one training seed}
 
 \begin{document}
 \maketitle
 \begin{abstract}
-This report describes the completed first experimental batch for predicting a distribution over 21 audience reactions from movie-clip keyframes. Five configurations were evaluated on the original Video2Reaction splits: a constant training-label prior (B0), frozen SigLIP2 features with mean pooling (B1), a temporal transformer (B2), its matched position-free set control, and a composite distribution/ranking objective (A5). All five runs and the shared 455,226-frame feature cache completed successfully on Snellius.
+This report describes 41 completed configurations for predicting distributions over 21 audience reactions. Seven reference models establish prior, visual pooling, temporal, loss, and attention comparisons. Thirty-four further configurations test sourced VAD supervision, frame-emotion features, three peak scores across four K values with controls, global/peak fusion, and descriptions. All runs and their feature caches completed on Snellius, using fixed official splits and one training seed.
 
-B1 reduces test KL from 0.689281 to 0.544414, a 21.0\% improvement over B0. Its paired movie-cluster bootstrap interval supports this gain. Differences in test KL between the learned models are inconclusive. B2 is sensitive to frame order, but does not clearly outperform its matched set control. A5 has small favorable cosine and ranking differences without evidence of a KL advantage. Weighted scores conceal weak rare-class performance, and 95.94\% of test clips share a movie with training. Peak selection, global-plus-peak fusion, VAD learning, and description diagnostics have not yet been run. Consequently, these results establish a viable visual baseline, but do not decide whether sparse emotional peaks, narrative context, or VAD geometry explain audience reactions.
+B1 reduces test KL from 0.689281 to 0.544414. Shared attention improves it slightly to 0.540655. The strongest gain comes from visual+description fusion: 0.509952 KL, improving over both capacity-matched controls. All tested Top-K selectors lose to all-frame pooling; uniform sampling has lower point-estimate KL than emotion ranking at each K. Global+peak fusion loses to its global-only control. VAD auxiliary regression worsens KL; geometry regularization beats its permuted control but remains inconclusive against B1. These results favor broad appearance and complementary text in this setup, without proving narrative understanding or rejecting all possible peak models. Test-sample intervals omit training-seed variability and multiplicity correction. Movie overlap and weak rare-class coverage limit generalization claims.
 \end{abstract}
 
 \vspace{4pt}
-\colorbox{soft}{\parbox{0.94\textwidth}{\textbf{Reading this report.} Sections 1--8 explain the evidence and its limits. Sections 9--10 distinguish untested hypotheses and give reproduction commands. Appendices contain the full class taxonomy, per-class metrics for every model, and 20 selected prediction examples. The report is understandable without the conversation or repository notes.}}
+\colorbox{soft}{\parbox{0.94\textwidth}{\textbf{Reading this report.} The main sections explain the completed comparisons, their limits, and reproduction commands. Appendices contain the full class taxonomy, per-class metrics for every model, and 20 selected prediction examples. The report is understandable without the conversation or repository notes.}}
 \clearpage
 \tableofcontents
 \clearpage
@@ -60,14 +60,14 @@ The original research objective was to establish reproducible baselines, then te
 \subsection{What is established}
 \begin{enumerate}
 \item Frozen visual features and a small learned head improve substantially over a constant training-label prior on the official splits.
-\item The simplest trained baseline, B1, has the lowest validation KL and the lowest point estimate of test KL among the evaluated models.
+\item Visual+description has the lowest validation and test KL, with gains over both capacity-matched single-modality controls. Among the seven reference models, shared attention has the lowest test KL; separate reaction queries have no demonstrated advantage.
 \item B2 trades better MRR, Top-1 F1, Chebyshev, intersection, and target-dominant probability error for worse KL and Top-3 F1 than B1. It has no clear test-KL advantage over its matched set control.
 \item A5 slightly improves cosine, MRR, and Top-3 F1 over B1, while KL is almost unchanged. One fixed coefficient choice and one training seed do not establish objective superiority.
 \item The infrastructure is verified: pinned splits and backbone, a locked uv environment, complete features, isolated source releases, resumable training, saved predictions, and a locked shared registry.
 \end{enumerate}
 
 \subsection{What is not established}
-This batch cannot determine whether emotionally intense peaks are more useful than uniformly integrated frames, whether global context complements peaks, or whether VAD supervision helps. It also cannot rule out temporal models generally. Those claims require interventions that were not executed here. A failed attempt to start feature extraction was an infrastructure failure, not negative evidence about a model.
+The tested emotion-ranked peaks are not superior to full-frame aggregation, and their fusion does not improve over the matched global-only control. This constrains the chosen proxy emotion model, selectors, backbone, and predictor; it does not rule out other salience models or establish the causes of audience reactions. VAD's semantic-control result does not establish a robust gain over B1. No experiment here proves narrative understanding or generalization to entirely new movies.
 
 The project preserved the existing multimodal and VLM interfaces and added an isolated experiment package. This is a reproducible visual baseline study, not an exact reproduction of a published VLM or a claim to match its resource budget. The result provenance is the completed run artifacts and the committed aggregate JSON \cite{results,code}.
 
@@ -115,9 +115,12 @@ Each GPU smoke uses the same three official \emph{training} clips: \code{4nSkJZ3
 Smoke job & Source & Verification & Elapsed \\\midrule
 27381153 & \code{08b8c30} & 14 tests + 3-video integration & 8m04s \\
 27381915 & \code{e91a469} & 21 tests + 3-video integration & 5m41s \\
-27382205 & \code{bbf8c1d} & 22 tests + shared-loader integration & 3m31s \\\bottomrule
+27382205 & \code{bbf8c1d} & 22 tests + shared-loader integration & 3m31s \\
+27438252 & \code{4fd4068} & 27 tests + attention export/control & 48s \\
+27611469 & \code{99b59ad} & 61 tests + 18 emotion/peak/VAD variants & 2m53s \\
+27611475 & \code{99b59ad} & 61 tests + 5 description/visual variants & 1m36s \\\bottomrule
 \end{tabular}
-\caption{All three smoke jobs completed with exit 0:0. These are environment and code checks. Their training-example losses are not benchmark results.}\label{tab:smoke}
+\caption{All six smoke jobs completed with exit 0:0. The two new jobs used three clips and 24 frames each, with production cache, fitting, checkpoint, and output paths. Smoke losses are not benchmark results.}\label{tab:smoke}
 \end{table}\FloatBarrier
 
 The final smoke losses were 0.028483 for mean pooling, 0.012147 for the temporal model, 0.024368 for the composite objective, and 0.033656 for query attention. The objectives differ and the same three training examples are reused. These numbers must not be used to rank the research hypotheses.
@@ -168,6 +171,15 @@ L_{\rm rank}&=\frac{1}{B}\sum_i\frac{\sum_{(c,d)\in\mathcal P_i}\max(0,0.1-z_{ic
 The comparison tests this combination at these fixed coefficients. It cannot attribute a gain to cosine or ranking separately, or establish optimal weights. Checkpoint selection remains validation KL, which may not select the epoch with the best ranking score.
 
 Soft-label CE, KL, JS, and cosine losses are implemented as interchangeable objectives. CE and forward KL have equal gradients for fixed normalized targets and were checked numerically. Separate full A1--A4 runs were not conducted.
+\subsection{E: reaction-specific and shared attention}
+Each of 21 learned queries $r_c\in\mathbb{R}^{128}$ scores projected frames:
+\begin{equation}
+a_{ict}=\softmax_t\!\left(\frac{r_c^\top u_{it}}{\sqrt{128}}\right),\qquad
+h_{ic}=\sum_t a_{ict}u_{it},\qquad z_{ic}=[\operatorname{head}(h_{ic})]_c.
+\end{equation}
+Padding is masked. The same head is applied to every pooled vector, retaining its corresponding reaction logit. The shared control replaces every class map by $\bar a_{it}=21^{-1}\sum_c a_{ict}$ before pooling. It averages maps rather than query vectors, keeping all 21 queries active. Both models have 171,797 trainable parameters, matched initialization, and the common training recipe. Neither encodes frame order. E versus shared attention tests the benefit of class-specific pooling more cleanly than E versus B1, which also changes capacity and uniform pooling.
+
+Both runs save weights for every validation/test frame, offsets, sample IDs, class order, entropy, top-frame positions, original frame indices, and timestamps. Checksums, normalization, inventory alignment, and recomputed diagnostics pass; shared maps are exactly equal across classes. Attention is a diagnostic of the fitted model, not a causal explanation of viewer reactions.
 \tbl{selection}
 
 \section{Metric definitions and sanity checks}
@@ -196,15 +208,16 @@ Zero-probability target labels can enter a top-k set when fewer than $k$ labels 
 \subsection{Tie portability and verification}
 MRR uses target argmax; official Top-1 F1 uses argsort. Their tie behavior can differ. The Mac's NumPy 1.26.4 produced different tied-label Top-k F1 values from the cluster's NumPy 2.2.6. Recalculation was therefore performed in the locked cluster uv environment, and the analysis script rejects a NumPy-version mismatch.
 
-All saved validation/test metrics recomputed within absolute tolerance $10^{-10}$. Sample IDs, movie IDs, class order, targets, and frame counts agree across the five runs. Each validation/test artifact contains 1,035/2,070 unique clips. The learned runs have exact checkpoint-reload flags and selected validation KL matching their saved training histories. Tests also compare the required metric functions with the original implementation on random distributions, sparse targets, ties, and the hand calculation.
+All saved validation/test metrics recomputed within absolute tolerance $10^{-10}$. Sample IDs, movie IDs, class order, targets, and frame counts agree across the seven reference runs. Each validation/test artifact contains 1,035/2,070 unique clips. The learned runs have exact checkpoint-reload flags and selected validation KL matching their saved training histories. Tests also compare the required metric functions with the original implementation on random distributions, sparse targets, ties, and the hand calculation.
 
 \section{Results and uncertainty}
+The following tables summarize the seven reference models. The subsequent recommended-experiment section reports all 34 additional conditions and their matched controls.
 \subsection{Overall performance}
 \tbl{primary}
 \tbl{secondary}
-B1 lowers test KL by 0.144867 relative to B0, a relative reduction of 21.0\%. Its MRR increases by 0.123613 and F1@3 by 0.061020. B1 also has the lowest validation KL, so treating it as the working reference model agrees with the declared selection criterion rather than relying only on test rankings.
+B1 lowers test KL by 0.144867 relative to B0, a relative reduction of 21.0\%. Its MRR increases by 0.123613 and F1@3 by 0.061020. B1 remains the fixed mean-pooling reference; E has the lowest validation KL among these seven reference models.
 
-B2 has the highest MRR (0.729166) and F1@1 (0.541735), and the lowest Chebyshev/TPE. It also has the highest intersection. Its KL and F1@3 are worse than B1. Set has the lowest CAD. A5 has the highest cosine and F1@3 and the lowest Clark. There is no single model that dominates every metric.
+Among these seven reference models, shared E has the highest cosine and MRR; B2 the highest F1@1 and intersection and lowest Chebyshev/TPE; Set the lowest CAD; and A5 the highest F1@3 and lowest Clark. E and shared E score 0.542404 and 0.540655 test KL. The subsequent text-assisted comparisons are reported separately below.
 
 \begin{figure}[!htbp]\centering
 \includegraphics[width=\textwidth]{figures/results_and_uncertainty.pdf}
@@ -219,7 +232,7 @@ The test set contains 1,183 distinct movies. For each of 10,000 bootstrap draws,
 where $w_m$ is the multiplicity of movie $m$, $n_m$ its clip count, and $\ell_i$ the per-clip evaluation KL. Intervals are the 2.5th/97.5th percentiles; bootstrap RNG seed is 20260930, independent of the fixed training seed 42.
 \tbl{bootstrap}
 
-The B1--B0 interval is entirely negative, supporting improved KL on this benchmark. Every listed comparison between separately trained learned models includes zero. This fails to establish KL superiority; it also does not prove equivalence. These marginal intervals do not account for multiple comparisons, training-seed variability, backbone choices, or uncertainty in annotation quality. They cover KL only; small MRR/F1/cosine gains remain point estimates.
+The B1--B0 interval is entirely negative, supporting improved KL on this benchmark. Shared E minus B1 is -0.003759, with interval [-0.006582, -0.000933], supporting a small improvement. E minus B1 is -0.002010 [-0.005060, +0.001068], and E minus shared E is +0.001749 [-0.000422, +0.003881]. These latter comparisons and the Tier 0 learned-model comparisons include zero; they establish neither superiority nor equivalence. These marginal intervals do not account for multiple comparisons, training-seed variability, backbone choices, or uncertainty in annotation quality. They cover KL only; small MRR/F1/cosine gains remain point estimates.
 
 \subsection{Order sensitivity versus useful superiority}
 Shuffling test frames changes B2's KL from 0.546904 to 0.548840, with maximum absolute probability change 0.128323. The paired interval for shuffled minus ordered KL is positive. B1, A5, and Set change by at most $2.4\times10^{-7}$ in predicted probability, consistent with numerical order invariance.
@@ -240,7 +253,7 @@ Bins were derived from training only. Target-entropy cut points are 1.240684, 1.
 \includegraphics[width=\textwidth]{figures/diagnostics_and_training.pdf}
 \caption{Left: KL across target-entropy bins defined on training. Right: validation-KL histories; dots identify the selected checkpoints. Test scores did not choose these epochs.}\label{fig:diagnostics}
 \end{figure}\FloatBarrier
-B1 improves over B0 in every target-entropy bin. The largest absolute gain is in the lowest-entropy group, where confident reaction targets are poorly approximated by the constant prior. B2 has the lowest KL in that bin, but its relative ordering changes in other bins. These stratified point estimates are descriptive; no separate uncertainty intervals or multiple-comparison adjustment were computed for them.
+B1 improves over B0 in every target-entropy bin. The largest absolute gain is in the lowest-entropy group, where confident reaction targets are poorly approximated by the constant prior. The relative ordering of learned models changes across bins. These stratified point estimates are descriptive; no separate uncertainty intervals or multiple-comparison adjustment were computed for them.
 
 \subsection{Unseen-movie subset}
 On the 84 test clips from movies absent from training, KL is 0.742025 for B0, 0.600715 for B1, 0.594232 for B2, 0.580218 for Set, and 0.597690 for A5. The small subset and absence of training-seed replication prevent reliable ranking for new-movie generalization. It is an evaluation subset of the original trained models, not a newly trained movie-disjoint benchmark.
@@ -248,7 +261,7 @@ On the 84 test clips from movies absent from training, KL is 0.742025 for B0, 0.
 \subsection{Twenty selected prediction examples}
 Appendix~\ref{app:examples} contains five large B1 improvements over B0, five large regressions, five high-entropy clips, and five low-entropy clips. Selection is deterministic and uses distinct clips and movies across all groups. Improvements/regressions are ranked by per-clip KL difference, followed by the highest/lowest entropy among remaining clips, with sample-ID tie breaking.
 
-These are post-hoc distribution-error illustrations, not a representative sample, a fresh evaluation set, or a basis for choosing hyperparameters. Each entry reports the clip/movie identity, frame count, entropy, B0/B1 KL, and target/B1 top-three probabilities. Complete distributions for all five models are saved in \path{research_notes/qualitative_examples.json}. Scene semantics and causal explanations have not been established by visually reviewing these clips. The examples show what the predictor gets right or wrong at the distribution level.
+These are post-hoc distribution-error illustrations, not a representative sample, a fresh evaluation set, or a basis for choosing hyperparameters. Each entry reports the clip/movie identity, frame count, entropy, B0/B1 KL, and target/B1 top-three probabilities. Complete distributions for all seven reference models are saved in \path{research_notes/qualitative_examples.json}. Scene semantics and causal explanations have not been established by visually reviewing these clips. The examples show what the predictor gets right or wrong at the distribution level.
 
 \section{Do the experiments actually test the hypotheses?}
 \begin{description}[style=nextline]
@@ -258,47 +271,15 @@ B1 has visual input and a trained head; B0 is a constant fitted only from traini
 B2 and Set are matched in capacity, initialization, loss, optimizer, and data, with positions as the intervention. Their KL difference is small and uncertain. This is counterevidence to a strong claim that this particular positional configuration improves KL, but not a rejection of all temporal modeling.
 \item[Composite shape/ranking supervision improves the metric tradeoff: tentative.]
 A5 changes the loss relative to B1 and has small favorable cosine/MRR/F1@3 point differences. KL is effectively unchanged at the observed precision and its interval includes zero. The two auxiliary terms are changed together, and validation KL remains the selection rule. Attribution, robustness, and optimal coefficients remain unknown.
-\item[Sparse emotional peaks dominate audience reaction: untested.]
-All-frame mean pooling and a positional transformer do not implement emotion-ranked Top-K selection. An order-independent mean aggregates content but does not demonstrate narrative understanding. The main peak hypothesis requires the controlled selection/fusion experiments below.
-\item[VAD geometry improves prediction: untested.]
-Sourced VAD coordinates were provisioned for all labels, but no VAD auxiliary or geometry-regularized model was trained. Availability and interpretability of coordinates do not establish predictive benefit. An improvement in ordinal CAD alone would not validate a three-dimensional VAD mechanism.
+\item[Sparse emotional peaks dominate prediction under these selectors: not supported.]
+Every Top-K condition has worse KL than B1. Emotion scores do not beat equal-K uniform selection; the global+peak representation loses to its matched global-only control. These are negative results for the tested proxies, rather than a universal rejection of emotional salience.
+\item[VAD geometry improves prediction: limited evidence.]
+Geometry regularization improves over its permuted-coordinate control, but its comparison with B1 includes zero. Auxiliary VAD regression worsens KL relative to both B1 and its own control. An ordinal-CAD improvement would not alone validate a three-dimensional VAD mechanism.
 \end{description}
 
-\textbf{Answer to the search-space question.} The implemented code reflects the narrow B0/B1/B2/Set/A5 hypotheses described above. The results constrain these specific configurations under one backbone, one seed, one optimization schedule, and the original splits. They cannot prove or disprove the broader architecture or loss search space. Test-set follow-ups selected after viewing these scores should be described as exploratory.
+\textbf{Answer to the search-space question.} The code implements the stated aggregation, loss, geometry, subset-selection, and modality interventions; matched controls test narrower explanations for each possible gain. The results constrain these specific configurations under one backbone, one seed, one optimization schedule, and the original splits. They cannot prove or disprove the broader architecture or loss search space. Test-set follow-ups selected after viewing these scores should be described as exploratory.
 
-\section{Untested experiments and the next research decisions}
-This section explains the remaining requested directions. It records scientific intent and appropriate controls; none of these full benchmark results is being claimed.
-
-\subsection{Perceived emotion, peaks, and global context: C, D, E, F}
-\textbf{C: perceived-emotion evidence.} A practical pretrained image-emotion model would produce a coarse distribution $a_t$. With sourced coarse-label coordinates $e_k$, frame VAD is $v_t=\sum_k a_{tk}e_k$. Compare visual features alone with visual+emotion, visual+VAD, and visual+emotion+VAD. A perceived-emotion classifier is an additional evidence source, not ground truth for induced audience reactions. A suitable pretrained model and its frozen feature cache remain to be prepared.
-
-\textbf{D: peak selection.} The requested candidate scores are arousal, distance from a declared neutral VAD point, and confidence-weighted distance:
-\begin{equation}
-s_t^{(1)}=A_t,\quad s_t^{(2)}=\|v_t-v_0\|_2,\quad
-s_t^{(3)}=\left(1-\frac{H(a_t)}{\log K_{\rm coarse}}\right)\|v_t-v_0\|_2.
-\end{equation}
-Compare $K=1,2,4,8,$ and all frames, preserving the same candidate-frame set and backbone. Equal-$K$ uniform and random selections are necessary controls: fewer frames can regularize a model independently of emotional salience. An inverted-U curve alone would not identify emotional peaks as the cause.
-
-\textbf{E: reaction-specific attention.} For learned reaction queries $r_c$, compute $a_{ct}=\softmax_t(r_c^\top u_t/\tau)$ and pool a separate representation per reaction. A query implementation passed the three-video smoke, but full benchmark training and evaluation were not run. Compare reaction-specific queries with a shared-attention control and save frame attention. Attention weights show model behavior, not causal explanations.
-
-\textbf{F: global-plus-peak fusion.} Concatenate global context and selected-frame representations, $h=[h_{\rm global};h_{\rm peak}]$. Compare global only, peak only, and fusion, plus an extra-capacity control. This would test complementary predictive value; it should not be described as evidence of narrative understanding merely because fusion improves a score.
-
-\subsection{VAD supervision and geometry}
-The private NRC-based asset provides sourced coordinates for all 21 reaction labels; none were silently invented. The lexicon is provisioned on the cluster rather than redistributed in this source bundle. Two planned interventions are
-\begin{align}
-y_{\rm VAD}&=\sum_c p_ce_c,\qquad
-L=L_{\rm reaction}+\lambda_{\rm VAD}\|g(h)-y_{\rm VAD}\|_2^2,\\
-L_{\rm geom}&=\sum_{c<d}\left[\cos(w_c,w_d)-\exp(-\gamma\|e_c-e_d\|_2^2)\right]^2.
-\end{align}
-The first adds expected-VAD regression; the second constrains classifier geometry. Matched permuted-coordinate controls are needed to distinguish emotion structure from generic auxiliary regularization. Permute only auxiliary assignments, keeping official class/CAD order unchanged. Neither intervention has been evaluated.
-
-\subsection{Description diagnostic and optional extensions}
-All clips have descriptions, so description-only and visual+description comparisons are feasible and remain important. They must be reported separately from video-only prediction. The paper reports stronger text-assisted performance \cite{paper}; this motivates a diagnostic, not an assumption that description features are available to a deployment system.
-
-Other requested branches remain optional and unlaunched: semantic reaction prototypes (fixed, projected, or residual), training-only nearest-neighbor retrieval ($K=1,3,5,10,20$ with blend weight selected on validation), positive/negative/ambiguous hierarchical supervision, and an entropy-prediction auxiliary head. Retrieval must never use test neighbors and should include same-movie exclusion. Hierarchy and entropy experiments need controls that distinguish useful structure from added capacity or auxiliary loss alone.
-
-\subsection{Recommended sequence}
-Use B1 as the current validation-selected reference. First establish one reliable perceived-emotion feature source and implement auditable peak selection. Then run a bounded C/D/E/F batch with equal-frame-count and capacity controls, followed by the VAD and description comparisons. Preserve the fixed training recipe initially, use validation for any new selection, and record additional test-driven exploration explicitly. No new batch was launched while preparing this report.
+\input{recommended_experiments.tex}
 
 \section{Reproduction, provenance, and cluster records}
 \subsection{Exact run identities}
@@ -310,11 +291,13 @@ Feature cache & 27382293 & \code{bbf8c1d} & completed / 1h50m35s \\
 B1 & 27382294 & \code{bbf8c1d} & completed / 2m42s \\
 B2 & 27382295 & \code{bbf8c1d} & completed / 2m42s \\
 Set & 27382296 & \code{bbf8c1d} & completed / 2m43s \\
-A5 & 27382297 & \code{bbf8c1d} & completed / 2m42s \\\bottomrule
+A5 & 27382297 & \code{bbf8c1d} & completed / 2m42s \\
+E & 27438329 & \code{a89ab3b} & completed / 1m10s \\
+E shared & 27438330 & \code{a89ab3b} & completed / 1m10s \\\bottomrule
 \end{tabular}
 \caption{Every listed job exited 0:0. The cache is preprocessing, not a benchmark predictor.}\label{tab:jobs}
 \end{table}\FloatBarrier
-The corrected immutable release is \path{releases/bbf8c1d019a4-9a6a80a3d307}. B0 used \path{releases/e91a469f51ba-b53672620486}. The analysis report and saved aggregate results were committed as \code{2a7548e}; this document describes those completed model runs and adds report diagnostics without retraining them. Full source hashes, package versions, data/model revisions, and resolved configurations accompany every run.
+The corrected Tier 0 release is \path{releases/bbf8c1d019a4-9a6a80a3d307}; B0 used \path{releases/e91a469f51ba-b53672620486}. All 34 new predictors use the smoke-tested \path{releases/99b59ad10207-2f524d3cd694}. Launcher fix \code{2f542f1} accepts both SLURM completion separators and leaves that frozen model source unchanged. The verifier in \code{cc69100} checks all metrics, VAD assignments, and peak selections. Full source hashes, package versions, data/model revisions, and resolved configurations accompany every run.
 
 \subsection{Artifact map}
 The Snellius project root is \path{/scratch-shared/gmago/video2reaction}. Paths below are relative to that root.
@@ -358,6 +341,29 @@ sbatch --output="$V2R_ROOT/logs/slurm/b1_meanpool-%j.out" \
 \end{verbatim}
 This submits a new allocation and reuses the pinned cache. The SLURM wrapper invokes \path{train.py --config configs/experiments/b1_meanpool.yaml} with a unique run name and the shared registry. \path{scripts/submit_all.sh} handles the whole first batch and duplicate-release guards; it should not be used merely to inspect results. Failed learned runs can resume from \path{last.pt} via \code{V2R\_RESUME\_FROM} when configuration/source identities match.
 
+An intentional repeat of the best text-assisted model uses its smoke-tested release and completed visual/text caches:
+\begin{verbatim}
+cd /scratch-shared/gmago/video2reaction/releases/\
+99b59ad10207-2f524d3cd694
+source configs/clusters/snellius.env
+sbatch --test-only slurm/visual_description.sbatch
+sbatch --output="$V2R_ROOT/logs/slurm/visual_description-%j.out" \
+  slurm/visual_description.sbatch
+\end{verbatim}
+\Needspace{16\baselineskip}
+To verify the completed matrix without training, use the current code directory:
+\begin{verbatim}
+source configs/clusters/snellius.env
+uv run --frozen --no-sync python scripts/analyze_recommended.py \
+  --outputs "$V2R_OUTPUT_DIR/experiments" \
+  --submissions "$V2R_ROOT"/results/submissions/\
+recommended_primary-\
+2f524d3cd694a0fbf1f5df45b42471b06218c9dc88b21c3666a204711bcdaeab.json \
+  "$V2R_ROOT"/results/submissions/emotion_curve-\
+2f524d3cd694a0fbf1f5df45b42471b06218c9dc88b21c3666a204711bcdaeab.json \
+  --output "$V2R_ROOT/results/recommended_results.json"
+\end{verbatim}
+
 On the Mac, code and artifact synchronization are separate operations:
 \begin{verbatim}
 bash scripts/sync_cluster.sh   # code: Mac -> Snellius
@@ -366,20 +372,20 @@ bash scripts/sync_outputs.sh   # generated artifacts: Snellius -> Mac
 Neither uses destructive synchronization. Environments and raw data are excluded. Log symlinks are materialized for local readability, and \path{results/sync_receipt.json} records the transfer. CodeGraph v1.6.1 is installed on Snellius; repository indexing has not been enabled.
 
 \subsection{Budget, storage, and access snapshot}
-At 00:38 UTC on 1 October 2026, \code{budget-overview} reported account \code{gusr133332} with \textbf{87,861:20 SBU} left for dispatch and submission, and zero active/queued jobs. This is the account's remaining allocation, not the cost of this batch alone. SURF's tool combines registered budget with recent SLURM usage \cite{surf}.
+At 16:12:26 UTC on 5 October 2026, \code{budget-overview} reported account \code{gusr133332} with \textbf{87,784:56 SBU} left for dispatch and submission, and zero active/queued jobs. The 38 new jobs (two smoke tests, two caches, and 34 predictors) cost 73:03 SBU in total; earlier baseline costs are separate. SURF's tool combines registered budget with recent SLURM usage \cite{surf}.
 
-Home quota usage was 40.4098\% of 200 GiB: about 80.82 GiB used and 119.18 GiB available under the quota; 699,411 of 1,000,000 nominal inodes were used. Scratch usage was 0.1124\% of an 8 TiB quota, leaving approximately 7.991 TiB; inode usage was 1.2616\% of 3,000,000. The feature directory occupied about 2.1 GiB and experiment outputs about 70 MiB by \code{du}. Quota percentages and \code{du} are different measurements and are reported at their observed precision. Scratch is temporary storage.
+Home quota usage at 16:12 UTC was 40.4080\% of 200 GiB: about 80.82 GiB used and 119.18 GiB available under the quota; 699,408 of 1,000,000 nominal inodes were used. Scratch usage was 0.1346\% of an 8 TiB quota, leaving approximately 7.989 TiB; inode usage was 1.3357\% of 3,000,000. The original visual cache occupied about 2.1 GiB by the earlier \code{du} check; additional emotion/text caches and run artifacts have since been added. Quota percentages and \code{du} are different measurements and are reported at their observed precision. Scratch is temporary storage.
 
-Snellius GPU A100/H100/MIG and relevant build/staging products were verified under the account; only Snellius was used for these experiments. UvA access was inspected earlier but no project job was submitted there. New submissions still require a current account/partition check and \code{sbatch --test-only}. These report-generation steps did not change model weights or launch a new training batch.
+Snellius GPU A100/H100/MIG and relevant build/staging products were verified under the account; only Snellius was used for these experiments. UvA access was inspected earlier but no project job was submitted there. New submissions still require a current account/partition check and \code{sbatch --test-only}. Each new pipeline passed a three-video smoke before full submission. New jobs ran in batches capped at four concurrent allocations.
 
+\Needspace{22\baselineskip}
 \section{Conclusions}
-\textbf{Current working model.} B1 is the simplest trained reference and the lowest-validation-KL configuration. Its visual improvement over the prior is substantial and supported by paired test-sample uncertainty analysis.
+\textbf{Reference and strongest result.} B1 remains the fixed mean-pooling reference. Shared attention gives a small visual-only KL improvement. Visual+description gives the strongest improvement in both validation and test KL, with evidence of complementarity beyond added capacity. It requires description input and is not a video-only result.
 
-\textbf{Supported, tentative, and untested claims.} Visual features add predictive information under the official split. B2 uses order, but a clear advantage over a matched set model was not demonstrated. A5 offers small descriptive ranking/cosine gains. The experiments do not establish a general winner between learned models, broad rare-class competence, new-movie generalization, or dominance over published systems using different modalities and training regimes.
+\textbf{Supported claims and limits.} Visual features add predictive information under the official split; descriptions add complementary information in the tested fusion. B2 uses order without a demonstrated gain over its matched set control. The study does not establish broad rare-class competence, new-movie generalization, or dominance over published systems using different modalities and training regimes. One seed and many comparisons limit generalization of small gains.
 
-\textbf{Peaks, global context, and VAD.} The central peak-versus-context question remains unanswered because the required peak and fusion interventions were not run. Mean pooling is evidence for useful aggregate visual content, not proof of narrative reasoning. VAD coordinates are available, but there is no trained VAD result from which to infer predictive benefit. The next controlled experiments must supply this missing evidence rather than reinterpret Tier 0 as a test of hypotheses it did not implement.
+\textbf{Peaks, global context, and VAD.} Full-frame appearance beats every tested peak subset, and the peak branch does not add value to the matched global model. This supports broad visual aggregation under these features, not narrative reasoning. Sourced VAD geometry has a modest control-relative benefit but no established gain over B1; the auxiliary objective hurts KL. Negative results constrain these fixed implementations and do not disprove the wider search space.
 
-\clearpage
 \begin{thebibliography}{9}
 \bibitem{paper} T. Nguyen, S. Zhang, S. Shankar, G. Jagatap, D. Chandran, A. Fanelli, and M. Fiterau.
 \emph{Video2Reaction: Mapping Video to Audience Reaction Distribution in the Wild}. arXiv:2607.06875v1, 2026.
@@ -394,6 +400,12 @@ Snellius GPU A100/H100/MIG and relevant build/staging products were verified und
 \url{https://github.com/gowreesh-mago/video2reaction/tree/bbf8c1d}.
 \bibitem{surf} SURF. \emph{Getting account and budget information}. Accessed 1 October 2026.
 \url{https://servicedesk.surf.nl/wiki/spaces/WIKI/pages/300974118/Getting+account+and+budget+information}.
+\bibitem{emoeditor} Zhang Lab. \emph{EmoEditor model and inference code}. Pinned source revision \nolinkurl{9d989ae99e43bfe533f9b7fdccfe49f6c2f23253}.
+\url{https://github.com/ZhangLab-DeepNeuroCogLab/EmoEditor}.
+\bibitem{nrc} Saif M. Mohammad. \emph{Obtaining Reliable Human Ratings of Valence, Arousal, and Dominance for 20,000 English Words}. ACL 2018. NRC VAD v1 lexicon.
+\url{https://saifmohammad.com/WebPages/nrc-vad.html}.
+\bibitem{extendedresults} Video2Reaction research branch. \emph{Verified 41-run results and controlled comparisons}. 5 October 2026.
+\url{https://github.com/gowreesh-mago/video2reaction/blob/research/video2reaction-experiments/research_notes/recommended_results.json}.
 \end{thebibliography}
 
 \appendix
@@ -410,10 +422,13 @@ The tables below use saved official test top-k sets. All scores are proportions.
 \tbl{classes_b2_temporal}
 \tbl{classes_b2_set_control}
 \tbl{classes_a5_distribution}
+\tbl{classes_e_reaction_query}
+\tbl{classes_e_shared_query_control}
+\input{tables/recommended_classes.tex}
 
 \clearpage
 \section{Twenty prediction examples}\label{app:examples}
-These are selected distribution diagnostics from completed test predictions. They were not used to train or select a checkpoint. All 20 clips and movie IDs are distinct. Hyperlinks use the saved YouTube IDs; current playback availability was not checked. Only the top-three probabilities are displayed, so displayed mass generally sums to less than one. The JSON companion contains all 21 target probabilities and all five predicted distributions.
+These are selected distribution diagnostics from completed test predictions. They were not used to train or select a checkpoint. All 20 clips and movie IDs are distinct. Hyperlinks use the saved YouTube IDs; current playback availability was not checked. Only the top-three probabilities are displayed, so displayed mass generally sums to less than one. The JSON companion contains all 21 target probabilities and all seven reference predicted distributions.
 
 \subsection{Five large improvements over the class prior}
 These clips have the largest retained positive reductions $\KL(B0)-\KL(B1)$, enforcing movie diversity. They demonstrate that the visual head can recover reactions poorly represented by a global prior, but selected extremes do not measure typical gain.
@@ -439,8 +454,7 @@ The original metadata files have the following SHA-256 identities:
 \item Validation: \nolinkurl{c78e6ed759d449041d8c0ff468098d71b829cb5a4d7e457d4710b2c2386acc83}.
 \item Test: \nolinkurl{58558f5694f3d038ac4c6af22e5a0f2b388b43236de9ab4ba74300adb0cc672d}.
 \end{itemize}
-The source aggregate used for this document, \path{research_notes/tier0_results.json}, has SHA-256
-\nolinkurl{a06f2eeae6ad1fe03ffbac8b2ae93b62b47696669badfece3c8513b9d8f0408a}.
+The source aggregates are \path{research_notes/attention_results.json} and \path{research_notes/recommended_results.json}; their SHA-256 identities are saved in \path{report_manifest.json}.
 The document's \path{report_manifest.json} identifies its source data and checks. Generated tables are populated from the saved cluster metrics and per-class files, rather than manually transcribed values. The two scientific figures show the same saved scores, intervals, and training histories.
 
 The source bundle contains this main \LaTeX{} file, generated table fragments, vector figures, result JSON, example JSON, and build instructions. Compile with \code{latexmk -pdf video2reaction\_report.tex}. Regenerating the tables and figures from the repository uses \path{scripts/build_report_assets.py}; this only reads generated run artifacts and does not train models or read the full dataset.
