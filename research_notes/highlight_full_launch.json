@@ -1,0 +1,51 @@
+{
+  "batch": "highlights",
+  "source_commit": "71b3b610e96da72fd586ceac69500cd1c6bc81df",
+  "source_sha256": "6dd469fd221b27f974b616eb9251c8d785bcc1036efe04ba777187e562958b13",
+  "release": "/scratch-shared/gmago/video2reaction/releases/71b3b610e96d-6dd469fd221b",
+  "max_parallel": 2,
+  "partition": "gpu_mig",
+  "account": "gusr133332",
+  "budget_before_submit_sbu": "87781:19",
+  "completed_smoke_job": "27623258",
+  "preflight": "Same-source smoke gate and all four sbatch --test-only requests passed before submission.",
+  "status_checked_at_utc": "2026-10-06T13:28:43Z",
+  "jobs": {
+    "joint_highlight_sparse": {
+      "job_id": "27662937",
+      "submitted_at": "2026-10-06T13:27:11.999724+00:00",
+      "dependency": null,
+      "throttle_after": null,
+      "output_dir": "/scratch-shared/gmago/video2reaction/outputs/experiments/joint_highlight_sparse_27662937",
+      "scheduler_state_at_check": "RUNNING",
+      "slurm_log": "/scratch-shared/gmago/video2reaction/logs/slurm/joint_highlight_sparse-27662937.out"
+    },
+    "joint_highlight_soft_control": {
+      "job_id": "27662938",
+      "submitted_at": "2026-10-06T13:27:13.970144+00:00",
+      "dependency": null,
+      "throttle_after": null,
+      "output_dir": "/scratch-shared/gmago/video2reaction/outputs/experiments/joint_highlight_soft_control_27662938",
+      "scheduler_state_at_check": "RUNNING",
+      "slurm_log": "/scratch-shared/gmago/video2reaction/logs/slurm/joint_highlight_soft_control-27662938.out"
+    },
+    "highlight_cache": {
+      "job_id": "27662939",
+      "submitted_at": "2026-10-06T13:27:14.549291+00:00",
+      "dependency": null,
+      "throttle_after": "27662937",
+      "output_dir": "/scratch-shared/gmago/video2reaction/outputs/experiments/highlight_cache_27662939",
+      "scheduler_state_at_check": "PENDING",
+      "slurm_log": "/scratch-shared/gmago/video2reaction/logs/slurm/highlight_cache-27662939.out"
+    },
+    "pretrained_dsnet_k4": {
+      "job_id": "27662940",
+      "submitted_at": "2026-10-06T13:27:15.113746+00:00",
+      "dependency": "27662939",
+      "throttle_after": "27662938",
+      "output_dir": "/scratch-shared/gmago/video2reaction/outputs/experiments/pretrained_dsnet_k4_27662940",
+      "scheduler_state_at_check": "PENDING",
+      "slurm_log": "/scratch-shared/gmago/video2reaction/logs/slurm/pretrained_dsnet_k4-27662940.out"
+    }
+  }
+}

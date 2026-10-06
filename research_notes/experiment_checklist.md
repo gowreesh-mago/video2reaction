@@ -1,6 +1,6 @@
 # Experiment checklist
 
-Last successful cluster check: **2026-10-05 17:54:06 UTC (19:54 Amsterdam)**. **No queued or running jobs.** All 41 benchmark configurations are complete; full artifact verification passed.
+Last successful cluster check: **2026-10-06 13:28:43 UTC (15:28 Amsterdam)**. **Two running jobs and two waiting on dependencies.** The full highlight follow-up batch was submitted after the user's launch request; both joint predictors started on A100 MIG GPUs with CUDA available and the expected smoke-tested source. The earlier 41 benchmark configurations are complete and verified. [Highlight launch receipt](highlight_full_launch.json)
 
 ## Current status
 
@@ -12,11 +12,11 @@ Last successful cluster check: **2026-10-05 17:54:06 UTC (19:54 Amsterdam)**. **
 - **Strongest result:** visual+description KL **0.509952**, versus B1 **0.544414** (6.33% lower), with gains over both capacity-matched controls. This is text-assisted prediction. Best visual-only test KL remains shared attention at **0.540655**.
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
-- **Resources:** **87,781:19 SBU** left; today's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home has about 119.18 GiB free; scratch usage is 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,224 output files (1.86 GB), 109 logs, and the registry/results are local, synced at 17:52:24 UTC. The dataset and shared feature caches remain on Snellius.
+- **Resources (October 5 snapshot):** **87,781:19 SBU** left; that day's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home had about 119.18 GiB free; scratch usage was 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
+- **Sync:** 1,236 output files (1.86 GB), 113 logs, and the registry/results are local, synced on October 6 at 13:28:55 UTC. The dataset and shared feature caches remain on Snellius.
 - **Source:** all new models used smoke-tested frozen `99b59ad`; launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
 - **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
-- **New highlight work:** three predictors implemented, reviewed, and pushed; all 80 local tests pass. GPU smoke `27623258` passed on H100 (80 tests, 3 videos, four predictors, 1m08s, exit 0:0). Full follow-up benchmarks remain on the experiment list.
+- **New highlight work:** GPU smoke `27623258` passed on H100 (80 tests, 3 videos, four predictors, 1m08s, exit 0:0). Full sparse/soft predictors `27662937`/`27662938` are running; DSNet cache `27662939` and Top-4 predictor `27662940` are waiting on dependencies. At most two jobs run concurrently, in the locked cluster uv environment.
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
@@ -194,11 +194,21 @@ Added 2026-10-05; these are separate from the 41 completed configurations. [Meth
 - [x] Add configs, independent SLURM jobs, frame diagnostics, and a three-video smoke covering all new predictors; all 80 local mock tests pass.
 - [x] Push `71b3b61`, synchronize, verify DSNet assets, and freeze `71b3b610e96d-6dd469fd221b`.
 - [x] Pass the new three-video GPU smoke in uv: job `27623258`, `gpu_h100`, 1m08s, exit `0:0`; 80 tests plus four predictor fits/reloads/resumes passed. It replaces cancelled-pending MIG job `27622854`, which did not train. [Smoke evidence](highlight_smoke_results.json) · [Launch receipt](highlight_smoke_launch.json)
+- [x] Recheck budget/quota, pass the same-source smoke gate and all four scheduler preflights, and submit the full batch on October 6. Budget before submission: **87,781:19 SBU**, with dispatch/submission allowed. [Full launch receipt](highlight_full_launch.json)
 - [ ] Full joint sparse/soft benchmark runs.
 - [ ] Full DSNet score cache and Top-4 benchmark run.
 - [ ] Verify metrics, selectors, support/collapse statistics, matched comparisons, and update the report with new results.
 
-The new full benchmark runs are listed as pending. Exact launch command for this smoke-tested source when launching the follow-up batch:
+### Full highlight batch — submitted October 6
+
+| Experiment | Job ID | State at 13:28:43 UTC | Dependency |
+|---|---|---|---|
+| Joint sparse highlights | `27662937` | running | none |
+| Matched soft-attention control | `27662938` | running | none |
+| Frozen DSNet score cache | `27662939` | pending | after `27662937` ends |
+| DSNet Top-4 reaction predictor | `27662940` | pending | successful `27662939`, and after `27662938` ends |
+
+All four use `gpu_mig`, account `gusr133332`, and frozen `71b3b610e96d-6dd469fd221b`. Both running predictors saved matching source manifests and report an NVIDIA A100 MIG 3g.20gb GPU. No full highlight scores have been verified yet. Exact launch command used:
 
 ```bash
 cd /scratch-shared/gmago/video2reaction/releases/71b3b610e96d-6dd469fd221b
@@ -206,7 +216,7 @@ source configs/clusters/snellius.env
 python3 scripts/submit_highlights.py --completed-smoke-job 27623258
 ```
 
-This submits three predictors and the DSNet cache, with at most two concurrent jobs. The original 41 benchmark results remain unchanged.
+This submitted three predictors and the DSNet cache, with at most two concurrent jobs. The launcher records IDs per source hash and reuses them on repeated invocation. The original 41 benchmark results remain unchanged.
 
 ## 7. Evaluation and final report
 
