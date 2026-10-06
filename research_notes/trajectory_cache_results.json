@@ -1,0 +1,30 @@
+{
+  "cache_path": "/scratch-shared/gmago/video2reaction/data/features/dinov2-base/173dabfb7a3f556d",
+  "splits": {
+    "train": {
+      "clips": 7243,
+      "frames": 317950,
+      "feature_dim": 768,
+      "features_sha256": "bbafa6d8ce7ab5b8c222d72767cb4412cd2c64bdccee5b2c13c991db2b4ee09e",
+      "image_hashes_sha256": "a70e4636a8f896ea3466ddf0e01d93ae818aa21def0cf8be7d0905236b55f6fa",
+      "index_sha256": "7094dde787f1cc9a596cfcce9517fe137a3ad561e57f70458e4492fb224d9b14"
+    },
+    "val": {
+      "clips": 1035,
+      "frames": 45964,
+      "feature_dim": 768,
+      "features_sha256": "72cb614d49096cb20e9577353fa9b5c7594f26f9fc7d1e96f43ce5f847486eed",
+      "image_hashes_sha256": "5e7d3a431a4347912ca6377653ba3d2d9ef966f8552259c227c623d172f6e722",
+      "index_sha256": "aad00485ab2067e90f55dd6deed0a06b933d0f5a274397b5a583cce36d170626"
+    },
+    "test": {
+      "clips": 2070,
+      "frames": 91312,
+      "feature_dim": 768,
+      "features_sha256": "0556dbea76301c5f06cb729ec38918ad2b44eb2eeb9f16ecbad569cceaf1215f",
+      "image_hashes_sha256": "ac10ea61d4b20f7955b822356f0eec0205987144ce60b97a1329edca61782f76",
+      "index_sha256": "7dca0c24d2b46b28e1bd6614ed4ba4cac4d0ab8bf4b309150e70314ba3a727fa"
+    }
+  },
+  "benchmark_result": false
+}

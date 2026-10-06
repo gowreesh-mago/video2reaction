@@ -1,8 +1,10 @@
 # Experiment checklist
 
-Latest verified status, **2026-10-06 around 18:44 UTC (20:44 Amsterdam)**: **all 49 full trajectory jobs are submitted** (one DINOv2 cache + 16 variants × 3 seeds). Cache **27682121 is running on A100**; all **48 predictors are pending on dependencies**, with at most two concurrent predictors on MIG. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Automatic launcher **27681911 completed**, exit `0:0`, 2m29s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
+Latest verified status, **2026-10-06 at 19:47 UTC (21:47 Amsterdam)**: DINOv2 cache **27682121 completed successfully** at 21:32:13 Amsterdam, exit `0:0`, **1h05m05s**. Its artifacts cover all **455,226 frames** across the official splits. Of 48 predictors, **one is running** (`traj_vad_duration_s42`, **27682123**, started 21:46:18); **one awaits GPU resources** (`traj_vad_peak_s42`, **27682125**); **46 await dependencies**. No full trajectory benchmark has completed or failed at this check. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Cache results](trajectory_cache_results.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
 
 ### Deadline estimate: October 7, 22:00 Amsterdam (CEST)
+
+**Updated at 21:47 Amsterdam:** cache completion at **21:32** met the estimate below. The first predictor started after a **14-minute queue wait** and completed dependency warm-up without an error in the inspected log; the second still awaits a GPU. If both lanes become available promptly and each run completes within its 45-minute allocation, the batch can finish around **16:00 tomorrow**, retaining roughly six hours before the deadline. Successful full-data runtimes are still unmeasured, so this remains conditional. Sustained availability of only one lane would invalidate the two-lane estimate.
 
 At the October 6, 20:44 Amsterdam check, extraction had logged **98,304 of 455,226 total frames** (98,304/317,950 training frames; validation/test follow). Recent throughput was approximately **128 frames/second**, leaving about 47 minutes of encoding plus split setup and cache writes. Estimated cache completion: **21:30–22:00 tonight**, provided throughput remains similar.
 
@@ -16,7 +18,7 @@ Live Snellius access was verified this turn. The previous DSNet cache `27662939`
 
 ## Current status
 
-- **Completed:** audits, locked cluster uv environment, eight successful three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending. The 48 new trajectory predictors are submitted and awaiting their cache.
+- **Completed:** audits, locked cluster uv environment, eight successful three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending. The new DINOv2 cache is complete; one of 48 trajectory predictors is running and 47 are pending.
 - **Smoke gates:** `27611469` (18 emotion/peak/VAD variants, 2m53s) and `27611475` (five description/visual variants, 1m36s) both passed **61 tests**, exact reloads, and three-video fitting checks on A100 MIG GPUs. They exited `0:0`.
 - **Primary batch:** all 19 predictors and two caches completed with exit `0:0`. [Launch receipt](recommended_primary_launch.json)
 - **Peak curve:** all 15 remaining K=1/2/8 conditions completed with exit `0:0`. The full K=1/2/4/8 grid includes three emotion scores plus equal-K uniform/random controls. [Curve receipt](emotion_curve_launch.json)
@@ -25,9 +27,9 @@ Live Snellius access was verified this turn. The previous DSNet cache `27662939`
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
 - **Resources (October 5 snapshot):** **87,781:19 SBU** left; that day's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home had about 119.18 GiB free; scratch usage was 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,653 output files (2.30 GB), 126 logs and 43 registry/result files are local, synced on October 6 at **18:35:42 UTC**. This includes the successful trajectory smoke, prior failed attempts, launch receipts and the full scene-duration audit. The dataset and shared feature caches remain on Snellius.
+- **Sync:** 1,655 output files (2.30 GB), 128 logs and 43 registry/result files are local, synced on October 6 at **19:47:19 UTC**. This includes the completed DINO cache metadata, the first predictor startup log, successful trajectory smoke, prior failed attempts, launch receipts and full scene-duration audit. The dataset and shared feature tensors remain on Snellius.
 - **Source:** the 34 recommended conditions used smoke-tested frozen `99b59ad`; the highlight follow-up uses frozen `71b3b61`. Launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
-- **Trajectory source:** `0533611`, frozen release `05336113586d-bd1c51a39c84`, passed 111 cluster tests and all 16 three-video variants. Full cache `27682121` has logged **98,304/317,950 training frames** encoded at the 18:44 UTC live check; validation/test follow. All 48 predictor IDs are listed below.
+- **Trajectory source:** `0533611`, frozen release `05336113586d-bd1c51a39c84`, passed 111 cluster tests and all 16 three-video variants. Full cache `27682121` completed **317,950/45,964/91,312 train/validation/test frames**, all 768-dimensional, with feature/index/image hashes recorded. All 48 predictor IDs are listed below.
 - **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
 - **New highlight work:** sparse/soft predictors `27662937`/`27662938` completed with exit `0:0` in 3m49s/3m50s. Test KL: sparse **0.551409**, soft **0.542966**, B1 **0.544414** (lower is better). Sparse loses to its matched soft control; soft versus B1 is inconclusive under paired movie bootstrap. DSNet cache `27662939` and Top-4 predictor `27662940` have now completed successfully; the latter's metrics are not yet audited.
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
@@ -391,6 +393,7 @@ The primary test is whether learned relevance improves over duration-only and pe
 - [x] Push/sync and freeze corrected release `05336113586d-bd1c51a39c84`; provision the separately hashed NRC v2.1 JSON using cluster uv. Retain failed first release `45a69ea34db0-98455bd0db4f` unchanged.
 - [x] Pass exact-source three-video/24-keyframe uv smoke **27681517** across all 16 variants, with **111 tests**, verified exports, reloads and optimizer resume; exit `0:0` / `00:16:31`.
 - [x] Recheck resources and preflight all requests; launcher **27681911** submitted cache **27682121** and all 48 predictors, with two-job concurrency and successful-cache dependencies.
+- [x] Verify cache **27682121** completed `0:0` in 1h05m05s and its recorded split counts cover all 455,226 frames; copy its metadata locally. First predictor **27682123** started; benchmark results remain pending.
 - [x] Copy launch receipt and smoke JSON locally; sync outputs/logs at **18:35:42 UTC** (1,653 output files, 2.30 GB; 126 logs). Dataset and shared feature caches stay remote. Full job IDs follow below.
 - [ ] After completion, recompute official metrics, audit contributions and compare paired seeds/movie bootstrap intervals. Smoke fitting is not a benchmark gain.
 
@@ -400,7 +403,7 @@ Resource check before this launch: **87,692:32 SBU** left for dispatch/submissio
 
 ### Full trajectory job IDs
 
-Snapshot above: cache running; every predictor pending on cache/throttle dependencies. [Machine-readable receipt](trajectory_full_launch.json).
+Latest snapshot above: cache complete; one predictor running, one waiting for resources and 46 pending on throttle dependencies. The [machine-readable launch receipt](trajectory_full_launch.json) preserves the earlier submission snapshot.
 
 | Variant | Seed 42 | Seed 43 | Seed 44 |
 |---|---:|---:|---:|
