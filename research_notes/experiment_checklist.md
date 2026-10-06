@@ -1,12 +1,14 @@
 # Experiment checklist
 
-Latest work, **2026-10-06 17:29 UTC**: first trajectory smoke **27680963 failed** its single-peak loss-decrease check after all **108 cluster tests passed**. Its 0.003 smoke learning rate was unstable on the three training videos. The full launch gate remains closed. A shared production/smoke rate of 0.0003 and 40 smoke updates are being validated before retry. The batch remains 16 variants × 3 seeds (48 predictors), plus a separate DINOv2 cache. [Review](trajectory_review.md) · [First smoke receipt](trajectory_smoke_launch.json)
+Latest verified status, **2026-10-06 around 18:35 UTC**: **all 49 full trajectory jobs are submitted** (one DINOv2 cache + 16 variants × 3 seeds). Cache **27682121 is running on A100**; all **48 predictors are pending on dependencies**, with at most two concurrent predictors on MIG. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Automatic launcher **27681911 completed**, exit `0:0`, 2m29s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
+
+Earlier smoke attempts remain recorded: `27680963` exposed unstable single-peak fitting at learning rate 0.003; the shared rate was corrected to 0.0003. `27681172` passed ten variants before its shortened ten-minute allocation timed out. The unchanged corrected source passed under its original twenty-minute ceiling.
 
 Live Snellius access was verified this turn. The previous DSNet cache `27662939` and predictor `27662940` both completed with exit `0:0` (1h11m41s and 3m54s); their new results have not yet been audited. The earlier 41 benchmarks and two joint runs have verified metrics. [Highlight launch receipt](highlight_full_launch.json) · [Joint results](highlight_joint_results.json)
 
 ## Current status
 
-- **Completed:** audits, locked cluster uv environment, seven three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending.
+- **Completed:** audits, locked cluster uv environment, eight successful three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending. The 48 new trajectory predictors are submitted and awaiting their cache.
 - **Smoke gates:** `27611469` (18 emotion/peak/VAD variants, 2m53s) and `27611475` (five description/visual variants, 1m36s) both passed **61 tests**, exact reloads, and three-video fitting checks on A100 MIG GPUs. They exited `0:0`.
 - **Primary batch:** all 19 predictors and two caches completed with exit `0:0`. [Launch receipt](recommended_primary_launch.json)
 - **Peak curve:** all 15 remaining K=1/2/8 conditions completed with exit `0:0`. The full K=1/2/4/8 grid includes three emotion scores plus equal-K uniform/random controls. [Curve receipt](emotion_curve_launch.json)
@@ -15,8 +17,9 @@ Live Snellius access was verified this turn. The previous DSNet cache `27662939`
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
 - **Resources (October 5 snapshot):** **87,781:19 SBU** left; that day's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home had about 119.18 GiB free; scratch usage was 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,277 output files (1.98 GB), 115 logs, and the registry/results are local, synced on October 6 at 14:34:09 UTC. The dataset and shared feature caches remain on Snellius. The new joint comparison JSON was copied separately after verification.
+- **Sync:** 1,653 output files (2.30 GB), 126 logs and 43 registry/result files are local, synced on October 6 at **18:35:42 UTC**. This includes the successful trajectory smoke, prior failed attempts, launch receipts and the full scene-duration audit. The dataset and shared feature caches remain on Snellius.
 - **Source:** the 34 recommended conditions used smoke-tested frozen `99b59ad`; the highlight follow-up uses frozen `71b3b61`. Launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
+- **Trajectory source:** `0533611`, frozen release `05336113586d-bd1c51a39c84`, passed 111 cluster tests and all 16 three-video variants. Full cache `27682121` has logged **32,768/317,950 training frames** encoded as of the last sync; validation/test follow. All 48 predictor IDs are listed below.
 - **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
 - **New highlight work:** sparse/soft predictors `27662937`/`27662938` completed with exit `0:0` in 3m49s/3m50s. Test KL: sparse **0.551409**, soft **0.542966**, B1 **0.544414** (lower is better). Sparse loses to its matched soft control; soft versus B1 is inconclusive under paired movie bootstrap. DSNet cache `27662939` and Top-4 predictor `27662940` have now completed successfully; the latter's metrics are not yet audited.
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
@@ -369,6 +372,7 @@ The primary test is whether learned relevance improves over duration-only and pe
 ### Authorized visual-only batch — implementation and launch checklist
 
 - [x] Recheck Snellius access, account `gusr133332`, existing jobs, keyframe timestamps and available caches before code changes.
+- [x] Audit all 455,226 source scene intervals across 7,243/1,035/2,070 train/val/test clips: positive durations, zero gaps, zero overlaps. Scene durations range from 0.04 to 138.08 seconds; estimates remain constant within each observed scene.
 - [x] Add a separate pinned DINOv2 cache and provision its visual-only weights on Snellius; no SigLIP/text representation enters this batch.
 - [x] Validate exact NRC v2.1 entries for all 21 labels, preserve class order, and transfer its archive to the private cluster cache.
 - [x] Implement duration, single-peak, per-emotion peak, soft/sparse relevance, power and raw-proximity aggregation using actual seconds.
@@ -376,15 +380,40 @@ The primary test is whether learned relevance improves over duration-only and pe
 - [x] Export scene identities, local VAD/probabilities, relevance, durations and contributions that reconstruct predictions. Add training-defined rare-class diagnostics.
 - [x] Complete code and adversarial hypothesis review, including correction of the duration confound in order perturbation. [Review](trajectory_review.md)
 - [x] Pass all 111 local regression/synthetic tests in conda `torch`, including concentrated-target checks added after the first smoke failure; no video dataset was copied to the Mac.
-- [x] Push `45a69ea`, sync and freeze release `45a69ea34db0-98455bd0db4f`; provision the separately hashed NRC v2.1 JSON using cluster uv.
-- [ ] Preflight and pass the exact-source three-video/24-keyframe uv smoke across all 16 variants, including exports, reloads and optimizer resume.
-- [ ] Recheck resources, preflight all requests and submit the full cache plus 48 predictors with two-job concurrency and successful-cache dependencies.
-- [ ] Copy launch receipt and smoke JSON locally, sync outputs/logs and record all job IDs and live states here.
+- [x] Push/sync and freeze corrected release `05336113586d-bd1c51a39c84`; provision the separately hashed NRC v2.1 JSON using cluster uv. Retain failed first release `45a69ea34db0-98455bd0db4f` unchanged.
+- [x] Pass exact-source three-video/24-keyframe uv smoke **27681517** across all 16 variants, with **111 tests**, verified exports, reloads and optimizer resume; exit `0:0` / `00:16:31`.
+- [x] Recheck resources and preflight all requests; launcher **27681911** submitted cache **27682121** and all 48 predictors, with two-job concurrency and successful-cache dependencies.
+- [x] Copy launch receipt and smoke JSON locally; sync outputs/logs at **18:35:42 UTC** (1,653 output files, 2.30 GB; 126 logs). Dataset and shared feature caches stay remote. Full job IDs follow below.
 - [ ] After completion, recompute official metrics, audit contributions and compare paired seeds/movie bootstrap intervals. Smoke fitting is not a benchmark gain.
 
 The run matrix, hyperparameters, interpretation limits and resource ceilings are in [trajectory_review.md](trajectory_review.md). `scripts/submit_trajectories.py` deduplicates jobs by source hash. Window-smoothing controls and independent temporal annotation remain future extensions. Trainable local decoders are fitted separately under each pooling rule; the frozen visual encoder, decoder architecture and common initialization are matched.
 
 Resource check before this launch: **87,692:32 SBU** left for dispatch/submission, no active/queued jobs before smoke, home usage 40.5693% of 200 GiB and scratch usage 0.1394% of 8 TiB. `budget-overview`/`myquota` require the cluster login-shell environment. The queued-start estimates favored a five-minute H100 smoke over MIG/A100; job `27680963` actually started at 17:26:06 UTC. The full predictor requests remain on MIG and the full cache on A100.
+
+### Full trajectory job IDs
+
+Snapshot above: cache running; every predictor pending on cache/throttle dependencies. [Machine-readable receipt](trajectory_full_launch.json).
+
+| Variant | Seed 42 | Seed 43 | Seed 44 |
+|---|---:|---:|---:|
+| `traj_vad_duration` | 27682123 | 27682152 | 27682170 |
+| `traj_vad_peak` | 27682125 | 27682153 | 27682171 |
+| `traj_vad_class_peak` | 27682126 | 27682154 | 27682172 |
+| `traj_vad_soft` | 27682128 | 27682155 | 27682175 |
+| `traj_vad_sparse` | 27682131 | 27682156 | 27682176 |
+| `traj_vad_power` | 27682132 | 27682157 | 27682177 |
+| `traj_vad_sparse_proximity` | 27682134 | 27682158 | 27682179 |
+| `traj_vad_sparse_permuted` | 27682137 | 27682159 | 27682180 |
+| `traj_vad_duration_rare` | 27682139 | 27682160 | 27682181 |
+| `traj_vad_sparse_rare` | 27682141 | 27682161 | 27682182 |
+| `traj_vad_duration_importance` | 27682142 | 27682162 | 27682183 |
+| `traj_vad_sparse_importance` | 27682145 | 27682163 | 27682184 |
+| `traj_free_soft` | 27682146 | 27682164 | 27682185 |
+| `traj_free_sparse` | 27682148 | 27682165 | 27682186 |
+| `traj_vad_sparse_no_time` | 27682149 | 27682168 | 27682187 |
+| `dino_meanpool` | 27682150 | 27682169 | 27682189 |
+
+Cluster outputs: `outputs/experiments/<variant>_s<seed>_<jobid>/`; logs: `logs/experiments/<variant>_s<seed>_<jobid>.log`. Smoke: `outputs/smoke/smoke_trajectory_3videos_27681517/`. Every run stores config, source identity, checkpoints and metrics; trajectory runs additionally save scene contributions.
 
 ## Status update procedure
 

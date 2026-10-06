@@ -1,0 +1,29 @@
+{
+  "source_cache": "/scratch-shared/gmago/video2reaction/data/features/siglip2-so400m/b69db8858136c6a0",
+  "splits": {
+    "train": {
+      "videos": 7243,
+      "frames": 317950,
+      "min_scene_seconds": 0.03999999999999204,
+      "max_scene_seconds": 138.07999999999998,
+      "gaps": 0,
+      "positive_nonoverlapping": true
+    },
+    "val": {
+      "videos": 1035,
+      "frames": 45964,
+      "min_scene_seconds": 0.03999999999999204,
+      "max_scene_seconds": 112.44,
+      "gaps": 0,
+      "positive_nonoverlapping": true
+    },
+    "test": {
+      "videos": 2070,
+      "frames": 91312,
+      "min_scene_seconds": 0.03999999999999204,
+      "max_scene_seconds": 96.4,
+      "gaps": 0,
+      "positive_nonoverlapping": true
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "job_id": "27681517",
+  "submitted_at": "2026-10-06T18:09:37.730048+00:00",
+  "release_dir": "/gpfs/scratch1/shared/gmago/video2reaction/releases/05336113586d-bd1c51a39c84",
+  "git_commit": "05336113586d3686a5cdc58099f0a0d717a435cc",
+  "source_sha256": "bd1c51a39c846a3ee24f815a295f36c7d7e6b8cf6d1833fd6ddf532b7db5306d",
+  "partition": "gpu_h100",
+  "time_limit": "00:20:00",
+  "status": "submitted",
+  "replaces_timed_out_smoke": "27681172",
+  "first_failed_smoke": "27680963",
+  "final_state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:16:31",
+  "tests_passed": 111,
+  "variants_passed": 16
+}

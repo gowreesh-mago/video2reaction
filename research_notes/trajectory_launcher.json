@@ -1,0 +1,17 @@
+{
+  "job_id": "27681911",
+  "submitted_at": "2026-10-06T18:17:26.921064+00:00",
+  "smoke_job": "27681517",
+  "release_dir": "/gpfs/scratch1/shared/gmago/video2reaction/releases/05336113586d-bd1c51a39c84",
+  "git_commit": "05336113586d3686a5cdc58099f0a0d717a435cc",
+  "source_sha256": "bd1c51a39c846a3ee24f815a295f36c7d7e6b8cf6d1833fd6ddf532b7db5306d",
+  "partition": "staging",
+  "dependency": "afterok:27681517",
+  "command": "set -eu\ncd /gpfs/scratch1/shared/gmago/video2reaction/releases/05336113586d-bd1c51a39c84\n. configs/clusters/snellius.env\n$HOME/.local/bin/uv run --frozen --no-sync python scripts/submit_trajectories.py --completed-smoke-job 27681517\npython3 scripts/update_registry.py --experiment trajectory_launcher_$SLURM_JOB_ID --status completed\n",
+  "planned_predictor_runs": 48,
+  "planned_cache_jobs": 1,
+  "final_state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:02:29",
+  "submitted_job_count": 49
+}

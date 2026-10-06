@@ -1,6 +1,6 @@
 # Visual-only VAD trajectory experiments
 
-Implementation and adversarial review, October 6, 2026. Full runs require the exact committed source to pass the three-video cluster smoke. Submission status and IDs are maintained in `experiment_checklist.md`.
+Implementation and adversarial review, October 6, 2026. **Launched:** smoke `27681517` passed all 16 variants and 111 tests in 16m31s; dependent launcher `27681911` submitted the full DINO cache and all 48 predictors. Source `0533611` is frozen at `releases/05336113586d-bd1c51a39c84`. The [checklist](experiment_checklist.md) and [launch receipt](trajectory_full_launch.json) contain every job ID. Full benchmark results are pending.
 
 ## Hypothesis and implemented path
 

@@ -1,0 +1,177 @@
+{
+  "status": "completed",
+  "benchmark_result": false,
+  "video_count": 3,
+  "frame_count": 24,
+  "visual_only": true,
+  "encoder": {
+    "model": "facebook/dinov2-base",
+    "revision": "f9e44c814b77203eaa57a6bdbbd535f21ede1415",
+    "local_files_only": true,
+    "use_fast": false,
+    "batch_size": 64,
+    "workers": 0,
+    "feature_dim": 768,
+    "kind": "dinov2"
+  },
+  "visual_cache": {
+    "cache_path": "/scratch-shared/gmago/video2reaction/outputs/smoke/smoke_trajectory_3videos_27681517/visual_cache/91118983fc0388d4",
+    "splits": {
+      "train": {
+        "clips": 3,
+        "frames": 24,
+        "feature_dim": 768,
+        "features_sha256": "c34c2a845cac76b4b0e935be5b25e5833d4357bfb6cf5383407f6145dfa58d48",
+        "image_hashes_sha256": "0a668de2762461c7d70b49c92136d8c72b8abe8c5f12b310deaa604414d6434d",
+        "index_sha256": "ead510ad81d61a8ed00bb6fe6d3ed09401a6789c527cc4cfffeb82ab3b118756"
+      }
+    },
+    "benchmark_result": false
+  },
+  "variants": {
+    "traj_vad_duration": {
+      "initial_kl": 3.400294181194937,
+      "fitted_kl": 0.6676554599128889,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_peak": {
+      "initial_kl": 3.306878718364482,
+      "fitted_kl": 1.8542083203355173,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_class_peak": {
+      "initial_kl": 2.8412227413181648,
+      "fitted_kl": 0.6275413490686166,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_soft": {
+      "initial_kl": 3.4826166513374424,
+      "fitted_kl": 0.5927202392606954,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_sparse": {
+      "initial_kl": 3.367638948926525,
+      "fitted_kl": 0.6413669451374696,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_power": {
+      "initial_kl": 3.0059135211823986,
+      "fitted_kl": 0.6751087552930755,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517573
+    },
+    "traj_vad_sparse_proximity": {
+      "initial_kl": 3.2925291531708467,
+      "fitted_kl": 0.6493603772170569,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_sparse_permuted": {
+      "initial_kl": 2.958648964672135,
+      "fitted_kl": 0.411189163709689,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_duration_rare": {
+      "initial_kl": 3.400294181194937,
+      "fitted_kl": 0.681728385166394,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_sparse_rare": {
+      "initial_kl": 3.367638948926525,
+      "fitted_kl": 0.5841528534407625,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_duration_importance": {
+      "initial_kl": 3.400294181194937,
+      "fitted_kl": 0.6728657382005937,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_vad_sparse_importance": {
+      "initial_kl": 3.367638948926525,
+      "fitted_kl": 0.5958519862866206,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "traj_free_soft": {
+      "initial_kl": 1.669441121944689,
+      "fitted_kl": 0.006805240435832845,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 519893
+    },
+    "traj_free_sparse": {
+      "initial_kl": 1.6762660962259621,
+      "fitted_kl": 0.008924198788007029,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 519893
+    },
+    "traj_vad_sparse_no_time": {
+      "initial_kl": 3.424874640802821,
+      "fitted_kl": 0.589337976165333,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": true,
+      "trainable_parameters": 517572
+    },
+    "dino_meanpool": {
+      "initial_kl": 1.6193712309208619,
+      "fitted_kl": 0.06990476664249673,
+      "loss_decreased": true,
+      "checkpoint_reload_exact": true,
+      "optimizer_resume_passed": true,
+      "contribution_export_verified": false,
+      "trainable_parameters": 119189
+    }
+  }
+}
