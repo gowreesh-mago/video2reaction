@@ -1,0 +1,4 @@
+base: on_vad_duration_rare100.yaml
+seed: 43
+experiment:
+  name: on_vad_duration_rare100_s43

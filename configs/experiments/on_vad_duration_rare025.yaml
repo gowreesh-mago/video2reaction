@@ -1,0 +1,13 @@
+base: traj_vad_duration.yaml
+experiment:
+  name: on_vad_duration_rare025
+  hypothesis: Does stronger training-only rare sampling help, and does importance
+    correction remove the gain?
+  changed_component: rare_sampling_strength
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+training:
+  sampling:
+    exponent: 0.25
+    cap: 3.0
+    importance_corrected: false

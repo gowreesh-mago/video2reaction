@@ -1,0 +1,4 @@
+base: on_vad_sparse_proximity_gate050.yaml
+seed: 44
+experiment:
+  name: on_vad_sparse_proximity_gate050_s44

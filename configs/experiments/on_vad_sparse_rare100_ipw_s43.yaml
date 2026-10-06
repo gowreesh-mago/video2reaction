@@ -1,0 +1,4 @@
+base: on_vad_sparse_rare100_ipw.yaml
+seed: 43
+experiment:
+  name: on_vad_sparse_rare100_ipw_s43

@@ -1,0 +1,4 @@
+base: on_free_soft_rare_ipw.yaml
+seed: 44
+experiment:
+  name: on_free_soft_rare_ipw_s44

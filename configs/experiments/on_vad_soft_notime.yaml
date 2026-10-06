@@ -1,0 +1,10 @@
+base: traj_vad_soft.yaml
+experiment:
+  name: on_vad_soft_notime
+  hypothesis: Does temporal position help with the same contextual model, duration
+    measure and pooling rule?
+  changed_component: temporal_position
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+model:
+  positional_encoding: false

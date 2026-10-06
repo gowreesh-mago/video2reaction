@@ -1,0 +1,4 @@
+base: on_vad_soft_gate050.yaml
+seed: 42
+experiment:
+  name: on_vad_soft_gate050_s42

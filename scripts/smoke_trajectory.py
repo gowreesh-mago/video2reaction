@@ -56,6 +56,13 @@ def main(args):
         raise RuntimeError('Actual-data smoke requires an allocated GPU and cluster uv')
     root = Path(__file__).resolve().parents[1]
     cfg = load_config(root / 'configs/experiments/smoke_trajectory_3videos.yaml')
+    cfg['training'].update(epochs=args.epochs, patience=args.epochs)
+    names = list(VARIANTS)
+    if args.batch == 'overnight':
+        names = json.loads((root / 'configs/trajectory_overnight.json').read_text())['variants']
+    if not 0 <= args.shard_index < args.shard_count or args.shard_count > len(names) or args.epochs < 1:
+        raise ValueError('Invalid smoke shard or epoch count')
+    names = names[args.shard_index::args.shard_count]
     code = verify_code(root)
     out = Path(os.environ['V2R_OUTPUT_DIR']) / 'smoke' / args.run_name
     if out.exists() and any(out.iterdir()):
@@ -86,7 +93,7 @@ def main(args):
         'videos':visual.frame_records, 'benchmark_result':False})
     trajectory = TrajectoryVideos(visual)
     results = {}
-    for name in VARIANTS:
+    for name in names:
         options = load_config(root / f'configs/experiments/{name}.yaml')
         options['data'], options['encoder'] = copy.deepcopy(cfg['data']), copy.deepcopy(cfg['encoder'])
         options['training'].update(cfg['training'])
@@ -117,6 +124,7 @@ def main(args):
         print('TRAJECTORY SMOKE', name, json.dumps(results[name]), flush=True)
         del model
     summary = {'status':'completed', 'benchmark_result':False, 'video_count':3, 'frame_count':24,
+        'batch':args.batch, 'shard_index':args.shard_index, 'shard_count':args.shard_count, 'epochs':args.epochs,
         'visual_only':True, 'encoder':cfg['encoder'], 'visual_cache':cache, 'variants':results}
     atomic_json(out/'metrics.json', summary)
     update_registry(args.registry, args.run_name, status='completed', end_time=utc_now(), metrics=summary)
@@ -127,6 +135,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--run-name', required=True)
     parser.add_argument('--registry', default=os.environ.get('V2R_REGISTRY'))
+    parser.add_argument('--batch', choices=['primary', 'overnight'], default='primary')
+    parser.add_argument('--shard-index', type=int, default=0)
+    parser.add_argument('--shard-count', type=int, default=1)
+    parser.add_argument('--epochs', type=int, default=40)
     args = parser.parse_args()
     try:
         main(args)

@@ -1,0 +1,4 @@
+base: on_vad_class_peak_tau060.yaml
+seed: 42
+experiment:
+  name: on_vad_class_peak_tau060_s42

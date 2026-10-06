@@ -1,0 +1,12 @@
+base: traj_vad_duration.yaml
+experiment:
+  name: on_vad_duration_perm161803
+  hypothesis: Do sourced VAD assignments outperform multiple arbitrary label-to-coordinate
+    assignments?
+  changed_component: semantic_assignment
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+trajectory:
+  prototypes:
+    mapping: permuted
+    permutation_seed: 161803

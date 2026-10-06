@@ -1,0 +1,4 @@
+base: on_vad_class_peak_notime.yaml
+seed: 43
+experiment:
+  name: on_vad_class_peak_notime_s43

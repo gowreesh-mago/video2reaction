@@ -1,0 +1,4 @@
+base: on_vad_duration_tau010.yaml
+seed: 42
+experiment:
+  name: on_vad_duration_tau010_s42

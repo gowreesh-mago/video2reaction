@@ -1,0 +1,4 @@
+base: on_vad_sparse_gate010.yaml
+seed: 44
+experiment:
+  name: on_vad_sparse_gate010_s44

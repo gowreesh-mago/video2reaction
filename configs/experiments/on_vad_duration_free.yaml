@@ -1,0 +1,10 @@
+base: traj_vad_duration.yaml
+experiment:
+  name: on_vad_duration_free
+  hypothesis: Does an unrestricted local classifier improve the same duration or power
+    probability mixture?
+  changed_component: unrestricted_local_decoder
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+trajectory:
+  decoder: free

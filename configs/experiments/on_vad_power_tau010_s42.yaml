@@ -1,0 +1,4 @@
+base: on_vad_power_tau010.yaml
+seed: 42
+experiment:
+  name: on_vad_power_tau010_s42

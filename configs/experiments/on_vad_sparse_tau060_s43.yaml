@@ -1,0 +1,4 @@
+base: on_vad_sparse_tau060.yaml
+seed: 43
+experiment:
+  name: on_vad_sparse_tau060_s43

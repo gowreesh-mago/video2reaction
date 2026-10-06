@@ -1,0 +1,4 @@
+base: on_vad_power_tau120.yaml
+seed: 43
+experiment:
+  name: on_vad_power_tau120_s43

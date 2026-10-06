@@ -1,0 +1,4 @@
+base: on_vad_sparse_proximity_notime.yaml
+seed: 44
+experiment:
+  name: on_vad_sparse_proximity_notime_s44

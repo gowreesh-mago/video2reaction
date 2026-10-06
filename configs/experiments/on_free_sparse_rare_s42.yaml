@@ -1,0 +1,4 @@
+base: on_free_sparse_rare.yaml
+seed: 42
+experiment:
+  name: on_free_sparse_rare_s42

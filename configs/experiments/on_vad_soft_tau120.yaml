@@ -1,0 +1,10 @@
+base: traj_vad_soft.yaml
+experiment:
+  name: on_vad_soft_tau120
+  hypothesis: Does the fitted VAD decoder depend strongly on its initial distance
+    bandwidth?
+  changed_component: temperature_initialization
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+trajectory:
+  temperature_init: 1.2

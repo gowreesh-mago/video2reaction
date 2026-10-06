@@ -1,0 +1,4 @@
+base: on_dino_meanpool_wide.yaml
+seed: 43
+experiment:
+  name: on_dino_meanpool_wide_s43

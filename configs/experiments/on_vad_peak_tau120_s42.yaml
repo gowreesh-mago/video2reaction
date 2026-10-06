@@ -1,0 +1,4 @@
+base: on_vad_peak_tau120.yaml
+seed: 42
+experiment:
+  name: on_vad_peak_tau120_s42

@@ -1,0 +1,10 @@
+base: traj_vad_duration.yaml
+experiment:
+  name: on_vad_duration_shallow
+  hypothesis: Does a single contextual layer generalize better than two with the same
+    pooling and decoder?
+  changed_component: context_depth
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+model:
+  layers: 1

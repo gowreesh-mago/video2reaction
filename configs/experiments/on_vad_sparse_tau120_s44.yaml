@@ -1,0 +1,4 @@
+base: on_vad_sparse_tau120.yaml
+seed: 44
+experiment:
+  name: on_vad_sparse_tau120_s44

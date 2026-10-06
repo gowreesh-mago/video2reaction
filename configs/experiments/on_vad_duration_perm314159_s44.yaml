@@ -1,0 +1,4 @@
+base: on_vad_duration_perm314159.yaml
+seed: 44
+experiment:
+  name: on_vad_duration_perm314159_s44

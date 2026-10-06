@@ -1,0 +1,10 @@
+base: traj_vad_sparse.yaml
+experiment:
+  name: on_vad_sparse_gate100
+  hypothesis: Does the strength of moment selection change predictive performance
+    and effective temporal support?
+  changed_component: relevance_temperature
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+trajectory:
+  relevance_temperature: 1.0

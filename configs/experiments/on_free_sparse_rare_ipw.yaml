@@ -1,0 +1,12 @@
+base: traj_free_sparse.yaml
+experiment:
+  name: on_free_sparse_rare_ipw
+  hypothesis: Is rare-emotion sampling useful without the fixed VAD bottleneck?
+  changed_component: free_decoder_rare_sampling
+  expected_outcome: Compare validation-selected KL and training-defined rare-class
+    diagnostics across three paired seeds.
+training:
+  sampling:
+    exponent: 0.5
+    cap: 3.0
+    importance_corrected: true
