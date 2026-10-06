@@ -1,0 +1,16 @@
+{
+  "job_id": "27680963",
+  "submitted_at": "2026-10-06T17:25:55.056513+00:00",
+  "release_dir": "/gpfs/scratch1/shared/gmago/video2reaction/releases/45a69ea34db0-98455bd0db4f",
+  "git_commit": "45a69ea34db0aa34ae498b8c687109c64388ee38",
+  "source_sha256": "98455bd0db4ffe84a43b5501df1d360472ffe3fecbf890a2d1349ba3be590cb1",
+  "partition": "gpu_h100",
+  "time_limit": "00:05:00",
+  "status_at_submission": "submitted",
+  "final_state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed": "00:03:36",
+  "tests_passed": 108,
+  "failure": "traj_vad_peak did not lower same-three-video KL with smoke learning rate 0.003; full launch gate remained closed",
+  "scope": "three training videos; 24 keyframes; 16 variants; not benchmark results"
+}

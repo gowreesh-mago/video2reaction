@@ -48,7 +48,8 @@ def generate():
         'kind': 'dinov2', 'model': 'facebook/dinov2-base',
         'revision': 'f9e44c814b77203eaa57a6bdbbd535f21ede1415', 'local_files_only': True,
         'use_fast': False, 'batch_size': 64, 'workers': 6, 'feature_dim': 768},
-        'model': {'input_dim': 768}, 'evaluation': {'save_attention': False}})
+        'model': {'input_dim': 768}, 'training': {'learning_rate': .0003},
+        'evaluation': {'save_attention': False}})
     write_config('trajectory_common', {'base': 'dino_common.yaml',
         'model': {'aggregation': 'trajectory'}, 'trajectory': {
             'pooling': 'sparse', 'decoder': 'vad', 'relevance_temperature': .2, 'temperature_init': .25,
@@ -81,7 +82,7 @@ def generate():
         'name': 'smoke_trajectory_3videos', 'hypothesis': 'Verify every production variant on three training videos.',
         'changed_component': 'Infrastructure smoke only', 'expected_outcome': 'Finite outputs, lower fit loss and exact reload/resume.'},
         'data': {'max_frames': 8, 'smoke_video_ids': ['4nSkJZ3i2-g', 'eiqBbLVXbQg', 'iKp5ARBBpyc']},
-        'encoder': {'workers': 0}, 'training': {'epochs': 20, 'patience': 20, 'batch_size': 3, 'learning_rate': .003}})
+        'encoder': {'workers': 0}, 'training': {'epochs': 40, 'patience': 40, 'batch_size': 3, 'learning_rate': .0003}})
 
 
 if __name__ == '__main__':

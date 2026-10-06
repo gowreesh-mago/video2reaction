@@ -13,7 +13,7 @@ data:
 encoder:
   workers: 0
 training:
-  epochs: 20
-  patience: 20
+  epochs: 40
+  patience: 40
   batch_size: 3
-  learning_rate: 0.003
+  learning_rate: 0.0003

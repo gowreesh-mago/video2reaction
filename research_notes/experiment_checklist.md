@@ -1,6 +1,6 @@
 # Experiment checklist
 
-Latest work, **2026-10-06 15:36 UTC**: implementing and launching the user's **purely visual VAD trajectory** experiments. Local review and **108 synthetic/regression tests passed**. The batch has 16 variants with seeds 42/43/44 (48 predictors), a separate DINOv2 feature cache and a three-video uv smoke gate. Push, smoke and full submission are pending below. [Implementation and adversarial review](trajectory_review.md)
+Latest work, **2026-10-06 17:29 UTC**: first trajectory smoke **27680963 failed** its single-peak loss-decrease check after all **108 cluster tests passed**. Its 0.003 smoke learning rate was unstable on the three training videos. The full launch gate remains closed. A shared production/smoke rate of 0.0003 and 40 smoke updates are being validated before retry. The batch remains 16 variants × 3 seeds (48 predictors), plus a separate DINOv2 cache. [Review](trajectory_review.md) · [First smoke receipt](trajectory_smoke_launch.json)
 
 Live Snellius access was verified this turn. The previous DSNet cache `27662939` and predictor `27662940` both completed with exit `0:0` (1h11m41s and 3m54s); their new results have not yet been audited. The earlier 41 benchmarks and two joint runs have verified metrics. [Highlight launch receipt](highlight_full_launch.json) · [Joint results](highlight_joint_results.json)
 
@@ -375,14 +375,16 @@ The primary test is whether learned relevance improves over duration-only and pe
 - [x] Add unrestricted visual decoder, semantic permutation, timestamp-free and rare-sampling/importance controls. Configure 16 variants × 3 paired seeds with official splits and validation KL selection.
 - [x] Export scene identities, local VAD/probabilities, relevance, durations and contributions that reconstruct predictions. Add training-defined rare-class diagnostics.
 - [x] Complete code and adversarial hypothesis review, including correction of the duration confound in order perturbation. [Review](trajectory_review.md)
-- [x] Pass all 108 local regression/synthetic tests in conda `torch`; no video dataset was copied to the Mac.
-- [ ] Push, sync and freeze an immutable source release; provision the NRC v2.1 JSON using cluster uv.
+- [x] Pass all 111 local regression/synthetic tests in conda `torch`, including concentrated-target checks added after the first smoke failure; no video dataset was copied to the Mac.
+- [x] Push `45a69ea`, sync and freeze release `45a69ea34db0-98455bd0db4f`; provision the separately hashed NRC v2.1 JSON using cluster uv.
 - [ ] Preflight and pass the exact-source three-video/24-keyframe uv smoke across all 16 variants, including exports, reloads and optimizer resume.
 - [ ] Recheck resources, preflight all requests and submit the full cache plus 48 predictors with two-job concurrency and successful-cache dependencies.
 - [ ] Copy launch receipt and smoke JSON locally, sync outputs/logs and record all job IDs and live states here.
 - [ ] After completion, recompute official metrics, audit contributions and compare paired seeds/movie bootstrap intervals. Smoke fitting is not a benchmark gain.
 
 The run matrix, hyperparameters, interpretation limits and resource ceilings are in [trajectory_review.md](trajectory_review.md). `scripts/submit_trajectories.py` deduplicates jobs by source hash. Window-smoothing controls and independent temporal annotation remain future extensions. Trainable local decoders are fitted separately under each pooling rule; the frozen visual encoder, decoder architecture and common initialization are matched.
+
+Resource check before this launch: **87,692:32 SBU** left for dispatch/submission, no active/queued jobs before smoke, home usage 40.5693% of 200 GiB and scratch usage 0.1394% of 8 TiB. `budget-overview`/`myquota` require the cluster login-shell environment. The queued-start estimates favored a five-minute H100 smoke over MIG/A100; job `27680963` actually started at 17:26:06 UTC. The full predictor requests remain on MIG and the full cache on A100.
 
 ## Status update procedure
 

@@ -10,5 +10,7 @@ encoder:
   feature_dim: 768
 model:
   input_dim: 768
+training:
+  learning_rate: 0.0003
 evaluation:
   save_attention: false

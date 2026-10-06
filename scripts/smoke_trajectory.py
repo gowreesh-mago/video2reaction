@@ -97,12 +97,16 @@ def main(args):
         seed_everything(options['seed'])
         initial = build_model(options, 'cuda')
         initial_kl = evaluate(dataset.targets, predict(initial, dataset, options, 'cuda'))[0]['kl']
+        atomic_json(path/'initial.json', {'initial_kl': initial_kl, 'benchmark_result': False})
+        print('TRAJECTORY INITIAL', name, initial_kl, flush=True)
         del initial
         model, info = fit(options, dataset, dataset, path, 'cuda', code['source_sha256'])
         prediction = predict(model, dataset, options, 'cuda', attention_output=path/'evaluation' if 'trajectory' in options else None)
         metrics, _ = evaluate(dataset.targets, prediction)
         if not metrics['kl'] < initial_kl:
-            raise AssertionError(f'{name}: smoke fitting did not lower KL')
+            atomic_json(path/'metrics.json', {'status':'failed', 'benchmark_result':False,
+                'initial_kl':initial_kl, 'fitted_kl':metrics['kl'], 'loss_decreased':False, 'training':info})
+            raise AssertionError(f"{name}: smoke fitting did not lower KL: {initial_kl} -> {metrics['kl']}")
         np.testing.assert_allclose(prediction.sum(1), 1, atol=1e-6)
         resumed = check_optimizer_resume(options, dataset, path/'last.pt')
         results[name] = {'initial_kl':initial_kl, 'fitted_kl':metrics['kl'],

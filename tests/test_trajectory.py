@@ -316,3 +316,22 @@ def test_rare_diagnostics_groups_use_training_mass_only(tmp_path):
     result = json.loads((tmp_path/'rare_diagnostics.json').read_text())
     assert result['groups']['rare']['labels'] == REACTION_CLASSES[:6]
     assert result['brier_sum'] == 0 and result['class_probability_mae'] == [0] * 21
+
+
+@pytest.mark.parametrize('name', ['traj_vad_peak', 'traj_vad_sparse', 'traj_vad_class_peak'])
+def test_concentrated_synthetic_reactions_fit_with_production_learning_rate(tmp_path, prototype_asset, name):
+    visual = Visual()
+    visual.targets = np.full((3,21), .005, dtype=np.float32)
+    for i,c in enumerate((0,8,19)):
+        visual.targets[i,c] = .7
+        visual.targets[i] /= visual.targets[i].sum()
+    data = TrajectoryVideos(visual)
+    cfg = config(name, prototype_asset)
+    cfg['training'].update(epochs=40, patience=40, batch_size=3)
+    from src.experiments.runtime import seed_everything
+    from src.experiments.metrics import evaluate
+    seed_everything(cfg['seed'])
+    initial = evaluate(data.targets, training.predict(training.build_model(cfg,'cpu'),data,cfg,'cpu'))[0]['kl']
+    model, info = training.fit(cfg,data,data,tmp_path/name,'cpu','synthetic')
+    final = evaluate(data.targets, training.predict(model,data,cfg,'cpu'))[0]['kl']
+    assert final < initial and info['checkpoint_reload_exact']

@@ -45,7 +45,7 @@ The unrestricted decoder has 21 outputs instead of 3 and no VAD temperature; the
 
 Rarity is defined exclusively by training probability mass, not dominant labels. Each clip's sampling weight is `sum_c target_ic / sqrt(train_prevalence_c)`, divided by mean weight and capped at 3 before normalization. Draw exactly N training clips with replacement each epoch. The importance arm multiplies per-clip KL by `1/(N * sampling_probability_i)`, preserving the natural objective in expectation. All arms retain the official soft targets. The two rare-sampling arms plus their natural counterparts form the requested duration/sparse by natural/rare comparison.
 
-All predictors use batch 64, AdamW learning rate 0.001, weight decay 0.0001, gradient norm cap 1, at most 50 epochs, and patience 8 on natural validation KL with min delta 0.0001. Test labels never select parameters, temperatures, sampling weights, early stopping or checkpoints. Seeds are paired, not selected by test score.
+All predictors use batch 64, AdamW learning rate 0.0003, weight decay 0.0001, gradient norm cap 1, at most 50 epochs, and patience 8 on natural validation KL with min delta 0.0001. The first three-video smoke used 0.003 and failed its single-peak loss-decrease check; the shared production/smoke rate was lowered before any full benchmark launch. Smoke uses 40 updates on the same three training videos. No validation/test scores informed this adjustment. Test labels never select parameters, temperatures, sampling weights, early stopping or checkpoints. Seeds are paired, not selected by test score.
 
 ## Adversarial review: do the changes actually test the hypothesis?
 
@@ -62,7 +62,7 @@ All predictors use batch 64, AdamW learning rate 0.001, weight decay 0.0001, gra
 
 ## Validation and artifact contract
 
-- Local tests use the user's conda `torch` environment and synthetic data only. The full existing suite and the new trajectory tests pass locally (108 tests before cluster smoke).
+- Local tests use the user's conda `torch` environment and synthetic data only. The expanded suite passes **111 tests**, including concentrated soft targets for peak, sparse and per-emotion peak fitting at the production learning rate. A separate synthetic-feature check uses the exact NRC v2.1 numeric prototypes with the full 768/128-dimensional architecture; it also requires decreasing loss. No real video features or metadata were copied for these mocks.
 - Cluster execution uses the existing locked uv environment with `uv run --frozen --no-sync`; no conda is used there.
 - Smoke uses exactly three official training videos, eight chronological keyframes each. It extracts new DINO features and fits every variant, checking finite normalized predictions, lower same-example KL, exact selected-checkpoint reload and a reproducible resumed optimizer update. These are infrastructure checks, not generalization scores.
 - Full submission refuses a different source hash, an incomplete smoke, a missing variant, missing contribution exports or a non-successful smoke job. Every SLURM request is preflighted before the first full submission. A locked submission ledger and scheduler comments prevent duplicate jobs on retry.
