@@ -1,0 +1,6 @@
+base: dino_common.yaml
+experiment:
+  name: dino_cache
+  hypothesis: Purely visual self-supervised features for all official keyframes.
+  changed_component: Frozen DINOv2 CLS features; no language model or text features.
+  expected_outcome: Complete verified cache, not a benchmark result.

@@ -1,0 +1,11 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_free_sparse
+  hypothesis: An unrestricted local classifier tests the VAD bottleneck under sparse
+    pooling.
+  changed_component: traj_free_sparse
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse
+  decoder: free

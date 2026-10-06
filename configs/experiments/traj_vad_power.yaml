@@ -1,0 +1,10 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_power
+  hypothesis: Adaptive probability power pooling improves on mean or peak pooling.
+  changed_component: traj_vad_power
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: power
+  decoder: vad

@@ -1,0 +1,14 @@
+base: tier0_common.yaml
+encoder:
+  kind: dinov2
+  model: facebook/dinov2-base
+  revision: f9e44c814b77203eaa57a6bdbbd535f21ede1415
+  local_files_only: true
+  use_fast: false
+  batch_size: 64
+  workers: 6
+  feature_dim: 768
+model:
+  input_dim: 768
+evaluation:
+  save_attention: false

@@ -1,0 +1,10 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_sparse
+  hypothesis: Suppressing irrelevant moments improves over soft visual relevance.
+  changed_component: traj_vad_sparse
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse
+  decoder: vad

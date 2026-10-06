@@ -1,0 +1,4 @@
+base: dino_meanpool.yaml
+seed: 44
+experiment:
+  name: dino_meanpool_s44

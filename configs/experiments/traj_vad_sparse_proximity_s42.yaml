@@ -1,0 +1,4 @@
+base: traj_vad_sparse_proximity.yaml
+seed: 42
+experiment:
+  name: traj_vad_sparse_proximity_s42

@@ -1,0 +1,12 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_sparse_permuted
+  hypothesis: Semantic VAD assignments help beyond a fixed three-dimensional bottleneck.
+  changed_component: traj_vad_sparse_permuted
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse
+  decoder: vad
+  prototypes:
+    mapping: permuted

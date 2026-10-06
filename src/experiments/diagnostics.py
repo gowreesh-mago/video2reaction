@@ -17,6 +17,32 @@ def boundaries(target, counts):
                                  ('dominant_probability', target.max(1))]}
 
 
+def save_rare_diagnostics(directory, train_targets, targets, predictions):
+    """Define rarity on training soft mass; keep diagnostics outside official scores."""
+    train_mass = np.asarray(train_targets, dtype=np.float64).mean(0)
+    p, q = np.asarray(targets, dtype=np.float64), np.asarray(predictions, dtype=np.float64)
+    rare = np.argsort(train_mass, kind='stable')[:6]
+    groups = {'rare': rare, 'common': np.setdiff1d(np.arange(len(train_mass)), rare)}
+    _, classes = evaluate(p, q)
+    result = {'class_order': REACTION_CLASSES, 'rarity_rule': 'Six lowest training soft-probability masses; fixed across seeds/variants',
+        'train_class_mass': train_mass.tolist(), 'target_class_mass': p.mean(0).tolist(),
+        'predicted_class_mass': q.mean(0).tolist(), 'class_probability_mae': np.abs(p-q).mean(0).tolist(),
+        'brier_sum': float(np.square(p-q).sum(1).mean()), 'groups': {}}
+    for name, positions in groups.items():
+        result['groups'][name] = {'labels': [REACTION_CLASSES[i] for i in positions],
+            'mean_class_probability_mae': float(np.abs(p-q)[:, positions].mean()),
+            'target_mass': float(p[:, positions].sum(1).mean()),
+            'predicted_mass': float(q[:, positions].sum(1).mean()), 'topk': {}}
+        for k in (1, 2, 3):
+            diagnostic = classes[f'top{k}']
+            supported = positions[np.asarray(diagnostic['target_support'])[positions] > 0]
+            result['groups'][name]['topk'][str(k)] = {
+                'macro_f1_all_group_classes': float(np.asarray(diagnostic['f1'])[positions].mean()),
+                'supported_classes': [REACTION_CLASSES[i] for i in supported],
+                'macro_recall_supported_classes': float(np.asarray(diagnostic['recall'])[supported].mean()) if len(supported) else None}
+    atomic_json(Path(directory) / 'rare_diagnostics.json', result)
+
+
 def save_evaluation(out, split, ids, rows, target, predicted, counts, train_movies, bins, shuffled=None):
     out = Path(out) / split
     out.mkdir(parents=True, exist_ok=True)

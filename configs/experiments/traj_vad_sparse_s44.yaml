@@ -1,0 +1,4 @@
+base: traj_vad_sparse.yaml
+seed: 44
+experiment:
+  name: traj_vad_sparse_s44

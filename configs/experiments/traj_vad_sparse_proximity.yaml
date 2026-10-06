@@ -1,0 +1,10 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_sparse_proximity
+  hypothesis: Absolute proximity adds information beyond local normalized probabilities.
+  changed_component: traj_vad_sparse_proximity
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse_proximity
+  decoder: vad

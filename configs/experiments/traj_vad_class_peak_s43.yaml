@@ -1,0 +1,4 @@
+base: traj_vad_class_peak.yaml
+seed: 43
+experiment:
+  name: traj_vad_class_peak_s43

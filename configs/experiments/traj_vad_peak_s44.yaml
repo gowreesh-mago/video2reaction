@@ -1,0 +1,4 @@
+base: traj_vad_peak.yaml
+seed: 44
+experiment:
+  name: traj_vad_peak_s44

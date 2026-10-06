@@ -1,0 +1,10 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_soft
+  hypothesis: Learned visual relevance improves on duration-only integration.
+  changed_component: traj_vad_soft
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: soft
+  decoder: vad

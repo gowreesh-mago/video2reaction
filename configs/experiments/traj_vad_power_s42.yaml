@@ -1,0 +1,4 @@
+base: traj_vad_power.yaml
+seed: 42
+experiment:
+  name: traj_vad_power_s42

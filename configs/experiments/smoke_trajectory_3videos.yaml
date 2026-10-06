@@ -1,0 +1,19 @@
+base: trajectory_common.yaml
+experiment:
+  name: smoke_trajectory_3videos
+  hypothesis: Verify every production variant on three training videos.
+  changed_component: Infrastructure smoke only
+  expected_outcome: Finite outputs, lower fit loss and exact reload/resume.
+data:
+  max_frames: 8
+  smoke_video_ids:
+  - 4nSkJZ3i2-g
+  - eiqBbLVXbQg
+  - iKp5ARBBpyc
+encoder:
+  workers: 0
+training:
+  epochs: 20
+  patience: 20
+  batch_size: 3
+  learning_rate: 0.003

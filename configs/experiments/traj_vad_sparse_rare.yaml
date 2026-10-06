@@ -1,0 +1,15 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_sparse_rare
+  hypothesis: Rare-reaction sampling and sparse relevance have complementary effects.
+  changed_component: traj_vad_sparse_rare
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse
+  decoder: vad
+training:
+  sampling:
+    exponent: 0.5
+    cap: 3.0
+    importance_corrected: false

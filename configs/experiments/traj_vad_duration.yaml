@@ -1,0 +1,10 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_duration
+  hypothesis: Time spent near each emotion predicts reaction probability.
+  changed_component: traj_vad_duration
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: duration
+  decoder: vad

@@ -1,10 +1,12 @@
 # Experiment checklist
 
-Last successful cluster check: **2026-10-06 13:28:43 UTC (15:28 Amsterdam)**. **Two running jobs and two waiting on dependencies.** The full highlight follow-up batch was submitted after the user's launch request; both joint predictors started on A100 MIG GPUs with CUDA available and the expected smoke-tested source. The earlier 41 benchmark configurations are complete and verified. [Highlight launch receipt](highlight_full_launch.json)
+Latest work, **2026-10-06 15:36 UTC**: implementing and launching the user's **purely visual VAD trajectory** experiments. Local review and **108 synthetic/regression tests passed**. The batch has 16 variants with seeds 42/43/44 (48 predictors), a separate DINOv2 feature cache and a three-video uv smoke gate. Push, smoke and full submission are pending below. [Implementation and adversarial review](trajectory_review.md)
+
+Live Snellius access was verified this turn. The previous DSNet cache `27662939` and predictor `27662940` both completed with exit `0:0` (1h11m41s and 3m54s); their new results have not yet been audited. The earlier 41 benchmarks and two joint runs have verified metrics. [Highlight launch receipt](highlight_full_launch.json) · [Joint results](highlight_joint_results.json)
 
 ## Current status
 
-- **Completed:** audits, locked cluster uv environment, seven three-video GPU smoke runs, three full feature caches, and **41 benchmark configurations** (7 reference models + 34 recommended conditions).
+- **Completed:** audits, locked cluster uv environment, seven three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending.
 - **Smoke gates:** `27611469` (18 emotion/peak/VAD variants, 2m53s) and `27611475` (five description/visual variants, 1m36s) both passed **61 tests**, exact reloads, and three-video fitting checks on A100 MIG GPUs. They exited `0:0`.
 - **Primary batch:** all 19 predictors and two caches completed with exit `0:0`. [Launch receipt](recommended_primary_launch.json)
 - **Peak curve:** all 15 remaining K=1/2/8 conditions completed with exit `0:0`. The full K=1/2/4/8 grid includes three emotion scores plus equal-K uniform/random controls. [Curve receipt](emotion_curve_launch.json)
@@ -13,10 +15,10 @@ Last successful cluster check: **2026-10-06 13:28:43 UTC (15:28 Amsterdam)**. **
 - **Peak/context finding:** every tested subset loses to all-frame B1. Uniform selection has lower KL than emotion ranking at every K. Global+peak loses to its matched global-only control; these proxies do not support peak dominance.
 - **VAD finding:** auxiliary regression worsens KL. Geometry regularization beats its permuted control, but its B1 comparison includes zero; the permuted control also has slightly better expected-VAD error. No robust baseline gain is established.
 - **Resources (October 5 snapshot):** **87,781:19 SBU** left; that day's 40 terminal jobs (39 successful, one cancelled before start) cost **76:41 SBU**. Home had about 119.18 GiB free; scratch usage was 0.1376% of 8 TiB. [Snapshot](cluster_status_20261005.json)
-- **Sync:** 1,236 output files (1.86 GB), 113 logs, and the registry/results are local, synced on October 6 at 13:28:55 UTC. The dataset and shared feature caches remain on Snellius.
-- **Source:** all new models used smoke-tested frozen `99b59ad`; launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
+- **Sync:** 1,277 output files (1.98 GB), 115 logs, and the registry/results are local, synced on October 6 at 14:34:09 UTC. The dataset and shared feature caches remain on Snellius. The new joint comparison JSON was copied separately after verification.
+- **Source:** the 34 recommended conditions used smoke-tested frozen `99b59ad`; the highlight follow-up uses frozen `71b3b61`. Launcher-only fix `2f542f1` accepts both SLURM completion separators. Full verifier `cc69100` is pushed. Branch: `research/video2reaction-experiments`.
 - **Registry:** one stale `running` entry for completed job `27612816` was reconciled using successful SLURM state and verified artifacts. Audit cross-node registry visibility before the next large concurrent batch. [Record](registry_reconciliation_20261005.json)
-- **New highlight work:** GPU smoke `27623258` passed on H100 (80 tests, 3 videos, four predictors, 1m08s, exit 0:0). Full sparse/soft predictors `27662937`/`27662938` are running; DSNet cache `27662939` and Top-4 predictor `27662940` are waiting on dependencies. At most two jobs run concurrently, in the locked cluster uv environment.
+- **New highlight work:** sparse/soft predictors `27662937`/`27662938` completed with exit `0:0` in 3m49s/3m50s. Test KL: sparse **0.551409**, soft **0.542966**, B1 **0.544414** (lower is better). Sparse loses to its matched soft control; soft versus B1 is inconclusive under paired movie bootstrap. DSNet cache `27662939` and Top-4 predictor `27662940` have now completed successfully; the latter's metrics are not yet audited.
 - **Report:** [Current report](final_report.md), [LaTeX source](latex/video2reaction_report.tex), and full JSON cover all 41 runs; the 50-page PDF passed visual and LaTeX checks. Optional Tier 2 G/H/I/J remain deferred under the original prioritization.
 
 Checked boxes mean completed and verified. A model passing the three-video smoke test does not complete its full benchmark experiment. Queue information is a timestamped snapshot; refresh it for each status request.
@@ -195,20 +197,24 @@ Added 2026-10-05; these are separate from the 41 completed configurations. [Meth
 - [x] Push `71b3b61`, synchronize, verify DSNet assets, and freeze `71b3b610e96d-6dd469fd221b`.
 - [x] Pass the new three-video GPU smoke in uv: job `27623258`, `gpu_h100`, 1m08s, exit `0:0`; 80 tests plus four predictor fits/reloads/resumes passed. It replaces cancelled-pending MIG job `27622854`, which did not train. [Smoke evidence](highlight_smoke_results.json) · [Launch receipt](highlight_smoke_launch.json)
 - [x] Recheck budget/quota, pass the same-source smoke gate and all four scheduler preflights, and submit the full batch on October 6. Budget before submission: **87,781:19 SBU**, with dispatch/submission allowed. [Full launch receipt](highlight_full_launch.json)
-- [ ] Full joint sparse/soft benchmark runs.
+- [x] Full joint sparse/soft benchmark runs; both completed with exit `0:0`. Validation/test metrics, sample alignment, checkpoint selection, and exact-reload flags verified against saved artifacts in cluster NumPy 2.2.6. [Results](highlight_joint_results.json)
 - [ ] Full DSNet score cache and Top-4 benchmark run.
 - [ ] Verify metrics, selectors, support/collapse statistics, matched comparisons, and update the report with new results.
 
 ### Full highlight batch — submitted October 6
 
-| Experiment | Job ID | State at 13:28:43 UTC | Dependency |
+| Experiment | Job ID | State at 14:35:00 UTC | Dependency |
 |---|---|---|---|
-| Joint sparse highlights | `27662937` | running | none |
-| Matched soft-attention control | `27662938` | running | none |
-| Frozen DSNet score cache | `27662939` | pending | after `27662937` ends |
+| Joint sparse highlights | `27662937` | completed, `0:0`, 3m49s | none |
+| Matched soft-attention control | `27662938` | completed, `0:0`, 3m50s | none |
+| Frozen DSNet score cache | `27662939` | running, 1h03m50s | after `27662937` ends (satisfied) |
 | DSNet Top-4 reaction predictor | `27662940` | pending | successful `27662939`, and after `27662938` ends |
 
-All four use `gpu_mig`, account `gusr133332`, and frozen `71b3b610e96d-6dd469fd221b`. Both running predictors saved matching source manifests and report an NVIDIA A100 MIG 3g.20gb GPU. No full highlight scores have been verified yet. Exact launch command used:
+All four use `gpu_mig`, account `gusr133332`, and frozen `71b3b610e96d-6dd469fd221b`. Both completed joint predictors saved matching source manifests and used an NVIDIA A100 MIG 3g.20gb GPU. Both trained 13 epochs and selected epoch 5 using validation KL.
+
+The sparse model's test KL exceeds the soft control by **0.008443**, with paired movie-bootstrap 95% CI **[0.005661, 0.011282]**. Against B1, sparse is worse by **0.006995 [0.002009, 0.011919]**; soft is lower by **0.001448**, but its difference CI **[-0.005379, 0.002529]** includes zero. These 10,000-resample intervals describe test-sample uncertainty for seed 42, not training-seed variability. Saved diagnostics report sparse support averaging 20.08 frames and 55.13% of each clip's frames; the full selector artifact audit remains pending. These results do not support a gain from this sparse selector.
+
+Exact launch command used:
 
 ```bash
 cd /scratch-shared/gmago/video2reaction/releases/71b3b610e96d-6dd469fd221b
@@ -228,12 +234,162 @@ This submitted three predictors and the DSNet cache, with at most two concurrent
 - [x] Update `research_notes/final_report.md` and the self-contained LaTeX report with all 41 runs and controlled peak/VAD/description conclusions. The 50-page PDF passed visual inspection and compiled without warnings.
 - [x] Answer whether peaks, global context, or both help, and whether VAD improves prediction, using completed controlled comparisons.
 
+## 8. Paper-inspired follow-up — proposed, not implemented or launched
+
+Reviewed October 6: Agarwal et al., [Why Do Vision Language Models Struggle To Recognize Human Emotions?, v2](https://arxiv.org/html/2604.15280v2), including the methods, limitations and supplementary results. The [project page](https://madhav1ag.github.io/vlm-temporal-emotion-gap/) links a paper and demo but no runnable implementation.
+
+### Evidence and relevance
+
+The paper studies facial-expression classification on balanced MAFW/DFEW subsets. Its MSCE method summarizes four intermediate frames per temporal gap and interleaves these summaries with keyframes. Qwen2.5-VL macro-F1 improves from 0.2449 to 0.2731 on MAFW and 0.4552 to 0.4820 on DFEW (Section 4.2, Table 3). These scores are not Video2Reaction results.
+
+Our most promising transfer is generated scene-change descriptions: visual + supplied description already achieves KL 0.509952, versus B1 0.544414. This motivates an experiment; it does not establish that generated descriptions will help. Our existing peak subsets and joint sparse selector have not improved B1. All-frame mean pooling has no VLM context-window truncation, so its results do not diagnose the paper's proposed attention bottleneck.
+
+### A. Cheap first experiment: rare-reaction training
+
+- [ ] Audit per-class target/prediction mass, macro Top-k F1, supported-class recall and probability errors for B1 and visual + description. Define rare/common groups using training target mass only; retain all official test clips and disclose zero-support classes.
+- [ ] Compare equal-step second-stage head training from the same checkpoint using natural sampling, sampling that favors clips containing rare reaction probability mass, and an importance-corrected sampling control. Freeze the learned representation in every arm; keep the original 21-way soft targets and prediction head.
+- [ ] Specify sampling strength/caps and seeds using training/validation only. A possible starting weight is the sum of each clip's class probabilities divided by the square root of training class prevalence, with a cap to avoid a few clips dominating. This is our adaptation, not a formula from the paper.
+- [ ] Evaluate official KL/MRR/weighted F1 alongside macro/per-class diagnostics. Report improved rare-class recognition with worse KL as a tradeoff, not a distribution-prediction improvement. Use at least three paired training seeds for any follow-up gain claim.
+
+Dominant-label balancing is unsuitable here: annoyance and embarrassment have zero training clips where they are the largest target, despite nonzero target probability mass. Reweighting may distort population calibration. The importance-corrected arm preserves the natural average training objective in expectation and helps separate a changed objective from changed sampling.
+
+### B. Main research experiment: generated temporal context
+
+- [ ] Verify whether raw videos or dense frame sequences exist on Snellius. Only scene keyframes are currently verified. A pilot using those keyframes can test scene-level context; it cannot recover unobserved micro-expressions.
+- [ ] On three training videos, generate short descriptions of visible actions, interactions and changes from small ordered frame windows with a frozen, pinned local VLM. Keep comments, target distributions and movie identity out of generation inputs. Audit hallucinations and measure runtime before full caching.
+- [ ] Compare the same visual encoder and predictor capacity with: supplied descriptions, generated static descriptions, and generated temporal descriptions. Match generator, visible frames, calls and output token budget between generated-text arms. Include a summary-only diagnostic; retain all-frame visual context in the combined arms.
+- [ ] Keep segment text embeddings and timestamps separate for an order-aware predictor. Our current `encode_descriptions` averages token-chunk embeddings into one vector, and the current fusion head mean-pools; simply appending a long timeline would not implement chronological interleaving. Add an identically sized position-free control.
+- [ ] Probe shuffled/reversed segment order and shuffled frames before summary generation. Distinguish new visual evidence, extra teacher computation, static semantic information and useful temporal order. An order effect alone does not prove correct temporal reasoning.
+
+Primary hypothesis: generated descriptions of scene changes improve reaction prediction beyond equally budgeted static descriptions. A temporal claim requires an advantage over the position-free control as well as appropriate order sensitivity. A gain over visual-only B1 alone is insufficient, because extra language information could explain it. Stage one must observe every frame it describes; timestamps alone cannot supply unseen motion.
+
+### Interpretation limits and execution order
+
+Character emotion is an input cue for audience reactions, not a substitute target: a frightened character may amuse a viewer. The paper's lexical-frequency analysis is correlational. Its balanced-LoRA versus zero-shot comparison also changes training exposure; our natural-sampling fine-tuning control is therefore necessary. Generation gains also need controls for additional frames and compute.
+
+Run the rare-reaction audit and small generation pilot first, then fix the experiment specification before full training. Existing visual/description caches can support the cheap training comparison. New summary caches, dense videos and model weights stay on Snellius; every new pipeline needs the existing local mocks, pushed source, cluster uv and three-video smoke gate. This section records proposals only; the user has not requested their implementation or launch in this paper-reading turn.
+
+## 9. User proposal: VAD trajectories, salient moments and rare-reaction training
+
+Recorded October 6. The user subsequently authorized implementation and launch. The trajectory batch below implements the refined visual-only mechanism. Earlier experiments did not implement this complete mechanism.
+
+**Input constraint from the user:** this experiment must be purely visual. Moment selection, relevance and VAD prediction must use RGB frames or video windows, with a visual encoder and temporal context. Do not use supplied/generated descriptions, captions, comments, text embeddings, text-to-VAD projection, or language-model outputs as input features or teacher proxies. Use a visual backbone trained without text supervision for the strict primary arm. NRC supplies only the fixed numeric VAD coordinates of the official emotion labels, as requested; existing audience reaction distributions remain the training targets. The text-based proposals in Section 8 are separate and outside this experiment.
+
+### What already exists, and what is missing
+
+| Existing experiment | Implemented mechanism | Difference from this proposal |
+|---|---|---|
+| `b_vad_aux` | Regress the target distribution's expected VAD as an auxiliary task | Final probabilities still come from an unrestricted 21-class head; no local peak/rest decomposition |
+| `b_vad_geometry` | Regularize classifier-weight similarities using fixed VAD distances | VAD distances do not produce the output probabilities |
+| C/D/F emotion and peak runs | Estimate frame VAD from eight frozen emotion probabilities; select peaks or fuse global/peak visual features | Output uses the learned classifier; F's global branch includes peak frames rather than representing the remaining video exclusively |
+| Joint highlight and DSNet baselines | Learned or pretrained frame selection followed by reaction prediction | No fixed VAD prototype decoder or rare-reaction objective |
+
+All implemented VAD assets use NRC **v1**, with values in [0,1]. The requested [NRC VAD v2 paper](https://arxiv.org/html/2503.23547) specifies [-1,1] scores; the [author's download page](https://saifmohammad.com/WebPages/nrc-vad.html) currently provides **v2.1**. Provision a separate hashed asset, verify all 21 exact labels and the scale, and preserve the benchmark class order. Do not replace old assets or reinterpret prior results.
+
+### Initial peak/rest special case
+
+Interpretation: the 21 emotion coordinates remain fixed, while each video's local peak and remaining context determine its predicted position(s) in that coordinate space.
+
+For fixed label coordinates `e_c`, infer a peak representation `z_peak` and a rest representation `z_rest`, each in the same three-dimensional VAD space. Convert distances into probabilities separately:
+
+```text
+p_peak(c) = softmax_c(-||z_peak - e_c||^2 / tau_peak)
+p_rest(c) = softmax_c(-||z_rest - e_c||^2 / tau_rest)
+p(c) = alpha * p_peak(c) + (1 - alpha) * p_rest(c)
+```
+
+Temperatures must be positive; alpha lies in [0,1] and may be predicted from the video. Exclude selected peak moments from the rest branch in the hard-selection version. Mixing the two distributions preserves two distinct affective modes; averaging the two VAD points first can erase them. Start with an isotropic metric and no free class-specific logits or biases, so the primary experiment actually tests distance-based prediction. A later semantic residual must be a separately named model with a distance-only ablation.
+
+### Proposed work and controls
+
+- [ ] Implement the fixed-prototype distance decoder and NRC v2.1 provisioning, with normalization, finite-gradient, scale and class-order checks.
+- [ ] Establish how visual moments enter VAD space using only visual features. Train a shared three-dimensional projection from contextualized video-window features, supervised through the final reaction-distribution loss and the fixed prototype decoder. This weak supervision does not uniquely establish the true VAD of each moment. An optional visual-only emotion teacher can provide an auxiliary anchor, but its supervision, class coverage and domain mismatch must be recorded and ablated. Do not use a text-to-VAD projection or language-generated labels as a proxy. Retain the full target distribution as training supervision.
+- [ ] Use a predeclared local-window selector and peak/rest budget. Compare learned selection with uniform windows. If adding DSNet or affective teacher supervision, identify it explicitly as a pseudo-label highlight objective and compare against the same selector trained only through reaction KL. High arousal must not be assumed equivalent to audience relevance or rare-emotion evidence.
+- [ ] Run the main 2-by-2 comparison: global VAD decoder versus peak/rest VAD decoder, each with ordinary versus rare-reaction training. Use the same source features, decoder family, optimization budget and paired seeds; add a matched global/global branch control for the extra mixture capacity.
+- [ ] Add a fixed permutation of the 21 VAD-to-label assignments with identical coordinate geometry, and equal-budget uniform/random selection controls. This separates semantic coordinates from bottleneck regularization and selection from retained frame count. Add peak-only and rest-only ablations to test which branch contributes.
+- [ ] Derive rare-reaction weights from training probability mass, with capped weighting or sampling. Do not convert soft targets to dominant labels, and compare against an importance-corrected sampling control. Report official KL/MRR/weighted F1, macro/per-class measures, target versus predicted class mass, and paired movie-bootstrap intervals across multiple training seeds.
+- [ ] Record alpha, both branch distributions/VAD points, frame timestamps, selection budget, coordinate provenance, temperature, support statistics and any highlight pseudo-label loss. Run a three-video smoke in cluster uv after local review/mocks and push/sync.
+
+### What this would establish
+
+A gain requires the combined model to beat its VAD-only, peak/rest-only-without-rebalancing, matched global/global and semantic-permutation controls. Better rare-class recall with worse official KL is a tradeoff, not an overall gain. Fixed geometry may share statistical strength across nearby reactions, but it does not inherently boost rare classes; labels with similar VAD can remain difficult to distinguish. Word norms are not video labels, and a character's expressed emotion can differ from the audience's induced reaction. Existing negative peak results and inconclusive VAD gains do not test this specific distance-decoded combination.
+
+### Refined hypothesis: comments concentrate on a few useful moments
+
+The user's clarification is that a video traces a path through VAD space, different emotions can peak at different times, and only some moments attract most comments. Duration and proximity should therefore be weighted by reaction relevance. The two-point peak/rest model above is a restricted comparison; it is not the full trajectory hypothesis. A long quiet passage should not necessarily outweigh a brief salient event.
+
+The proposed data path is `RGB windows -> visual temporal encoder -> {3D VAD point, relevance score} per window -> fixed-coordinate distance decoder -> weighted probability mixture`. Both prediction branches use visual features. Full-video visual context may inform a local window, but no text representation enters the path. Include a matched unrestricted visual reaction head to test the cost or benefit of the three-dimensional bottleneck.
+
+For nonoverlapping intervals `i`, let `dt_i` be actual duration in seconds, `z_i` the estimated VAD position, and `e_c` a fixed emotion coordinate. Define proximity and a momentary categorical distribution:
+
+```text
+k_ic = exp(-||z_i - e_c||^2 / (2 * sigma^2))
+q_ic = k_ic / sum_c k_ic
+```
+
+The proposed main model predicts a nonnegative relevance density `a_i` from video context, allowing zero or negligible values for irrelevant intervals. Normalize duration times relevance into moment weights, then mix the momentary distributions:
+
+```text
+w_i = dt_i * a_i / sum_j(dt_j * a_j)
+P(c | video) = sum_i w_i * q_ic
+```
+
+Interpretation under the model: `w_i` is the share of reaction mass associated with interval `i`, and `q_ic` is the emotion distribution conditional on that interval contributing. Clip-level labels alone cannot verify that these are the actual moments viewers commented on. Relevance is not automatically arousal, teacher confidence, closeness to a prototype, or generic visual highlightness. The gate may use full-video context so that a payoff can be interpreted using its setup. Enforce positive total weight and record any fallback for an all-zero gate.
+
+This weighted mixture is already a probability distribution. `a_i = 1` gives duration-weighted averaging; concentration on one interval gives a single-peak model. Multiple nonzero intervals allow different comments to concern different moments. We should aggregate local probabilities before collapsing VAD coordinates: averaging opposite VAD positions can erase both emotional modes.
+
+An additional proximity-sensitive variant accumulates raw affinities:
+
+```text
+E_c = sum_i dt_i * a_i * k_ic
+P_proximity(c) = E_c / sum_c E_c
+```
+
+This is not equivalent to averaging `q_ic` with the same weights. It also weights each interval by its total affinity to all prototypes, preserving absolute proximity but potentially favoring densely packed prototype regions. Compare these variants explicitly. Normalized distances are model scores; calibration to audience reactions must be evaluated.
+
+For the user's illustrative love/fear example, if the 6-second interval has probabilities `(0.9, 0.1)` and the 3-second interval `(0.4, 0.6)`, equal relevance yields `(0.7333, 0.2667)`. Different relevance can reverse the duration advantage. Love is an illustrative label only; it is not part of the official 21-label taxonomy.
+
+### Aggregation literature and proposed comparisons
+
+- [Attention-based Deep Multiple Instance Learning, Ilse et al.](https://proceedings.mlr.press/v80/ilse18a.html) learns instance contributions using bag-level supervision. Adapting this to a mixture of categorical reaction distributions is our proposal; its original formulation does not establish comment attribution.
+- [Sparsemax, Martins and Astudillo](https://proceedings.mlr.press/v48/martins16.html) can assign exactly zero attention weight to some instances. It provides a way to test sparse selection against soft attention, but sparsity alone does not identify useful moments. Specify whether the gate represents interval mass or per-second density before incorporating duration; do not count duration twice.
+- [Power pooling, Liu et al.](https://arxiv.org/html/2010.09985) interpolates from mean to max pooling with `s_c = sum_i(q_ic^(r+1)) / sum_i(q_ic^r)`, `r >= 0`. Our comparison would add `dt_i` to both sums and normalize `s_c` across classes. These are adaptations of a sound-event presence model. Strong power pooling can discard relative event duration, so it is a peak-sensitive control rather than a faithful duration accumulator.
+- [Auto-pool, McFee et al.](https://arxiv.org/html/1804.10070) learns softmax weights on instance predictions. It offers another mean-to-peak comparison, with the same distinction between event presence and audience reaction shares.
+
+- [ ] Start with the same momentary decoder and features across duration-only, single-peak, per-emotion peak, power-pooling, soft-relevance and sparse-relevance aggregation. For per-emotion closest approach use `max_i k_ic` then normalize across classes; the maximum of `q_ic` need not occur at minimum absolute VAD distance.
+- [ ] Compare relevance-weighted local probabilities with relevance-weighted raw proximity. Keep rare-reaction reweighting fixed initially; add it as a separate factorial comparison after isolating aggregation.
+- [ ] Compare uniform and learned relevance using the same fixed VAD decoder; compare VAD and unrestricted momentary classifiers under the same relevance mechanism. Existing joint baselines pool visual features before a classifier, so they do not isolate the proposed probability mixture.
+- [ ] Compare matched contiguous windows and random windows, using duration budgets in seconds. Use fixed-window averaging or smoothing to test whether peak gains survive removal of isolated noisy frames. Choose all budgets and hyperparameters on training/validation data.
+- [ ] Check interval-splitting invariance for a fixed trajectory and relevance density: subdividing a constant interval must not change its contribution. Scene timestamps permit a piecewise-constant approximation only; verify dense observations before claiming measured within-scene dwell times. Handle overlapping windows without counting time repeatedly.
+- [ ] Save per-interval VAD, proximity, probabilities, relevance, duration and per-emotion contribution `w_i * q_ic`; report attention support and concentration. Evaluate the official clip metrics and rare-class diagnostics with matched seeds and movie-level intervals.
+- [ ] Audit whether selected windows correspond to reaction-relevant content using independent temporal annotations or a separately held-out alignment study if such data become available. Clip-level gains and attention plots alone cannot prove that comments concern the selected moments. Removal tests are supporting diagnostics and can also disrupt narrative context.
+
+The primary test is whether learned relevance improves over duration-only and peak-only aggregation with the same local decoder architecture, and whether sparse relevance improves over an equally trained soft gate. Better clip predictions support this predictive model, but do not by themselves prove the hypothesized comment-generation process. A negative result constrains the tested representation, supervision and pooling choices; it does not eliminate every VAD trajectory model.
+
+### Authorized visual-only batch — implementation and launch checklist
+
+- [x] Recheck Snellius access, account `gusr133332`, existing jobs, keyframe timestamps and available caches before code changes.
+- [x] Add a separate pinned DINOv2 cache and provision its visual-only weights on Snellius; no SigLIP/text representation enters this batch.
+- [x] Validate exact NRC v2.1 entries for all 21 labels, preserve class order, and transfer its archive to the private cluster cache.
+- [x] Implement duration, single-peak, per-emotion peak, soft/sparse relevance, power and raw-proximity aggregation using actual seconds.
+- [x] Add unrestricted visual decoder, semantic permutation, timestamp-free and rare-sampling/importance controls. Configure 16 variants × 3 paired seeds with official splits and validation KL selection.
+- [x] Export scene identities, local VAD/probabilities, relevance, durations and contributions that reconstruct predictions. Add training-defined rare-class diagnostics.
+- [x] Complete code and adversarial hypothesis review, including correction of the duration confound in order perturbation. [Review](trajectory_review.md)
+- [x] Pass all 108 local regression/synthetic tests in conda `torch`; no video dataset was copied to the Mac.
+- [ ] Push, sync and freeze an immutable source release; provision the NRC v2.1 JSON using cluster uv.
+- [ ] Preflight and pass the exact-source three-video/24-keyframe uv smoke across all 16 variants, including exports, reloads and optimizer resume.
+- [ ] Recheck resources, preflight all requests and submit the full cache plus 48 predictors with two-job concurrency and successful-cache dependencies.
+- [ ] Copy launch receipt and smoke JSON locally, sync outputs/logs and record all job IDs and live states here.
+- [ ] After completion, recompute official metrics, audit contributions and compare paired seeds/movie bootstrap intervals. Smoke fitting is not a benchmark gain.
+
+The run matrix, hyperparameters, interpretation limits and resource ceilings are in [trajectory_review.md](trajectory_review.md). `scripts/submit_trajectories.py` deduplicates jobs by source hash. Window-smoothing controls and independent temporal annotation remain future extensions. Trainable local decoders are fitted separately under each pooling rule; the frozen visual encoder, decoder architecture and common initialization are matched.
+
 ## Status update procedure
 
 1. Refresh Snellius `squeue`, `sacct` for recorded jobs, and the shared JSON registry. Compare scheduler state with per-run artifacts before marking completion.
 2. Update this file's timestamp, checkboxes, job table, failures/blockers, and next proposed batch. Keep failed attempts and replacement job IDs visible.
 3. Report what is implemented, submitted, running, completed, failed, and still pending. Record unavailable checks explicitly rather than treating stale state as current.
-4. Follow the active goal's authorized experiment sequence, with review, smoke, and live resource checks before each new pipeline. Keep one seed (42), fixed official splits, validation-based selection, and matched controls. Use uv on the cluster; local conda `torch` is for mock tests.
+4. Follow the authorized sequence with review, smoke and live resource checks. Preserve each batch's declared seeds (earlier batches: 42; trajectory batch: 42/43/44), official splits, validation-based selection and matched controls. Use uv on the cluster; local conda `torch` is for mock tests.
 
 Cluster root: `/scratch-shared/gmago/video2reaction`.
 

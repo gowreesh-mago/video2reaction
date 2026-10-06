@@ -43,6 +43,12 @@ def load_frozen_encoder(encoder_cfg, device, dtype):
     return processor, encoder
 
 
+def encode_images(encoder, inputs, encoder_cfg):
+    if encoder_cfg.get('kind', 'siglip2') == 'dinov2':
+        return encoder(**inputs).last_hidden_state[:, 0]
+    return encoder.get_image_features(**inputs)
+
+
 def prepare_features(cfg, splits, out):
     if not torch.cuda.is_available():
         raise RuntimeError('Feature preparation requires an allocated CUDA GPU')
@@ -102,7 +108,7 @@ def prepare_features(cfg, splits, out):
                 inputs = processor(images=list(images), return_tensors='pt').to('cuda')
                 inputs = {k: v.to(torch.bfloat16) if v.is_floating_point() else v for k, v in inputs.items()}
                 with torch.inference_mode():
-                    encoded = encoder.get_image_features(**inputs).float().cpu().numpy()
+                    encoded = encode_images(encoder, inputs, encoder_cfg).float().cpu().numpy()
                 if encoded.shape != (len(batch), shape[1]) or not np.isfinite(encoded).all():
                     raise ValueError('Invalid frozen features')
                 end = cursor + len(batch)

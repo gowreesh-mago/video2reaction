@@ -1,0 +1,4 @@
+base: traj_free_sparse.yaml
+seed: 43
+experiment:
+  name: traj_free_sparse_s43

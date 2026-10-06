@@ -1,0 +1,4 @@
+base: traj_vad_soft.yaml
+seed: 44
+experiment:
+  name: traj_vad_soft_s44

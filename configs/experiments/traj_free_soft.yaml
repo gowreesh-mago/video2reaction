@@ -1,0 +1,11 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_free_soft
+  hypothesis: An unrestricted local classifier tests the VAD bottleneck under soft
+    pooling.
+  changed_component: traj_free_soft
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: soft
+  decoder: free

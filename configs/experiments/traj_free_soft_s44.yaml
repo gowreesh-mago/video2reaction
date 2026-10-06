@@ -1,0 +1,4 @@
+base: traj_free_soft.yaml
+seed: 44
+experiment:
+  name: traj_free_soft_s44

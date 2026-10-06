@@ -1,0 +1,8 @@
+base: dino_common.yaml
+experiment:
+  name: dino_meanpool
+  hypothesis: A matched purely visual backbone baseline separates encoder and pooling
+    changes.
+  changed_component: dino_meanpool
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.

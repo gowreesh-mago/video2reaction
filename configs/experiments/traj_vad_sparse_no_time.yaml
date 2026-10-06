@@ -1,0 +1,12 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_sparse_no_time
+  hypothesis: Timestamp-free contextualization tests the value of temporal position.
+  changed_component: traj_vad_sparse_no_time
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: sparse
+  decoder: vad
+model:
+  positional_encoding: false

@@ -11,7 +11,9 @@ video2reaction/
     metadata/                   pinned official train/val/test JSON
     key_frames -> /gpfs/home3/gmago/video2reaction/.../key_frames
     archives/key_frames.zip -> /gpfs/home3/gmago/video2reaction/key_frames.zip
-    features/                   shared frozen SigLIP2 features
+    features/                   separate cache namespaces for each visual encoder
+      dinov2-base/               purely visual trajectory cache, keyed by encoder/data identity
+    lexicons/nrc-vad-v2.1/       private exact 21-label [-1,1] prototypes and original README
   cache/uv/                     uv download cache
   cache/tools/                  inspected CodeGraph installer
   releases/<commit>-<hash>/    frozen tracked source; .venv links to existing uv environment

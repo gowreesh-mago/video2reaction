@@ -102,13 +102,18 @@ def official_splits(cfg):
 
 
 def cache_spec(cfg):
+    kind = cfg['encoder'].get('kind', 'siglip2')
+    if kind not in {'siglip2', 'dinov2'}:
+        raise ValueError('Unknown frozen visual encoder')
     return {'schema': 1, 'encoder': cfg['encoder'], 'data': cfg['data'],
-            'features': 'SigLIP2 get_image_features, eval, bf16 -> float32',
+            'features': ('DINOv2 last_hidden_state CLS, eval, bf16 -> float32' if kind == 'dinov2'
+                         else 'SigLIP2 get_image_features, eval, bf16 -> float32'),
             'class_order': REACTION_CLASSES}
 
 
 def cache_directory(cfg):
-    return Path(os.environ['V2R_FEATURE_DIR']) / fingerprint(cache_spec(cfg))[:16]
+    variable = 'V2R_DINO_FEATURE_DIR' if cfg['encoder'].get('kind') == 'dinov2' else 'V2R_FEATURE_DIR'
+    return Path(os.environ[variable]) / fingerprint(cache_spec(cfg))[:16]
 
 
 def verify_code(root):

@@ -12,7 +12,7 @@ import torch
 import yaml
 
 from src.experiments.data import frame_index, target_distribution
-from src.experiments.diagnostics import boundaries, save_evaluation
+from src.experiments.diagnostics import boundaries, save_evaluation, save_rare_diagnostics
 from src.experiments.descriptions import DescriptionVideos, description_directory, prepare_description_cache
 from src.experiments.features import CachedVideos, prepare_features
 from src.experiments.emotion import emotion_directory, prepare_emotion_cache
@@ -21,6 +21,7 @@ from src.experiments.pretrained_highlights import PretrainedHighlightVideos, pre
 from src.experiments.registry import atomic_json, update_registry, utc_now
 from src.experiments.runtime import cache_directory, digest_file, load_config, official_splits, seed_everything, verify_code
 from src.experiments.training import fit, predict
+from src.experiments.trajectory import TrajectoryVideos
 from scripts.check_gpu import gpu_info
 
 
@@ -46,13 +47,13 @@ def run(args):
                     start_time=utc_now(), hostname=socket.gethostname(), git_commit=code['git_commit'],
                     source_sha256=code['source_sha256'], config=str(out / 'config.yaml'),
                     experiment_name=cfg['experiment']['name'], hypothesis=cfg['experiment']['hypothesis'],
-                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'emotion_cache', 'description_cache', 'highlight_cache'} else 'benchmark')
+                    output_dir=str(out), run_type='feature_cache' if cfg['experiment']['name'] in {'feature_cache', 'dino_cache', 'emotion_cache', 'description_cache', 'highlight_cache'} else 'benchmark')
     torch.set_num_threads(min(4, int(os.environ.get('SLURM_CPUS_PER_TASK', '4'))))
     seed_everything(cfg['seed'])
     splits, split_hashes = official_splits(cfg)
     atomic_json(out / 'split_hashes.json', split_hashes)
     name = cfg['experiment']['name']
-    if name == 'feature_cache':
+    if name in {'feature_cache', 'dino_cache'}:
         summary = prepare_features(cfg, splits, out)
     elif name == 'emotion_cache':
         summary = prepare_emotion_cache(cfg, splits, out)
@@ -78,6 +79,8 @@ def run(args):
             # Load train/validation first. Test predictions are made only after checkpoint selection.
             train = CachedVideos(cfg, 'train', splits['train'])
             val = CachedVideos(cfg, 'val', splits['val'])
+            if 'trajectory' in cfg:
+                train, val = TrajectoryVideos(train), TrajectoryVideos(val)
             if 'pretrained_highlight' in cfg:
                 if any(key in cfg for key in ('description', 'evidence', 'vad_objective')) or cfg['model']['aggregation'] != 'mean':
                     raise ValueError('The frozen highlight baseline changes selection only')
@@ -106,6 +109,8 @@ def run(args):
             result = {}
             for s in ('val', 'test'):
                 dataset = val if s == 'val' else CachedVideos(cfg, s, splits[s])
+                if 'trajectory' in cfg and s == 'test':
+                    dataset = TrajectoryVideos(dataset)
                 if 'pretrained_highlight' in cfg:
                     if s == 'test':
                         dataset = PretrainedHighlightVideos(cfg, dataset)
@@ -116,11 +121,13 @@ def run(args):
                     if s == 'test':
                         dataset = EvidenceVideos(cfg, dataset)
                     dataset.save_evidence(out / s)
-                result[s] = save_evaluation(out, s, dataset.ids, splits[s], dataset.targets,
-                            predict(model, dataset, cfg, 'cuda', attention_output=out / s
-                                    if cfg['evaluation'].get('save_attention', False) else None),
+                prediction = predict(model, dataset, cfg, 'cuda', attention_output=out / s
+                                     if cfg['evaluation'].get('save_attention', False) else None)
+                result[s] = save_evaluation(out, s, dataset.ids, splits[s], dataset.targets, prediction,
                             getattr(dataset, 'stratum_counts', dataset.counts), train_movies, bins,
                             shuffled=predict(model, dataset, cfg, 'cuda', shuffle_frames=True))
+                if cfg['encoder'].get('kind') == 'dinov2':
+                    save_rare_diagnostics(out / s, train.targets, dataset.targets, prediction)
         summary = {'benchmark_result': True, 'experiment': cfg['experiment'], 'training': info,
                    'val': result['val']['metrics'], 'test': result['test']['metrics'],
                    'seed': cfg['seed'], 'selection': cfg['training']['selection_metric'] if name != 'b0_prior' else 'none'}

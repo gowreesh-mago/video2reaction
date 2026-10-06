@@ -1,0 +1,4 @@
+base: traj_vad_sparse_no_time.yaml
+seed: 44
+experiment:
+  name: traj_vad_sparse_no_time_s44

@@ -1,0 +1,4 @@
+base: traj_vad_sparse_importance.yaml
+seed: 43
+experiment:
+  name: traj_vad_sparse_importance_s43

@@ -1,0 +1,15 @@
+base: trajectory_common.yaml
+experiment:
+  name: traj_vad_duration_rare
+  hypothesis: Rare-reaction sampling improves rare-class coverage with duration pooling.
+  changed_component: traj_vad_duration_rare
+  expected_outcome: Compare validation-selected official KL and rare-class diagnostics
+    across paired seeds.
+trajectory:
+  pooling: duration
+  decoder: vad
+training:
+  sampling:
+    exponent: 0.5
+    cap: 3.0
+    importance_corrected: false

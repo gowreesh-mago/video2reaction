@@ -1,0 +1,14 @@
+base: dino_common.yaml
+model:
+  aggregation: trajectory
+trajectory:
+  pooling: sparse
+  decoder: vad
+  relevance_temperature: 0.2
+  temperature_init: 0.25
+  prototypes:
+    asset_sha256: fb2ce00a38d37e6e8b41418a09cb374ad96b51bc9c24c32f0a51bb790a351906
+    mapping: sourced
+    permutation_seed: 271828
+evaluation:
+  save_attention: true

@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+#SBATCH --job-name=v2r-traj_vad_sparse_importance_s44
+#SBATCH --account=gusr133332
+#SBATCH --partition=gpu_mig
+#SBATCH --gpus=1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=24G
+#SBATCH --time=00:45:00
+#SBATCH --signal=B:TERM@30
+set -euo pipefail
+bash scripts/run_experiment.sh traj_vad_sparse_importance_s44

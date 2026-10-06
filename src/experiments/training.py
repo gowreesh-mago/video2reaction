@@ -16,11 +16,32 @@ from .models import ReactionPredictor
 from .registry import atomic_json
 from .runtime import atomic_torch, fingerprint, restore_rng, rng_state, seed_everything
 from .vad import reaction_vad, vad_objective
+from .trajectory import TrajectoryPredictor, TrajectoryRecorder, load_prototypes, permute_intervals
+from .rare_sampling import sampling_probabilities, corrected_kl
+
+
+def build_model(cfg, device):
+    if 'trajectory' not in cfg:
+        return ReactionPredictor(**cfg['model']).to(device)
+    if (cfg['encoder'].get('kind') != 'dinov2' or cfg['encoder']['model'] != 'facebook/dinov2-base'
+            or any(key in cfg for key in ('description', 'evidence', 'vad_objective', 'pretrained_highlight'))):
+        raise ValueError('Trajectory runs require the pure visual DINOv2 input path')
+    options = copy.deepcopy(cfg['trajectory'])
+    prototypes, provenance = load_prototypes(options.pop('prototypes'))
+    model = TrajectoryPredictor(**cfg['model'], prototypes=prototypes, **options).to(device)
+    model.prototype_provenance = provenance
+    return model
 
 
 def loader(dataset, cfg, epoch=None):
     generator = torch.Generator().manual_seed(cfg['seed'] + (epoch or 0))
-    return DataLoader(dataset, batch_size=cfg['training']['batch_size'], shuffle=epoch is not None,
+    sampler = None
+    if epoch is not None and cfg['training'].get('sampling'):
+        weights = sampling_probabilities(dataset.targets, cfg['training']['sampling'])
+        sampler = torch.utils.data.WeightedRandomSampler(torch.from_numpy(weights), len(dataset),
+                                                        replacement=True, generator=generator)
+    return DataLoader(dataset, batch_size=cfg['training']['batch_size'], shuffle=epoch is not None and sampler is None,
+                      sampler=sampler,
                       generator=generator, collate_fn=collate_videos, num_workers=0)
 
 
@@ -29,18 +50,29 @@ def predict(model, dataset, cfg, device, shuffle_frames=False, attention_output=
         raise ValueError('Attention export requires the original chronological frame order')
     model.eval()
     prediction = np.empty((len(dataset), 21), dtype=np.float64)
-    recorder = AttentionRecorder(dataset) if attention_output is not None else None
+    trajectory = isinstance(model, TrajectoryPredictor)
+    recorder = (TrajectoryRecorder(dataset, model) if trajectory else AttentionRecorder(dataset)) if attention_output is not None else None
     with torch.no_grad():
         for x, mask, _, indices in loader(dataset, cfg):
             if shuffle_frames:
                 for row, index in enumerate(indices.tolist()):
                     count = int(mask[row].sum())
                     rng = np.random.default_rng(cfg['evaluation']['permutation_seed'] + index)
-                    x[row, :count] = x[row, rng.permutation(count)].clone()
-            logits, attention = model(x.to(device), mask.to(device))
+                    if trajectory:
+                        # Preserve each scene's duration; change only its temporal placement.
+                        x[row, :count] = permute_intervals(x[row, :count], rng.permutation(count))
+                    else:
+                        x[row, :count] = x[row, rng.permutation(count)].clone()
+            if trajectory and recorder is not None:
+                logits, attention, details = model(x.to(device), mask.to(device), return_details=True)
+            else:
+                logits, attention = model(x.to(device), mask.to(device))
             prediction[indices.numpy()] = logits.softmax(-1).cpu().numpy()
             if recorder is not None:
-                recorder.add(indices, mask, attention)
+                if trajectory:
+                    recorder.add_details(indices, mask, attention, details, logits.softmax(-1))
+                else:
+                    recorder.add(indices, mask, attention)
     if recorder is not None:
         recorder.save(attention_output)
         if model.aggregation in {'highlight_sparse', 'highlight_soft'}:
@@ -53,13 +85,24 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
     seed_everything(cfg['seed'])
-    model = ReactionPredictor(**cfg['model']).to(device)
+    model = build_model(cfg, device)
+    if 'trajectory' in cfg:
+        atomic_json(out / 'trajectory_provenance.json', model.prototype_provenance)
     vad_options = cfg.get('vad_objective')
     vad_matrix = None
     if vad_options:
         vad_matrix, provenance = reaction_vad(vad_options, device)
         atomic_json(out / 'vad_provenance.json', provenance)
     options = cfg['training']
+    sampling = options.get('sampling')
+    sample_probabilities = sampling_probabilities(train.targets, sampling) if sampling else None
+    if sampling:
+        if cfg['loss']['kind'] != 'kl':
+            raise ValueError('Rare sampling comparisons require the same KL loss')
+        atomic_json(out / 'sampling.json', {'fit_split': 'train', 'options': sampling,
+                    'class_mass': train.targets.astype(np.float64).mean(0).tolist(),
+                    'sample_probabilities': sample_probabilities.tolist(), 'sample_ids': train.ids,
+                    'draws_per_epoch': len(train), 'replacement': True})
     if options['selection_metric'] != 'kl' or options['scheduler'] != 'constant':
         raise ValueError('This runner supports validation KL and a constant learning rate')
     optimizer = torch.optim.AdamW(model.parameters(), lr=options['learning_rate'], weight_decay=options['weight_decay'])
@@ -80,7 +123,7 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
             model.train()
             total = 0.
             total_reaction = total_vad = 0.
-            for x, mask, target, _ in loader(train, cfg, epoch=epoch):
+            for x, mask, target, indices in loader(train, cfg, epoch=epoch):
                 optimizer.zero_grad(set_to_none=True)
                 target = target.to(device)
                 if vad_options:
@@ -88,6 +131,8 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
                 else:
                     logits, _ = model(x.to(device), mask.to(device))
                 loss = distribution_loss(logits, target, **cfg['loss'])
+                if sampling and sampling['importance_corrected']:
+                    loss = corrected_kl(logits, target, sample_probabilities, indices)
                 if vad_options:
                     regularization = vad_objective(model, predicted_vad, target, vad_matrix, vad_options)
                     total_reaction += loss.item() * len(x)
@@ -125,7 +170,7 @@ def fit(cfg, train, val, out, device, source_sha, resume_from=None):
     atomic_torch(out / 'best.pt', {'model': best_state, 'config': copy.deepcopy(cfg), 'identity': identity,
                                  'best_epoch': best_epoch, 'val_kl': best})
     # Verify serialized selected weights before evaluation on the test split.
-    reloaded = ReactionPredictor(**cfg['model']).to(device)
+    reloaded = build_model(cfg, device)
     reloaded.load_state_dict(torch.load(out / 'best.pt', map_location=device, weights_only=True)['model'])
     model.eval()
     reloaded.eval()
