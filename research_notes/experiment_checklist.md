@@ -2,13 +2,14 @@
 
 ## Overnight expansion authorized October 6
 
-Prepared **216 additional visual-only runs** (72 conditions × seeds 42/43/44), with **eight concurrent predictors**, after four exact-source three-video smoke shards. The original batch had **32/48 successful completions**, two running and 14 pending at 22:48 Amsterdam; observed predictor runtimes were about 1–5 minutes. [Matrix, code review and hypothesis limits](trajectory_overnight_review.md).
+**Autonomous overnight chain submitted at 22:55 Amsterdam:** smoke jobs **27684811–27684814**, staging launcher **27684815** with successful-smoke dependencies, and morning status job **27684816**, scheduled no earlier than **October 7 at 06:00 Amsterdam**. The launcher will submit **216 additional visual-only runs** (72 conditions × seeds 42/43/44), with **eight concurrent predictors**, only after all four exact-source smoke shards pass. The 216 predictor job IDs do not yet exist at this snapshot. Source `60d7d05` is pushed and frozen as `60d7d05a4bf8-ff5706bd4523`. The original batch had **32/48 successful completions**, two running and 14 pending at 22:48 Amsterdam; observed predictor runtimes were about 1–5 minutes. [Matrix, code review and hypothesis limits](trajectory_overnight_review.md) · [Pipeline receipt](trajectory_overnight_pipeline.json).
 
 - [x] Recheck account, queue limits, storage and budget: no reported user submission cap, over 81,000 SBU available for submission, GPU partitions accessible.
 - [x] Generate 72 distinct conditions covering bandwidth initialization, selection strength, temporal position, width/depth, rare-sampling controls, free decoders and semantic permutations.
 - [x] Keep production model/training implementation unchanged and review matched comparisons, test-set exposure, smoke gating and resource bounds.
-- [ ] Push and freeze source, submit four smoke shards and an automatic full-batch launcher; record IDs after scheduler verification.
-- [ ] Schedule a cluster-side status snapshot for October 7 at/after 06:00 Amsterdam; no laptop process is needed.
+- [x] Pass 111 existing and 74 additional local tests (185 total); cluster smoke jobs repeat the full test suite.
+- [x] Push and freeze source, submit four smoke shards and an automatic full-batch launcher; all six queue entries verified.
+- [x] Schedule a cluster-side status snapshot for October 7 at/after 06:00 Amsterdam; job **27684816** is pending with reason `BeginTime`. It writes JSON/Markdown on Snellius; no laptop process or automatic chat message is involved.
 - [ ] Verify all smoke shards, full-batch submissions, experiment results and saved scores.
 
 Latest verified status, **2026-10-06 at 19:47 UTC (21:47 Amsterdam)**: DINOv2 cache **27682121 completed successfully** at 21:32:13 Amsterdam, exit `0:0`, **1h05m05s**. Its artifacts cover all **455,226 frames** across the official splits. Of 48 predictors, **one is running** (`traj_vad_duration_s42`, **27682123**, started 21:46:18); **one awaits GPU resources** (`traj_vad_peak_s42`, **27682125**); **46 await dependencies**. No full trajectory benchmark has completed or failed at this check. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Cache results](trajectory_cache_results.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)

@@ -1,0 +1,13 @@
+{
+  "source_sha256": "ff5706bd45237a56d34688818cad85a8ee702de79a3ae7123e5860bf6f696628",
+  "git_commit": "60d7d05a4bf8a17933e061977d6f9909728a521f",
+  "release_dir": "/scratch-shared/gmago/video2reaction/releases/60d7d05a4bf8-ff5706bd4523",
+  "submitted_at": "2026-10-06T20:55:28.252883+00:00",
+  "planned_predictors": 216,
+  "max_parallel": 8,
+  "smoke_jobs": ["27684811", "27684812", "27684813", "27684814"],
+  "launcher_job": "27684815",
+  "morning_status_job": "27684816",
+  "morning_begin_amsterdam": "2026-10-07T06:00:00+02:00",
+  "status_at_submission": "Four smokes queued; launcher pending successful smoke dependencies; morning report pending BeginTime. Full predictors will be submitted by the launcher after smoke validation."
+}
