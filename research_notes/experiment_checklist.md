@@ -1,5 +1,13 @@
 # Experiment checklist
 
+## Latest status — October 7, 2026
+
+**All 264 visual trajectory benchmark runs completed successfully by 01:03:13 Amsterdam**, across 88 conditions × three seeds. No benchmark jobs remain queued or running. Four smoke shards **27684811–27684814** passed all 185 tests and all 72 added model conditions. Launcher **27684815** submitted all 216 additional runs and completed `0:0`. Morning snapshot **27684816** ran at 06:00:03–06:00:32 and recorded 265 completed jobs (264 predictors + the feature cache), all with metrics.
+
+**Result:** the best condition by mean validation KL is wide DINOv2 mean pooling, mean test KL **0.580511**, versus standard mean pooling **0.580898**. Its small gain is inconclusive: paired 95% interval **[−0.002199, +0.001402]**. The best VAD condition has test KL **0.835698**, clearly worse than mean pooling; the fixed-VAD/peak proposal did not improve the visual baseline. All values average seeds 42/43/44. Audit **27711358 passed `0:0` in 3m44s**: all validation/test metrics recompute to 1e−10, with aligned samples, selected-checkpoint checks and recomputed per-class MAE. [Current results and interpretation](trajectory_results.md) · [Full verified JSON](trajectory_results.json) · [Morning snapshot](trajectory_morning_status.json) · [Overnight job IDs](trajectory_overnight_jobs.json).
+
+Results/submission JSON files have been copied locally. New model checkpoints and the large trajectory tensors remain on Snellius; this is not a claim that the entire new output tree is already synced.
+
 ## Overnight expansion authorized October 6
 
 **Autonomous overnight chain submitted at 22:55 Amsterdam:** smoke jobs **27684811–27684814**, staging launcher **27684815** with successful-smoke dependencies, and morning status job **27684816**, scheduled no earlier than **October 7 at 06:00 Amsterdam**. The launcher will submit **216 additional visual-only runs** (72 conditions × seeds 42/43/44), with **eight concurrent predictors**, only after all four exact-source smoke shards pass. The 216 predictor job IDs do not yet exist at this snapshot. Source `60d7d05` is pushed and frozen as `60d7d05a4bf8-ff5706bd4523`. The original batch had **32/48 successful completions**, two running and 14 pending at 22:48 Amsterdam; observed predictor runtimes were about 1–5 minutes. [Matrix, code review and hypothesis limits](trajectory_overnight_review.md) · [Pipeline receipt](trajectory_overnight_pipeline.json).
@@ -10,9 +18,11 @@
 - [x] Pass 111 existing and 74 additional local tests (185 total); cluster smoke jobs repeat the full test suite.
 - [x] Push and freeze source, submit four smoke shards and an automatic full-batch launcher; all six queue entries verified.
 - [x] Schedule a cluster-side status snapshot for October 7 at/after 06:00 Amsterdam; job **27684816** is pending with reason `BeginTime`. It writes JSON/Markdown on Snellius; no laptop process or automatic chat message is involved.
-- [ ] Verify all smoke shards, full-batch submissions, experiment results and saved scores.
+- [x] Verify all four successful smoke shards, all 216 full submissions and successful scheduler exits with saved metrics for all 264 primary/overnight predictors.
+- [x] Complete independent official-metric recomputation and paired comparisons (audit **27711358**, 264 new runs plus five older references, completed `0:0`).
+- [ ] Independently audit complete trajectory tensors and update the LaTeX report; contribution reconstruction currently relies on the per-run export assertions.
 
-Latest verified status, **2026-10-06 at 19:47 UTC (21:47 Amsterdam)**: DINOv2 cache **27682121 completed successfully** at 21:32:13 Amsterdam, exit `0:0`, **1h05m05s**. Its artifacts cover all **455,226 frames** across the official splits. Of 48 predictors, **one is running** (`traj_vad_duration_s42`, **27682123**, started 21:46:18); **one awaits GPU resources** (`traj_vad_peak_s42`, **27682125**); **46 await dependencies**. No full trajectory benchmark has completed or failed at this check. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Cache results](trajectory_cache_results.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
+Historical snapshot, **2026-10-06 at 19:47 UTC (21:47 Amsterdam)**: DINOv2 cache **27682121 completed successfully** at 21:32:13 Amsterdam, exit `0:0`, **1h05m05s**. Its artifacts cover all **455,226 frames** across the official splits. At that check, one of 48 predictors was running and 47 were pending. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Cache results](trajectory_cache_results.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
 
 ### Deadline estimate: October 7, 22:00 Amsterdam (CEST)
 
