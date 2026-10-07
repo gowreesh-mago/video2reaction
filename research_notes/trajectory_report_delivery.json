@@ -1,0 +1,33 @@
+{
+  "report_date": "2026-10-07",
+  "verified_at_utc": "2026-10-07T11:21:37.542080+00:00",
+  "pdf_pages": 33,
+  "benchmark_runs": 264,
+  "conditions": 88,
+  "model_details": "Backbone, preprocessing, tensor dimensions, context layers, VAD/free heads, pooling equations, loss and sampling",
+  "checks": {
+    "latex_build_without_warnings": true,
+    "portable_bundle_compiles": true,
+    "portable_build_text_identical_all_pages": true,
+    "all_pages_rendered_and_visually_inspected": true,
+    "architecture_paper_comparison_and_complete_results_inspected_at_full_size": true,
+    "no_clipped_text_or_blank_pages": true,
+    "input_hashes_match": true,
+    "all_264_unique_job_ids_in_appendix": true,
+    "cluster_pdf_and_source_sha256_match_local": true
+  },
+  "artifacts": {
+    "output/pdf/video2reaction_trajectory_report.pdf": {
+      "bytes": 503050,
+      "sha256": "af15ebac00e8d22137206086540ef26decef55431399a4213b571b03c8cba1c2"
+    },
+    "output/pdf/video2reaction_trajectory_report_source.zip": {
+      "bytes": 1293594,
+      "sha256": "05447c85d3ccb99f1fac508b6d27d81d7650b023774772dce57403c94ddd6fb9"
+    }
+  },
+  "source": "research_notes/latex/trajectory_report/main.tex",
+  "cluster_directory": "/scratch-shared/gmago/video2reaction/reports/2026-10-07-visual-trajectories",
+  "dataset_copied_to_mac": false,
+  "cluster_verified_at_utc": "2026-10-07T11:22:45.105359+00:00"
+}

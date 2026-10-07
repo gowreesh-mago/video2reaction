@@ -1,0 +1,32 @@
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{lp{5.6cm}rrrr}
+\caption{All 16 primary conditions. Test KL shows mean and sample standard deviation across three seeds.}\label{tab:primary}\\
+\toprule
+ID & Condition & Val. KL & Test KL & MRR & Top-1 F1 \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \ref{tab:primary} continued}}\\
+\toprule
+ID & Condition & Val. KL & Test KL & MRR & Top-1 F1 \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+P01 & VAD duration & 0.9456 & $0.9364 \pm 0.0716$ & 0.6079 & 0.4047 \\
+P02 & VAD single peak & 1.8259 & $1.8006 \pm 0.0048$ & 0.2074 & 0.1212 \\
+P03 & VAD peak per emotion & 1.1001 & $1.0945 \pm 0.0055$ & 0.5330 & 0.2564 \\
+P04 & VAD soft relevance & 1.0661 & $1.0588 \pm 0.0037$ & 0.5632 & 0.3987 \\
+P05 & VAD sparse relevance & 1.0702 & $1.0697 \pm 0.0188$ & 0.5870 & 0.4290 \\
+P06 & VAD power pooling & 1.0453 & $1.0354 \pm 0.0072$ & 0.6081 & 0.3638 \\
+P07 & VAD raw proximity & 1.0945 & $1.0936 \pm 0.0044$ & 0.5632 & 0.4093 \\
+P08 & VAD sparse, permuted labels & 0.9344 & $0.9274 \pm 0.0171$ & 0.6305 & 0.3897 \\
+P09 & VAD duration, rare sampling & 0.9399 & $0.9360 \pm 0.0177$ & 0.6047 & 0.3948 \\
+P10 & VAD sparse, rare sampling & 1.0941 & $1.0894 \pm 0.0153$ & 0.5586 & 0.4026 \\
+P11 & VAD duration, corrected sampling & 0.9671 & $0.9506 \pm 0.0802$ & 0.6129 & 0.4084 \\
+P12 & VAD sparse, corrected sampling & 1.0782 & $1.0640 \pm 0.0128$ & 0.5895 & 0.4209 \\
+P13 & Free decoder, soft relevance & 0.5909 & $0.5837 \pm 0.0016$ & 0.6988 & 0.4870 \\
+P14 & Free decoder, sparse relevance & 0.5910 & $0.5840 \pm 0.0025$ & 0.6987 & 0.4857 \\
+P15 & VAD sparse, no timestamps & 1.0895 & $1.0728 \pm 0.0160$ & 0.5703 & 0.4011 \\
+P16 & DINO mean pooling & 0.5866 & $0.5809 \pm 0.0004$ & 0.6934 & 0.4831 \\
+\end{longtable}
+\endgroup

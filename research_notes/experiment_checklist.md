@@ -8,6 +8,8 @@
 
 Results/submission JSON files have been copied locally. New model checkpoints and the large trajectory tensors remain on Snellius; this is not a claim that the entire new output tree is already synced.
 
+**Detailed report:** the new 33-page [LaTeX source](latex/trajectory_report/main.tex) explains the hypotheses, model architecture and equations, all 264 runs, uncertainty, rare-emotion diagnostics, and comparison with the Video2Reaction paper. The PDF and portable source bundle are saved locally in `output/pdf/` and on Snellius under `reports/2026-10-07-visual-trajectories/`, with matching SHA-256 hashes. All pages were visually checked, the build has no warnings, and the standalone source bundle builds with identical page text. [Delivery and verification record](trajectory_report_delivery.json).
+
 ## Overnight expansion authorized October 6
 
 **Autonomous overnight chain submitted at 22:55 Amsterdam:** smoke jobs **27684811–27684814**, staging launcher **27684815** with successful-smoke dependencies, and morning status job **27684816**, scheduled no earlier than **October 7 at 06:00 Amsterdam**. The launcher will submit **216 additional visual-only runs** (72 conditions × seeds 42/43/44), with **eight concurrent predictors**, only after all four exact-source smoke shards pass. The 216 predictor job IDs do not yet exist at this snapshot. Source `60d7d05` is pushed and frozen as `60d7d05a4bf8-ff5706bd4523`. The original batch had **32/48 successful completions**, two running and 14 pending at 22:48 Amsterdam; observed predictor runtimes were about 1–5 minutes. [Matrix, code review and hypothesis limits](trajectory_overnight_review.md) · [Pipeline receipt](trajectory_overnight_pipeline.json).
@@ -20,7 +22,8 @@ Results/submission JSON files have been copied locally. New model checkpoints an
 - [x] Schedule a cluster-side status snapshot for October 7 at/after 06:00 Amsterdam; job **27684816** is pending with reason `BeginTime`. It writes JSON/Markdown on Snellius; no laptop process or automatic chat message is involved.
 - [x] Verify all four successful smoke shards, all 216 full submissions and successful scheduler exits with saved metrics for all 264 primary/overnight predictors.
 - [x] Complete independent official-metric recomputation and paired comparisons (audit **27711358**, 264 new runs plus five older references, completed `0:0`).
-- [ ] Independently audit complete trajectory tensors and update the LaTeX report; contribution reconstruction currently relies on the per-run export assertions.
+- [x] Write and compile the detailed LaTeX report; visually verify all 33 pages and check that the portable source bundle builds independently.
+- [ ] Independently audit complete trajectory tensors; contribution reconstruction currently relies on the per-run export assertions, a limitation explicitly recorded in the report.
 
 Historical snapshot, **2026-10-06 at 19:47 UTC (21:47 Amsterdam)**: DINOv2 cache **27682121 completed successfully** at 21:32:13 Amsterdam, exit `0:0`, **1h05m05s**. Its artifacts cover all **455,226 frames** across the official splits. At that check, one of 48 predictors was running and 47 were pending. Three-video smoke **27681517 passed all 16 variants and 111 tests**, exit `0:0`, 16m31s. Source `0533611` is pushed and runs from frozen release `05336113586d-bd1c51a39c84`. [Launch receipt](trajectory_full_launch.json) · [Cache results](trajectory_cache_results.json) · [Smoke results](trajectory_smoke_results.json) · [Implementation/adversarial review](trajectory_review.md)
 
@@ -32,13 +35,13 @@ At the October 6, 20:44 Amsterdam check, extraction had logged **98,304 of 455,2
 
 The 48 predictor allocations, each capped at 45 minutes, form two dependency chains: **24 × 45 minutes = 18 hours** with continuous availability of both slots. A 22:00 cache completion therefore permits dispatch through roughly **16:00 tomorrow**, leaving about **six hours** before the requested deadline for queue gaps, verification or retries. This is an allocation-based planning estimate, not a measured training-completion forecast: no full trajectory predictor has started yet, and exceeding its limit would produce a timeout rather than a completed experiment. At this snapshot, the only pending MIG jobs were these 48 dependency-held runs; Slurm supplied no start estimates while the cache dependency remained unmet. The deadline looks achievable but is not guaranteed. No jobs, concurrency settings or training settings were changed for this estimate.
 
-- [ ] Once the first full predictors finish, replace the allocation-based estimate with observed runtimes and check all jobs for timeouts/failures.
+- [x] Replace the allocation-based estimate with observed runtimes and check all jobs for timeouts/failures: all 264 finished successfully, taking 62–324 seconds each (median 121 seconds), by October 7 at 01:03:13 Amsterdam.
 
 Earlier smoke attempts remain recorded: `27680963` exposed unstable single-peak fitting at learning rate 0.003; the shared rate was corrected to 0.0003. `27681172` passed ten variants before its shortened ten-minute allocation timed out. The unchanged corrected source passed under its original twenty-minute ceiling.
 
 Live Snellius access was verified this turn. The previous DSNet cache `27662939` and predictor `27662940` both completed with exit `0:0` (1h11m41s and 3m54s); their new results have not yet been audited. The earlier 41 benchmarks and two joint runs have verified metrics. [Highlight launch receipt](highlight_full_launch.json) · [Joint results](highlight_joint_results.json)
 
-## Current status
+## Earlier status snapshot — October 6 (superseded above)
 
 - **Completed:** audits, locked cluster uv environment, eight successful three-video GPU smoke runs and **44 benchmark configurations by scheduler state** (7 reference models + 34 recommended conditions + 2 joint models + DSNet selection). Metrics for 43 are verified; the DSNet result and full selector audit for the two joint models remain pending. The new DINOv2 cache is complete; one of 48 trajectory predictors is running and 47 are pending.
 - **Smoke gates:** `27611469` (18 emotion/peak/VAD variants, 2m53s) and `27611475` (five description/visual variants, 1m36s) both passed **61 tests**, exact reloads, and three-video fitting checks on A100 MIG GPUs. They exited `0:0`.

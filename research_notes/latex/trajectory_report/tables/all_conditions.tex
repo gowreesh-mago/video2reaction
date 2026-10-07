@@ -1,0 +1,104 @@
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{lp{6.8cm}rrrr}
+\caption{Complete 88-condition results, ordered by mean validation KL. Configuration names are exact repository identifiers.}\label{tab:all_conditions}\\
+\toprule
+ID & Configuration & Val. KL & Test KL & MRR & F1@1 \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \ref{tab:all_conditions} continued}}\\
+\toprule
+ID & Configuration & Val. KL & Test KL & MRR & F1@1 \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+N47 & \path{on_dino_meanpool_wide} & 0.5856 & $0.5805 \pm 0.0011$ & 0.6935 & 0.4782 \\
+P16 & \path{dino_meanpool} & 0.5866 & $0.5809 \pm 0.0004$ & 0.6934 & 0.4831 \\
+N60 & \path{on_vad_duration_free} & 0.5888 & $0.5839 \pm 0.0025$ & 0.6994 & 0.4849 \\
+N61 & \path{on_vad_power_free} & 0.5890 & $0.5837 \pm 0.0016$ & 0.7026 & 0.4919 \\
+N72 & \path{on_free_sparse_shallow} & 0.5906 & $0.5824 \pm 0.0019$ & 0.6967 & 0.4854 \\
+P13 & \path{traj_free_soft} & 0.5909 & $0.5837 \pm 0.0016$ & 0.6988 & 0.4870 \\
+P14 & \path{traj_free_sparse} & 0.5910 & $0.5840 \pm 0.0025$ & 0.6987 & 0.4857 \\
+N71 & \path{on_free_soft_shallow} & 0.5912 & $0.5839 \pm 0.0023$ & 0.6960 & 0.4849 \\
+N41 & \path{on_free_sparse_notime} & 0.5929 & $0.5845 \pm 0.0024$ & 0.6943 & 0.4773 \\
+N46 & \path{on_free_sparse_wide} & 0.5934 & $0.5838 \pm 0.0027$ & 0.7023 & 0.4989 \\
+N40 & \path{on_free_soft_notime} & 0.5939 & $0.5854 \pm 0.0036$ & 0.6936 & 0.4775 \\
+N45 & \path{on_free_soft_wide} & 0.5943 & $0.5863 \pm 0.0005$ & 0.7017 & 0.4989 \\
+N59 & \path{on_free_sparse_rare_ipw} & 0.5951 & $0.5875 \pm 0.0022$ & 0.6886 & 0.4737 \\
+N57 & \path{on_free_soft_rare_ipw} & 0.5963 & $0.5909 \pm 0.0035$ & 0.6861 & 0.4681 \\
+N58 & \path{on_free_sparse_rare} & 0.5989 & $0.5910 \pm 0.0025$ & 0.6912 & 0.4815 \\
+N56 & \path{on_free_soft_rare} & 0.6002 & $0.5932 \pm 0.0023$ & 0.6883 & 0.4705 \\
+N10 & \path{on_vad_soft_tau010} & 0.8450 & $0.8357 \pm 0.0299$ & 0.6178 & 0.4187 \\
+N13 & \path{on_vad_sparse_tau010} & 0.8479 & $0.8379 \pm 0.0148$ & 0.6207 & 0.4042 \\
+N63 & \path{on_vad_duration_perm161803} & 0.8614 & $0.8579 \pm 0.0066$ & 0.5742 & 0.2840 \\
+N01 & \path{on_vad_duration_tau010} & 0.8709 & $0.8651 \pm 0.0860$ & 0.6374 & 0.4188 \\
+N65 & \path{on_vad_soft_perm161803} & 0.8764 & $0.8705 \pm 0.0143$ & 0.5491 & 0.2527 \\
+N67 & \path{on_vad_sparse_perm161803} & 0.8795 & $0.8722 \pm 0.0107$ & 0.5682 & 0.2925 \\
+N62 & \path{on_vad_duration_perm314159} & 0.9215 & $0.9138 \pm 0.0086$ & 0.6173 & 0.3709 \\
+N19 & \path{on_vad_sparse_proximity_tau010} & 0.9257 & $0.9263 \pm 0.0450$ & 0.6123 & 0.4324 \\
+P08 & \path{traj_vad_sparse_permuted} & 0.9344 & $0.9274 \pm 0.0171$ & 0.6305 & 0.3897 \\
+P09 & \path{traj_vad_duration_rare} & 0.9399 & $0.9360 \pm 0.0177$ & 0.6047 & 0.3948 \\
+P01 & \path{traj_vad_duration} & 0.9456 & $0.9364 \pm 0.0716$ & 0.6079 & 0.4047 \\
+N51 & \path{on_vad_duration_rare100_ipw} & 0.9610 & $0.9524 \pm 0.0588$ & 0.6045 & 0.3951 \\
+N50 & \path{on_vad_duration_rare100} & 0.9623 & $0.9435 \pm 0.0040$ & 0.6077 & 0.4084 \\
+P11 & \path{traj_vad_duration_importance} & 0.9671 & $0.9506 \pm 0.0802$ & 0.6129 & 0.4084 \\
+N48 & \path{on_vad_duration_rare025} & 0.9692 & $0.9573 \pm 0.0498$ & 0.6027 & 0.4065 \\
+N07 & \path{on_vad_class_peak_tau010} & 0.9820 & $0.9724 \pm 0.0901$ & 0.6003 & 0.3514 \\
+N49 & \path{on_vad_duration_rare025_ipw} & 1.0039 & $0.9921 \pm 0.0792$ & 0.6049 & 0.4200 \\
+N66 & \path{on_vad_sparse_perm314159} & 1.0405 & $1.0371 \pm 0.0036$ & 0.5964 & 0.3685 \\
+N64 & \path{on_vad_soft_perm314159} & 1.0417 & $1.0373 \pm 0.0040$ & 0.6046 & 0.3867 \\
+N43 & \path{on_vad_soft_wide} & 1.0435 & $1.0315 \pm 0.0357$ & 0.5811 & 0.4139 \\
+P06 & \path{traj_vad_power} & 1.0453 & $1.0354 \pm 0.0072$ & 0.6081 & 0.3638 \\
+N29 & \path{on_vad_sparse_gate100} & 1.0489 & $1.0373 \pm 0.0098$ & 0.5957 & 0.4228 \\
+N38 & \path{on_vad_power_notime} & 1.0492 & $1.0399 \pm 0.0099$ & 0.6115 & 0.3762 \\
+N55 & \path{on_vad_sparse_rare100_ipw} & 1.0496 & $1.0436 \pm 0.0176$ & 0.5936 & 0.4269 \\
+N16 & \path{on_vad_power_tau010} & 1.0496 & $1.0446 \pm 0.0252$ & 0.5749 & 0.2629 \\
+N25 & \path{on_vad_soft_gate100} & 1.0516 & $1.0474 \pm 0.0124$ & 0.5816 & 0.4219 \\
+N44 & \path{on_vad_sparse_wide} & 1.0563 & $1.0494 \pm 0.0211$ & 0.5680 & 0.3924 \\
+N24 & \path{on_vad_soft_gate050} & 1.0621 & $1.0513 \pm 0.0180$ & 0.5822 & 0.4236 \\
+N28 & \path{on_vad_sparse_gate050} & 1.0623 & $1.0587 \pm 0.0217$ & 0.5857 & 0.4185 \\
+N34 & \path{on_vad_duration_notime} & 1.0639 & $1.0429 \pm 0.0126$ & 0.5868 & 0.4104 \\
+P04 & \path{traj_vad_soft} & 1.0661 & $1.0588 \pm 0.0037$ & 0.5632 & 0.3987 \\
+N42 & \path{on_vad_duration_wide} & 1.0670 & $1.0528 \pm 0.0118$ & 0.5860 & 0.4221 \\
+P05 & \path{traj_vad_sparse} & 1.0702 & $1.0697 \pm 0.0188$ & 0.5870 & 0.4290 \\
+N68 & \path{on_vad_duration_shallow} & 1.0741 & $1.0613 \pm 0.0012$ & 0.5952 & 0.4263 \\
+N23 & \path{on_vad_soft_gate010} & 1.0765 & $1.0642 \pm 0.0319$ & 0.5691 & 0.4091 \\
+N53 & \path{on_vad_sparse_rare025_ipw} & 1.0772 & $1.0705 \pm 0.0098$ & 0.5719 & 0.4022 \\
+P12 & \path{traj_vad_sparse_importance} & 1.0782 & $1.0640 \pm 0.0128$ & 0.5895 & 0.4209 \\
+N32 & \path{on_vad_sparse_proximity_gate050} & 1.0836 & $1.0775 \pm 0.0111$ & 0.5733 & 0.4097 \\
+N33 & \path{on_vad_sparse_proximity_gate100} & 1.0851 & $1.0676 \pm 0.0146$ & 0.5602 & 0.4000 \\
+N37 & \path{on_vad_soft_notime} & 1.0889 & $1.0586 \pm 0.0241$ & 0.5681 & 0.3990 \\
+P15 & \path{traj_vad_sparse_no_time} & 1.0895 & $1.0728 \pm 0.0160$ & 0.5703 & 0.4011 \\
+N17 & \path{on_vad_power_tau060} & 1.0902 & $1.0830 \pm 0.0080$ & 0.6009 & 0.3753 \\
+N69 & \path{on_vad_soft_shallow} & 1.0904 & $1.0831 \pm 0.0091$ & 0.5392 & 0.3884 \\
+N52 & \path{on_vad_sparse_rare025} & 1.0917 & $1.0868 \pm 0.0158$ & 0.5665 & 0.4011 \\
+P10 & \path{traj_vad_sparse_rare} & 1.0941 & $1.0894 \pm 0.0153$ & 0.5586 & 0.4026 \\
+N27 & \path{on_vad_sparse_gate010} & 1.0942 & $1.0954 \pm 0.0146$ & 0.5626 & 0.4086 \\
+P07 & \path{traj_vad_sparse_proximity} & 1.0945 & $1.0936 \pm 0.0044$ & 0.5632 & 0.4093 \\
+N70 & \path{on_vad_sparse_shallow} & 1.0986 & $1.0897 \pm 0.0052$ & 0.5180 & 0.3389 \\
+P03 & \path{traj_vad_class_peak} & 1.1001 & $1.0945 \pm 0.0055$ & 0.5330 & 0.2564 \\
+N26 & \path{on_vad_sparse_gate005} & 1.1028 & $1.0977 \pm 0.0068$ & 0.5288 & 0.3411 \\
+N36 & \path{on_vad_class_peak_notime} & 1.1062 & $1.0997 \pm 0.0033$ & 0.5131 & 0.2501 \\
+N31 & \path{on_vad_sparse_proximity_gate010} & 1.1064 & $1.0983 \pm 0.0048$ & 0.5069 & 0.3157 \\
+N22 & \path{on_vad_soft_gate005} & 1.1077 & $1.1000 \pm 0.0059$ & 0.5085 & 0.3224 \\
+N54 & \path{on_vad_sparse_rare100} & 1.1099 & $1.0976 \pm 0.0083$ & 0.5509 & 0.3941 \\
+N39 & \path{on_vad_sparse_proximity_notime} & 1.1135 & $1.0980 \pm 0.0027$ & 0.5152 & 0.3276 \\
+N30 & \path{on_vad_sparse_proximity_gate005} & 1.1188 & $1.1063 \pm 0.0101$ & 0.5094 & 0.3065 \\
+N02 & \path{on_vad_duration_tau060} & 1.1460 & $1.1369 \pm 0.0254$ & 0.5268 & 0.3951 \\
+N08 & \path{on_vad_class_peak_tau060} & 1.1482 & $1.1400 \pm 0.0244$ & 0.5106 & 0.2979 \\
+N14 & \path{on_vad_sparse_tau060} & 1.2009 & $1.1882 \pm 0.0047$ & 0.4665 & 0.3354 \\
+N20 & \path{on_vad_sparse_proximity_tau060} & 1.2033 & $1.1940 \pm 0.0018$ & 0.4710 & 0.3456 \\
+N11 & \path{on_vad_soft_tau060} & 1.2060 & $1.1938 \pm 0.0057$ & 0.4623 & 0.3406 \\
+N03 & \path{on_vad_duration_tau120} & 1.2130 & $1.2019 \pm 0.0050$ & 0.4794 & 0.3595 \\
+N18 & \path{on_vad_power_tau120} & 1.2325 & $1.2213 \pm 0.0239$ & 0.4317 & 0.2485 \\
+N09 & \path{on_vad_class_peak_tau120} & 1.2697 & $1.2621 \pm 0.0295$ & 0.3573 & 0.1598 \\
+N12 & \path{on_vad_soft_tau120} & 1.3062 & $1.2982 \pm 0.0476$ & 0.3939 & 0.2108 \\
+N21 & \path{on_vad_sparse_proximity_tau120} & 1.3316 & $1.3228 \pm 0.0010$ & 0.3681 & 0.1456 \\
+N15 & \path{on_vad_sparse_tau120} & 1.3326 & $1.3248 \pm 0.0037$ & 0.3705 & 0.1462 \\
+N06 & \path{on_vad_peak_tau120} & 1.5997 & $1.5863 \pm 0.0029$ & 0.2653 & 0.1418 \\
+N05 & \path{on_vad_peak_tau060} & 1.7545 & $1.7345 \pm 0.0069$ & 0.1953 & 0.1048 \\
+N35 & \path{on_vad_peak_notime} & 1.8101 & $1.7844 \pm 0.0126$ & 0.2153 & 0.1303 \\
+P02 & \path{traj_vad_peak} & 1.8259 & $1.8006 \pm 0.0048$ & 0.2074 & 0.1212 \\
+N04 & \path{on_vad_peak_tau010} & 2.3868 & $2.3726 \pm 0.0370$ & 0.1660 & 0.0836 \\
+\end{longtable}
+\endgroup

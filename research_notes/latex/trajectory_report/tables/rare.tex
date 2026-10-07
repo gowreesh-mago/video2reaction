@@ -1,0 +1,26 @@
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{6.5cm}rrrr}
+\caption{Probability diagnostics, averaged across three seeds. Rare MAE and predicted mass use the six rare classes; Brier covers all 21 classes. Actual rare-group mass is 0.018256.}\label{tab:rare}\\
+\toprule
+Model & KL & Rare MAE & Predicted mass & Brier \\
+\midrule\endfirsthead
+\multicolumn{5}{l}{\textit{Table \ref{tab:rare} continued}}\\
+\toprule
+Model & KL & Rare MAE & Predicted mass & Brier \\
+\midrule\endhead
+\midrule\multicolumn{5}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+DINO mean pooling & 0.5809 & 0.005520 & 0.01821 & 0.11828 \\
+DINO mean pooling, width 256 & 0.5805 & 0.005574 & 0.01872 & 0.11833 \\
+Free decoder, sparse relevance & 0.5840 & 0.005599 & 0.01851 & 0.11813 \\
+Free sparse, rare sampling & 0.5910 & 0.005619 & 0.01869 & 0.12060 \\
+Free sparse, corrected sampling & 0.5875 & 0.005480 & 0.01766 & 0.12001 \\
+VAD duration & 0.9364 & 0.014984 & 0.07907 & 0.16797 \\
+VAD duration, rare sampling & 0.9360 & 0.015713 & 0.08420 & 0.16559 \\
+VAD sparse relevance & 1.0697 & 0.019333 & 0.10665 & 0.19124 \\
+VAD sparse, rare sampling & 1.0894 & 0.018860 & 0.10372 & 0.19600 \\
+VAD soft, initial temperature 0.1 & 0.8357 & 0.013549 & 0.06925 & 0.15495 \\
+\end{longtable}
+\endgroup

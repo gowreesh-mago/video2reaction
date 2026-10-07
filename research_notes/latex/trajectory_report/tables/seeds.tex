@@ -1,0 +1,104 @@
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{lp{7cm}rrr}
+\caption{Test KL for every trained seed; no seed is selected by its test score.}\label{tab:seeds}\\
+\toprule
+ID & Configuration & Seed 42 & Seed 43 & Seed 44 \\
+\midrule\endfirsthead
+\multicolumn{5}{l}{\textit{Table \ref{tab:seeds} continued}}\\
+\toprule
+ID & Configuration & Seed 42 & Seed 43 & Seed 44 \\
+\midrule\endhead
+\midrule\multicolumn{5}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+P01 & \path{traj_vad_duration} & 1.019026 & 0.892462 & 0.897671 \\
+P02 & \path{traj_vad_peak} & 1.803145 & 1.803582 & 1.795011 \\
+P03 & \path{traj_vad_class_peak} & 1.096918 & 1.088148 & 1.098331 \\
+P04 & \path{traj_vad_soft} & 1.060944 & 1.054572 & 1.060931 \\
+P05 & \path{traj_vad_sparse} & 1.090472 & 1.053810 & 1.064866 \\
+P06 & \path{traj_vad_power} & 1.031203 & 1.031206 & 1.043707 \\
+P07 & \path{traj_vad_sparse_proximity} & 1.093062 & 1.089538 & 1.098207 \\
+P08 & \path{traj_vad_sparse_permuted} & 0.945643 & 0.911595 & 0.925079 \\
+P09 & \path{traj_vad_duration_rare} & 0.941454 & 0.916215 & 0.950260 \\
+P10 & \path{traj_vad_sparse_rare} & 1.097998 & 1.071737 & 1.098412 \\
+P11 & \path{traj_vad_duration_importance} & 1.042852 & 0.911308 & 0.897695 \\
+P12 & \path{traj_vad_sparse_importance} & 1.058243 & 1.055077 & 1.078631 \\
+P13 & \path{traj_free_soft} & 0.585279 & 0.582057 & 0.583814 \\
+P14 & \path{traj_free_sparse} & 0.586571 & 0.581648 & 0.583709 \\
+P15 & \path{traj_vad_sparse_no_time} & 1.069087 & 1.090422 & 1.059010 \\
+P16 & \path{dino_meanpool} & 0.581204 & 0.580394 & 0.581095 \\
+N01 & \path{on_vad_duration_tau010} & 0.964274 & 0.810769 & 0.820247 \\
+N02 & \path{on_vad_duration_tau060} & 1.110438 & 1.161012 & 1.139118 \\
+N03 & \path{on_vad_duration_tau120} & 1.196248 & 1.205709 & 1.203772 \\
+N04 & \path{on_vad_peak_tau010} & 2.411235 & 2.337398 & 2.369304 \\
+N05 & \path{on_vad_peak_tau060} & 1.728741 & 1.732590 & 1.742089 \\
+N06 & \path{on_vad_peak_tau120} & 1.582999 & 1.588132 & 1.587791 \\
+N07 & \path{on_vad_class_peak_tau010} & 1.075620 & 0.932549 & 0.909085 \\
+N08 & \path{on_vad_class_peak_tau060} & 1.158383 & 1.149139 & 1.112333 \\
+N09 & \path{on_vad_class_peak_tau120} & 1.257108 & 1.293720 & 1.235437 \\
+N10 & \path{on_vad_soft_tau010} & 0.869727 & 0.823707 & 0.813661 \\
+N11 & \path{on_vad_soft_tau060} & 1.189874 & 1.191099 & 1.200365 \\
+N12 & \path{on_vad_soft_tau120} & 1.243241 & 1.324965 & 1.326246 \\
+N13 & \path{on_vad_sparse_tau010} & 0.854899 & 0.828227 & 0.830572 \\
+N14 & \path{on_vad_sparse_tau060} & 1.182934 & 1.189576 & 1.191981 \\
+N15 & \path{on_vad_sparse_tau120} & 1.328908 & 1.323940 & 1.321661 \\
+N16 & \path{on_vad_power_tau010} & 1.032801 & 1.073596 & 1.027498 \\
+N17 & \path{on_vad_power_tau060} & 1.073854 & 1.088115 & 1.087121 \\
+N18 & \path{on_vad_power_tau120} & 1.208404 & 1.206681 & 1.248862 \\
+N19 & \path{on_vad_sparse_proximity_tau010} & 0.972025 & 0.924702 & 0.882024 \\
+N20 & \path{on_vad_sparse_proximity_tau060} & 1.193065 & 1.192883 & 1.196017 \\
+N21 & \path{on_vad_sparse_proximity_tau120} & 1.321743 & 1.323550 & 1.323218 \\
+N22 & \path{on_vad_soft_gate005} & 1.105545 & 1.093799 & 1.100719 \\
+N23 & \path{on_vad_soft_gate010} & 1.099525 & 1.037639 & 1.055346 \\
+N24 & \path{on_vad_soft_gate050} & 1.071554 & 1.045286 & 1.037062 \\
+N25 & \path{on_vad_soft_gate100} & 1.059396 & 1.048268 & 1.034627 \\
+N26 & \path{on_vad_sparse_gate005} & 1.095318 & 1.092402 & 1.105344 \\
+N27 & \path{on_vad_sparse_gate010} & 1.091932 & 1.111496 & 1.082894 \\
+N28 & \path{on_vad_sparse_gate050} & 1.081297 & 1.056727 & 1.038122 \\
+N29 & \path{on_vad_sparse_gate100} & 1.033877 & 1.029678 & 1.048403 \\
+N30 & \path{on_vad_sparse_proximity_gate005} & 1.116113 & 1.096028 & 1.106828 \\
+N31 & \path{on_vad_sparse_proximity_gate010} & 1.095783 & 1.095405 & 1.103847 \\
+N32 & \path{on_vad_sparse_proximity_gate050} & 1.088232 & 1.066010 & 1.078176 \\
+N33 & \path{on_vad_sparse_proximity_gate100} & 1.078816 & 1.051063 & 1.072875 \\
+N34 & \path{on_vad_duration_notime} & 1.040728 & 1.056425 & 1.031415 \\
+N35 & \path{on_vad_peak_notime} & 1.770695 & 1.787103 & 1.795539 \\
+N36 & \path{on_vad_class_peak_notime} & 1.098103 & 1.103423 & 1.097509 \\
+N37 & \path{on_vad_soft_notime} & 1.054609 & 1.084507 & 1.036728 \\
+N38 & \path{on_vad_power_notime} & 1.038778 & 1.050346 & 1.030721 \\
+N39 & \path{on_vad_sparse_proximity_notime} & 1.101187 & 1.096162 & 1.096781 \\
+N40 & \path{on_free_soft_notime} & 0.581934 & 0.585048 & 0.589173 \\
+N41 & \path{on_free_sparse_notime} & 0.582117 & 0.584555 & 0.586908 \\
+N42 & \path{on_vad_duration_wide} & 1.041818 & 1.065227 & 1.051476 \\
+N43 & \path{on_vad_soft_wide} & 1.010714 & 1.010989 & 1.072769 \\
+N44 & \path{on_vad_sparse_wide} & 1.073731 & 1.038383 & 1.036132 \\
+N45 & \path{on_free_soft_wide} & 0.585871 & 0.586850 & 0.586047 \\
+N46 & \path{on_free_sparse_wide} & 0.584677 & 0.585922 & 0.580823 \\
+N47 & \path{on_dino_meanpool_wide} & 0.579657 & 0.580185 & 0.581692 \\
+N48 & \path{on_vad_duration_rare025} & 1.013484 & 0.918846 & 0.939501 \\
+N49 & \path{on_vad_duration_rare025_ipw} & 1.011586 & 0.905046 & 1.059775 \\
+N50 & \path{on_vad_duration_rare100} & 0.943491 & 0.939545 & 0.947539 \\
+N51 & \path{on_vad_duration_rare100_ipw} & 1.020270 & 0.917958 & 0.918998 \\
+N52 & \path{on_vad_sparse_rare025} & 1.068630 & 1.097830 & 1.093893 \\
+N53 & \path{on_vad_sparse_rare025_ipw} & 1.059303 & 1.077651 & 1.074498 \\
+N54 & \path{on_vad_sparse_rare100} & 1.105316 & 1.098641 & 1.088738 \\
+N55 & \path{on_vad_sparse_rare100_ipw} & 1.037104 & 1.030087 & 1.063493 \\
+N56 & \path{on_free_soft_rare} & 0.595553 & 0.592991 & 0.591063 \\
+N57 & \path{on_free_soft_rare_ipw} & 0.591163 & 0.587260 & 0.594194 \\
+N58 & \path{on_free_sparse_rare} & 0.593772 & 0.589086 & 0.590086 \\
+N59 & \path{on_free_sparse_rare_ipw} & 0.590011 & 0.585963 & 0.586402 \\
+N60 & \path{on_vad_duration_free} & 0.586142 & 0.581202 & 0.584260 \\
+N61 & \path{on_vad_power_free} & 0.584565 & 0.581799 & 0.584654 \\
+N62 & \path{on_vad_duration_perm314159} & 0.920557 & 0.916586 & 0.904138 \\
+N63 & \path{on_vad_duration_perm161803} & 0.856150 & 0.852363 & 0.865141 \\
+N64 & \path{on_vad_soft_perm314159} & 1.040741 & 1.032971 & 1.038336 \\
+N65 & \path{on_vad_soft_perm161803} & 0.885582 & 0.868889 & 0.857078 \\
+N66 & \path{on_vad_sparse_perm314159} & 1.040608 & 1.037313 & 1.033383 \\
+N67 & \path{on_vad_sparse_perm161803} & 0.884395 & 0.867723 & 0.864537 \\
+N68 & \path{on_vad_duration_shallow} & 1.060466 & 1.062693 & 1.060870 \\
+N69 & \path{on_vad_soft_shallow} & 1.093537 & 1.076772 & 1.079136 \\
+N70 & \path{on_vad_sparse_shallow} & 1.095453 & 1.085480 & 1.088126 \\
+N71 & \path{on_free_soft_shallow} & 0.586110 & 0.581537 & 0.583999 \\
+N72 & \path{on_free_sparse_shallow} & 0.583808 & 0.580274 & 0.583188 \\
+\end{longtable}
+\endgroup

@@ -1,0 +1,24 @@
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{5.6cm}rrrrr}
+\caption{Selected comparisons, using means across seeds 42, 43 and 44.}\label{tab:selected}\\
+\toprule
+Model & Val. KL & Test KL & MRR & F1@1 & F1@3 \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Table \ref{tab:selected} continued}}\\
+\toprule
+Model & Val. KL & Test KL & MRR & F1@1 & F1@3 \\
+\midrule\endhead
+\midrule\multicolumn{6}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+DINO mean pooling, width 256 & 0.5856 & $0.5805 \pm 0.0011$ & 0.6935 & 0.4782 & 0.5963 \\
+DINO mean pooling & 0.5866 & $0.5809 \pm 0.0004$ & 0.6934 & 0.4831 & 0.5956 \\
+Free decoder, duration & 0.5888 & $0.5839 \pm 0.0025$ & 0.6994 & 0.4849 & 0.5961 \\
+Free decoder, power & 0.5890 & $0.5837 \pm 0.0016$ & 0.7026 & 0.4919 & 0.5963 \\
+Free decoder, soft relevance & 0.5909 & $0.5837 \pm 0.0016$ & 0.6988 & 0.4870 & 0.5958 \\
+Free decoder, sparse relevance & 0.5910 & $0.5840 \pm 0.0025$ & 0.6987 & 0.4857 & 0.5946 \\
+Free sparse, one context layer & 0.5906 & $0.5824 \pm 0.0019$ & 0.6967 & 0.4854 & 0.5963 \\
+VAD soft, initial temperature 0.1 & 0.8450 & $0.8357 \pm 0.0299$ & 0.6178 & 0.4187 & 0.5574 \\
+\end{longtable}
+\endgroup

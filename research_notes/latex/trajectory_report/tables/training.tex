@@ -1,0 +1,25 @@
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{7cm}rrr}
+\caption{Declared trainable parameter counts and training duration. Epoch triplets follow seeds 42/43/44.}\label{tab:training}\\
+\toprule
+Model & Parameters & Epochs run & Selected epochs \\
+\midrule\endfirsthead
+\multicolumn{4}{l}{\textit{Table \ref{tab:training} continued}}\\
+\toprule
+Model & Parameters & Epochs run & Selected epochs \\
+\midrule\endhead
+\midrule\multicolumn{4}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+DINO mean pooling & 119,189 & 17/16/15 & 9/8/7 \\
+DINO mean pooling, width 256 & 269,589 & 16/16/15 & 8/8/7 \\
+Free decoder, soft relevance & 519,893 & 11/12/11 & 3/4/3 \\
+Free decoder, sparse relevance & 519,893 & 11/12/11 & 3/4/3 \\
+Free decoder, duration & 519,893 & 11/12/11 & 3/4/3 \\
+VAD soft, initial temperature 0.1 & 517,572 & 17/15/15 & 9/7/7 \\
+VAD duration & 517,572 & 50/50/50 & 49/50/50 \\
+VAD single peak & 517,572 & 50/50/50 & 50/50/50 \\
+VAD sparse relevance & 517,572 & 29/17/15 & 21/9/7 \\
+\end{longtable}
+\endgroup

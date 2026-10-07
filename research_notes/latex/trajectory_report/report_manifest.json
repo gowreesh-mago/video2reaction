@@ -1,0 +1,39 @@
+{
+  "benchmark_runs": 264,
+  "conditions": 88,
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "audit_job": "27711358",
+  "audit_completed_at_utc": "2026-10-07T10:49:00.816052+00:00",
+  "source_sha256": {
+    "research_notes/trajectory_results.json": "106344255d13cf051d20f0e88ba452fd6566a79de1f0d647452b31728eeb5b8e",
+    "research_notes/trajectory_morning_status.json": "cc59ff4d386bb3940264e30c172061d90f41b14f59870d41c1f51568b547f571",
+    "research_notes/trajectory_report_inputs.json": "9d7bc0c17818eefc5c05f693eed07157d0a1cf6b132f7545dbb21847f6a9cd0f",
+    "research_notes/dataset_audit.json": "657df7408b8cf92f540fc4687ebaaa1b7a5344944045fbd7f02628414d845c5f",
+    "research_notes/trajectory_time_audit.json": "a532e6a56d5de8b752ca0c243a3d29570a8f796e2be9ab15af89c6f40494c117",
+    "configs/trajectory_overnight.json": "d83466198fcd3be64e1bdffeab7f25ac67918320e4e07fb357ae526bd75b441f"
+  },
+  "tables": [
+    "all_conditions.tex",
+    "classes.tex",
+    "jobs.tex",
+    "paired.tex",
+    "primary.tex",
+    "rare.tex",
+    "seeds.tex",
+    "selected.tex",
+    "support.tex",
+    "training.tex"
+  ],
+  "figures": [
+    "learning_curves.pdf",
+    "overview.pdf",
+    "paired.pdf",
+    "rare.pdf",
+    "temperature.pdf"
+  ],
+  "scope": "Derived tables/plots from saved aggregate results; no benchmark inference or metric recomputation on Mac."
+}

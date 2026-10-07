@@ -1,0 +1,26 @@
+\begingroup
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{p{8.8cm}rr}
+\caption{Paired movie-bootstrap comparisons. Negative differences favor the first model.}\label{tab:paired}\\
+\toprule
+Comparison & KL difference & 95\% interval \\
+\midrule\endfirsthead
+\multicolumn{3}{l}{\textit{Table \ref{tab:paired} continued}}\\
+\toprule
+Comparison & KL difference & 95\% interval \\
+\midrule\endhead
+\midrule\multicolumn{3}{r}{\textit{Continued on the next page}}\\\endfoot
+\bottomrule\endlastfoot
+Wide minus standard mean pooling & -0.000386 & [-0.002199, +0.001402] \\
+Free duration minus mean pooling & +0.002971 & [-0.001125, +0.007119] \\
+Free soft minus free duration & -0.000151 & [-0.001625, +0.001339] \\
+Free sparse minus free soft & +0.000259 & [-0.000459, +0.000975] \\
+One-layer minus two-layer free sparse & -0.001553 & [-0.004117, +0.000972] \\
+Best VAD minus mean pooling & +0.254801 & [+0.244745, +0.265172] \\
+VAD soft: initial 0.1 minus initial 0.25 & -0.223118 & [-0.232869, -0.213605] \\
+Rare-sampled minus natural VAD duration & -0.000410 & [-0.008768, +0.008209] \\
+Rare-sampled minus natural free sparse & +0.007005 & [+0.003106, +0.010854] \\
+Permuted minus sourced sparse VAD & -0.142277 & [-0.156808, -0.128307] \\
+\end{longtable}
+\endgroup
