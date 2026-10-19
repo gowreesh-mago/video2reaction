@@ -1,5 +1,26 @@
 # Experiment checklist
 
+## Previous-run error analysis — October 19, 2026
+
+Scope confirmed by the user: analyse previous Video2Reaction runs. The advertisement idea is excluded. VAD-to-DINO means the direction **VAD → DINO**, not emotion prototypes learned in DINO space; no new predictor training is part of this analysis.
+
+- [x] Inspect Snellius outputs: saved three-dimensional per-scene VAD coordinates exist, with contributions and sample IDs.
+- [x] Create branch `research/error-analysis-dino-20261019`, preserving earlier report work.
+- [x] Implement all-metric audits, distribution diagnostics, per-class and per-video errors, and training-defined rare-class checks.
+- [x] Recompute all eleven validation/test metrics for **308 previous runs**, matching saved values to 1e-10 under NumPy 2.2.6. Align all 2,070 test IDs, labels, movie IDs and frame counts.
+- [x] Plot DINO embeddings in three dimensions, label-distribution PCA, expected label VAD and the actual saved VAD trajectories. All PCA fits use training data only.
+- [x] Audit all 91,312 scene contributions for each of three VAD runs; they reconstruct the saved video predictions. Record coordinate spread and contributing-scene counts.
+- [x] Examine rare reactions, entropy, movie overlap, class-frequency effects and all metrics. Export detailed per-class and per-video errors for 13 representative runs.
+- [x] Copy 35 checksummed numerical export files locally (about 14 MB), without copying raw videos, keyframes or the full feature cache. Produce the PDF/LaTeX report, interactive HTML and failure tables in `outputs/analysis/2026-10-19-error-analysis/` and `output/pdf/`.
+- [ ] Locate paper-model predictions for a paired DINO versus paper-model error analysis. They were not found in the inspected project outputs or original data tree; a path has been requested.
+
+DINOv3 was not used in the previous experiments. A new DINOv3 benchmark and a fitted VAD-to-DINO mapping are outside this previous-run analysis and remain unlaunched.
+
+**Main findings, seed 42:** DINO predicts only five classes as its top reaction. Top-1 F1 is **0.4846 overall**, but **0.1939** on the 215 videos outside the three most common training reactions. The six rarest classes have no Top-1 test support; their Top-3 recall is zero for DINO and the best VAD condition. DINO's rare probability total is 0.01839 versus target 0.01826, but its rare-mass correlation across videos is only 0.173. The best VAD condition predicts 0.08645 rare mass with correlation -0.005. Its three-seed mean KL remains 0.83570 versus DINO 0.58090.
+
+**Execution:** `28283046` completed metric recomputation but failed on missing display metadata; corrected. `28283214` completed the full numerical audit, then failed while importing PyTorch for an unnecessary checkpoint-buffer read. `28283298` completed the resumed projection/trajectory audit (`0:0`, 24 seconds; six tests passed), using the exact checksummed prototype asset and saved arrays. No new model was trained or evaluated. The shared cluster environment currently lacks `torch/bin/torch_shm_manager`; check/repair the uv runtime before any future predictor job. This analysis did not modify that environment.
+
+
 ## Latest status — October 7, 2026
 
 **All 264 visual trajectory benchmark runs completed successfully by 01:03:13 Amsterdam**, across 88 conditions × three seeds. No benchmark jobs remain queued or running. Four smoke shards **27684811–27684814** passed all 185 tests and all 72 added model conditions. Launcher **27684815** submitted all 216 additional runs and completed `0:0`. Morning snapshot **27684816** ran at 06:00:03–06:00:32 and recorded 265 completed jobs (264 predictors + the feature cache), all with metrics.

@@ -3,6 +3,7 @@ import argparse
 import csv
 import html
 import json
+import re
 from pathlib import Path
 
 import matplotlib
@@ -179,13 +180,16 @@ def main(out):
     (out/'example_selection.json').write_text(json.dumps(examples,indent=2)+'\n')
 
     fig=plt.figure(figsize=(12,4.6),layout='constrained')
+    space_axes=[]
     for j,(key,title) in enumerate([('dino_pca3','DINO video means: training-fit PCA'),('label_pca3','21-label distributions: training-fit PCA'),('label_expected_vad','Label-weighted lexicon coordinates')]):
         ax=fig.add_subplot(1,3,j+1,projection='3d')
+        space_axes.append(ax)
         v=spaces[key]
-        ax.scatter(*v.T,c=p[:,rare].sum(1),cmap='viridis',vmin=0,vmax=p[:,rare].sum(1).max(),s=5,alpha=.55)
+        points=ax.scatter(*v.T,c=p[:,rare].sum(1),cmap='viridis',vmin=0,vmax=p[:,rare].sum(1).max(),s=5,alpha=.55)
         ax.set_title(title,fontsize=9)
         ax.set_xlabel('Valence' if j==2 else 'PC 1',fontsize=8);ax.set_ylabel('Arousal' if j==2 else 'PC 2',fontsize=8);ax.set_zlabel('Dominance' if j==2 else 'PC 3',fontsize=8)
         ax.tick_params(labelsize=7)
+    fig.colorbar(points,ax=space_axes,orientation='horizontal',fraction=.045,pad=.06,label='Rare ground-truth probability')
     save(fig,figures,'spaces3d')
     interactive(out,data,spaces,metadata,a)
 
@@ -251,10 +255,11 @@ def write_report(out,a,spaceinfo,details,examples):
     rankrows=[[s]+[f'{d["metrics"][m]:.4f}' for m in ['mrr','tpe','f1_top1','f1_top2','f1_top3']] for s,d in zip(SHORT,details)]
     rare_rows=[[s,f'{d["groups"]["rare"]["predicted_mass"]:.4f}',f'{d["groups"]["rare"]["macro_f1"]["1"]:.4f}',f'{d["groups"]["rare"]["macro_f1"]["3"]:.4f}'] for s,d in zip(SHORT,details)]
     class_rows=[[r['label'],f'{r["train_mass"]:.4f}',f'{r["target_mass"]:.4f}',str(int(r['top1_target_support'])),str(int(r['top3_target_support'])),f'{r["top1_recall"]:.3f}',f'{r["top3_recall"]:.3f}'] for r in dino['class_rows']]
-    fig=lambda name,caption: '\n'+r'\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figures/'+name+'.pdf}\\\small '+esc(caption)+r'\end{figure}'+'\n'
+    fig=lambda name,caption: '\n'+r'\begin{figure}[H]\centering\includegraphics[width=\linewidth]{figures/'+name+'.pdf}'+r'\caption{'+esc(caption)+r'}\end{figure}'+'\n'
     text=r'''\documentclass[10pt,a4paper]{article}
 \usepackage[margin=18mm]{geometry}
 \usepackage[T1]{fontenc}\usepackage{lmodern}\usepackage{graphicx,booktabs,float,longtable,xcolor,hyperref}
+\usepackage[font=small,labelfont=bf]{caption}
 \hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
 \setlength{\parindent}{0pt}\setlength{\parskip}{6pt}
 \begin{document}
@@ -310,6 +315,13 @@ Population bias and individual-video error answer different questions. A model c
 Subsets include any positive rare-reaction mass, at least ten percent rare mass, and movies absent from training. The same clips are used across models within each subset. Entropy quartiles, training-defined rare-mass quartiles, frame-count quartiles and every dominant class also have all eleven metrics in the JSON. Repeated zero quantiles can create empty groups; these remain explicitly empty rather than being assigned fabricated scores.
 '''
     text+=fig('strata','Subset performance is descriptive. Small groups, especially unseen movies and rare dominant reactions, support less precise conclusions. The official split has substantial movie overlap; these plots do not establish generalization to a new movie distribution.')
+    strata_rows=[]
+    for title,key in [('Any rare mass','rare_present'),('Rare mass at least 10%','rare_mass_at_least_10pct'),('Outside common three','dominant_outside_train_top3'),('Unseen movie','unseen_movie')]:
+        strata_rows.append([title,str(dino['strata'][key]['n'])]+[f'{details[k]["strata"][key]["metrics"]["kl"]:.4f}' for k in FOCUS])
+    text+=table(['Subset','Videos','DINO KL','VAD KL','SigLIP KL','Text KL'],strata_rows)
+    interval=a['pairs_vs_dino_seed42']['on_vad_soft_tau010_s42']['kl']
+    text+=f"Across all test clips, the best VAD condition's seed-42 KL exceeds DINO's by {interval['difference']:.4f}; the paired movie-bootstrap interval is [{interval['ci95'][0]:.4f}, {interval['ci95'][1]:.4f}]. This is a clear degradation for these saved models. It does not prove that every VAD-based model must fail. The current error pattern is excess probability spread and poor localization of rare mass to the right videos.\n"
+    text+=f"DINO's lowest target-entropy quartile has KL {dino['strata']['entropy']['groups'][0]['metrics']['kl']:.4f}, versus {dino['strata']['entropy']['groups'][3]['metrics']['kl']:.4f} in the highest quartile. Confident, concentrated label distributions are therefore not automatically easier for this model: its more diffuse output can miss the dominant reaction.\n"
     text+=r'''\subsection{Concrete failures for inspection}
 The first three examples have the largest DINO baseline KL. The next three have the largest rare-reaction mass among videos not already selected. Each plot shows the seven largest reactions under the sum of target, DINO and VAD probabilities; omitted classes remain in the numerical files. Titles come from metadata and are not a verified explanation of the failure. Following each video link supports a separate manual content review.
 '''
@@ -327,6 +339,13 @@ The third view is the expected lexicon coordinate under a video's ground-truth r
 We inspected the saved trajectory arrays and read the fixed prototype asset after verifying its checksum and class mapping against each run's provenance. No model inference is needed. For three representative VAD runs, all 91,312 test-scene coordinates are finite and have three dimensions. Their saved contributions independently reconstruct the final video predictions within export tolerance. Low-error, high-error and high-rare-mass trajectory examples are exported with scene order and model weights.
 '''
     text+=fig('trajectories','Two saved example trajectories from the best VAD condition, beside the corresponding DINO frame features in the fixed training-fit PCA view. Colour indicates scene order; marker size indicates model relevance. Lines join scene keyframes, not dense observed motion.')
+    geometry=[]
+    for name,label in [('on_vad_soft_tau010_s42','VAD best'),('traj_vad_soft_s42','VAD soft'),('traj_vad_sparse_s42','VAD sparse')]:
+        row=spaceinfo['trajectories'][name]
+        geometry.append([label]+[f'{v:.3f}' for v in row['coordinate_sd']]+[f'{row["mean_within_clip_variance"]:.4f}',f'{row["median_effective_moments"]:.2f}'])
+    text+=table(['Model','Valence SD','Arousal SD','Dominance SD','Within-clip var.','Eff. scenes'],geometry)
+    text+='Coordinate standard deviations pool all test scenes, so longer clips contribute more scenes. Within-clip variance is contribution-weighted and then averaged over videos. Effective scenes is the median inverse concentration of each scene\'s total probability contribution. It is a model summary, not a ground-truth count of emotional events.\n\n'
+    text+='All three inspected models have nonzero spread on every VAD axis and positive covariance eigenvalues. Their errors therefore cannot be explained by predicting one constant VAD point for all scenes. This does not validate the semantic meaning of the learned coordinates; there are no independent scene-level VAD annotations in this evaluation.\n'
     text+=r'''\subsection{VAD to DINO: what these results can establish}
 The requested direction is VAD to DINO. The previous models predict VAD from visual features; they do not contain a learned inverse map from VAD back to DINO. A three-number bottleneck cannot uniquely recover every 768-dimensional visual feature. Many visually different scenes can share similar affective coordinates. A learned map could estimate a conditional visual prototype, but demonstrating that would require a separately specified reconstruction probe and held-out evaluation. This report does not train such a map or claim that visual proximity proves emotional agreement.
 
@@ -336,7 +355,7 @@ The paper's fine-tuned LLaVA/Qwen per-video predictions were not found in the in
 
 Source: \url{https://arxiv.org/html/2607.06875v1}, Tables 5--7. Exact paired error analysis needs sample-aligned predictions from the desired paper checkpoint.
 
-DINOv3 was not used in the previous experiments. The official implementation supports it, but changing the encoder requires a new experiment and is outside this analysis of prior runs: \url{https://github.com/facebookresearch/dinov3}.
+DINOv3 was not used in the previous experiments. Changing the encoder requires a new experiment and is outside this analysis. The \href{https://github.com/facebookresearch/dinov3}{official DINOv3 implementation} provides the model and integration details.
 
 The paired confidence intervals saved in analysis.json resample movies, retaining all clips from each sampled movie. They describe fixed seed-42 models, use 3,000 draws, and are not corrected for multiple comparisons. They do not include training variability. Weighted F1 is non-additive and is reported directly rather than assigned an invalid average of per-video F1 values.
 
@@ -355,6 +374,8 @@ The test set has already been used repeatedly. These results identify failure mo
 '''
     text+=table(['Representative','Original run ID'],[[s,d['run_id']] for s,d in zip(SHORT,details)],'lp{10cm}')
     text+=r'\end{document}'
+    # Each generated prose line is a paragraph; keep table and figure markup intact.
+    text=re.sub(r'(?<=\.)\n(?=[A-Za-z])','\n\n',text)
     (out/'error_analysis.tex').write_text(text)
 
 
