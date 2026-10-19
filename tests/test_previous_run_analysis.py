@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from scripts.analyze_previous_runs import aligned, diagnostic, sample_metrics
+from scripts.analyze_previous_runs import aligned, diagnostic, sample_metrics, metadata_text
 from src.experiments.metrics import evaluate
 from src.experiments.taxonomy import REACTION_CLASSES
 
@@ -56,3 +56,9 @@ def test_alignment_rejects_duplicate_ids(tmp_path):
         target_distribution=p,predicted_distribution=p)
     with pytest.raises(ValueError,match='Duplicate'):
         aligned(path)
+
+
+def test_missing_metadata_is_explicit_and_never_changes_numeric_results():
+    for value in (float('nan'), None, '', 3):
+        assert metadata_text(value) == '[missing metadata]'
+    assert metadata_text('A title') == 'A title'

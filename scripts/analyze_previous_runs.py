@@ -61,6 +61,11 @@ def write_csv(path, rows):
         w.writerows(rows)
 
 
+def metadata_text(value):
+    """Official metadata uses nonstandard JSON NaN for some missing strings."""
+    return value if isinstance(value, str) and value.strip() else '[missing metadata]'
+
+
 def entropy(p):
     return -(p * np.log(np.maximum(p, 1e-30))).sum(-1)
 
@@ -161,6 +166,13 @@ def main(root, out):
     out.mkdir(parents=True, exist_ok=True)
     train_rows = json.loads((root/'data/metadata/train.json').read_text())
     test_rows = json.loads((root/'data/metadata/test.json').read_text())
+    missing_metadata = []
+    for vid, row in test_rows.items():
+        for field in ('movie_name', 'clip_name', 'clip_description'):
+            value = row.get(field)
+            if not isinstance(value, str) or not value.strip():
+                missing_metadata.append({'sample_id': vid, 'field': field})
+            row[field] = metadata_text(value)
     train_ids = sorted(train_rows)
     train_p = np.stack([target_distribution(train_rows[v]) for v in train_ids]).astype(float)
     train_movies = {str(v['imdbid']) for v in train_rows.values()}
@@ -267,6 +279,7 @@ def main(root, out):
         'excluded_without_test_predictions':excluded,'class_order':CLASSES,
         'rare_rule':'Six smallest TRAIN soft-label masses; not test-selected',
         'rare_labels':[CLASSES[i] for i in rare], 'test_n':len(p),'train_n':len(train_p),
+        'missing_display_metadata':missing_metadata,
         'detail':detail,'groups':group_results,'pairs_vs_dino_seed42':pairs,
         'uncertainty':'Paired movie-cluster percentile bootstrap, 3000 draws; fixed seed-42 models. Descriptive, no multiple-comparison correction. Weighted F1 is non-additive and is not bootstrapped here.',
         'paper_predictions':'Not found in inspected project outputs or original data tree. Our text-assisted model is not the paper model.',
