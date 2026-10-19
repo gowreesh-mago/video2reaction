@@ -6,7 +6,8 @@
 - [x] Export ten existing VAD trajectories (374 scenes) with audience labels, DINO predictions, fixed reaction coordinates and saved scene contributions. Copy only the compact numerical export to the Mac.
 - [x] Validate hashes, label/sample alignment, chronology, the distance decoder and reconstruction of each video prediction. Six focused regression checks pass.
 - [x] Build an offline Plotly viewer with playback, scene scrubbing, all-ten-path overlay, linked reaction distributions, common references, proximity plots and influence timelines.
-- [x] Pass browser checks across all ten videos, visually inspect desktop/mobile views, and verify all 12 delivered file hashes on Snellius. [Explorer guide](error_analysis/interactive_trajectories.md).
+- [x] Add a focused t−1 → t edge, an emotions-only view, and 374 compact source keyframes with synchronized previous/current cards and recorded scene intervals.
+- [x] Pass browser checks across all ten videos, visually inspect desktop/mobile views, and verify the delivered file hashes on Snellius. [Explorer guide](error_analysis/interactive_trajectories.md).
 
 ## Previous-run error analysis — October 19, 2026
 

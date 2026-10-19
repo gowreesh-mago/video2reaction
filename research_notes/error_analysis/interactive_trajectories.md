@@ -3,16 +3,18 @@
 [Open the standalone Plotly explorer](../../outputs/analysis/2026-10-19-interactive-trajectories/video_trajectories_10.html)
 · [Download its numerical data](../../outputs/analysis/2026-10-19-interactive-trajectories/trajectory_examples_10.json)
 
-The HTML works offline in a desktop browser. It embeds all ten examples and Plotly. No model server, notebook or raw video download is needed.
+The HTML works offline in a desktop browser. It embeds all ten examples, 374 compact source keyframes, and Plotly. No model server, notebook or raw video download is needed.
 
 ## What to try
 
-1. Select a video and press **Play**, or drag the scene slider. Rotate and zoom the three-dimensional view; the camera stays in place as scenes change.
+1. Select a video and press **Play**, or drag the scene slider. **Focus t−1 → t** highlights the current edge and its direction, with the remaining path faded. The first scene has no preceding edge. Turn focus off to restore the complete elapsed path. Rotate and zoom the three-dimensional view; the camera stays in place as scenes change.
 2. Turn on **Compare all 10 paths** to see the other trajectories in the same VAD coordinates. Hover for clip identity; click a point to select that video and scene.
 3. Choose a reaction, or click a reaction marker or bar. The dashed line and lower plot show its proximity to the current scene. The table shows the six closest reactions.
 4. Compare the whole-video audience distribution with the VAD prediction and the current scene. Switch the orange bars to **Mixture through this scene** to see the normalized accumulation of saved contributions. The DINO baseline is available through the legend.
 5. Choose the common reference: training mean, mean of these ten examples, or mean across all 2,070 test videos. Cross markers show that reference in the distribution plot. Reaction marker sizes can use either the selected video's audience labels or this reference.
 6. Click the timeline bars to investigate influential scenes. Their width is scene duration, height is mixture weight per second, and area is the actual scene weight.
+7. The previous/current keyframe cards follow the two endpoints of the highlighted edge. Click either image to enlarge it. Captions show the recorded scene intervals; exact keyframe capture instants are not recorded in the dataset.
+8. Enable **Emotions only** to hide all video geometry and proximity lines. The 21 fixed reaction coordinates remain interactive. Choose **Current scene probability** for marker size to see the reaction probabilities change during playback; **Emotion names** shows all labels.
 
 ## Data and limits
 
@@ -22,13 +24,13 @@ The HTML works offline in a desktop browser. It embeds all ten examples and Plot
 - Scene probabilities use `softmax(−squared_distance / temperature)`, with the saved temperature `0.09071478247642517`. The final distribution is the sum of scene probabilities times the saved scene mixture weights.
 - The Transformer uses full-video context. Playback and the running mixture explain a completed prediction; they are not online inference. Connecting lines show scene order, not measured smooth motion. There is no scene-level emotion ground truth.
 - Audience targets are the dataset's video-level reaction distributions. Common references are averages of per-video distributions, not pooled comment frequencies.
-- The compact numerical export is 554,864 bytes. No raw videos, keyframes or complete feature tensors were copied. The private output contains the 21 NRC VAD v2.1 coordinates used by the run; preserve the source licensing recorded in its JSON. Generated assets stay outside Git.
+- The compact numerical export is 554,864 bytes. A separate 10,164,687-byte JSON contains 374 JPEG thumbnails, at most 640 × 360 pixels, copied only for these ten videos. Original videos and full feature tensors remain on Snellius. The private output contains the 21 NRC VAD v2.1 coordinates used by the run; preserve the source licensing recorded in its JSON. Generated assets stay outside Git.
 
 ## Validation and reproduction
 
 The exporter verifies saved source hashes, sample and class alignment, scene chronology, probability normalization, the distance decoder, and reconstruction of each saved video prediction. Six regression tests cover selection, class-order/temperature errors, incorrect mixtures and overlapping scene intervals.
 
-Browser checks exercise all ten videos, final cumulative mixtures, playback, timeline and table clicks, camera preservation, common references, downloads and desktop/mobile layout. The browser runs offline with an isolated profile. Its result and screenshots are in the output directory's `qa/` folder.
+Browser checks exercise all ten videos, final cumulative mixtures, playback, timeline and table clicks, camera preservation, common references, downloads and desktop/mobile layout. They also decode all 374 images, check previous/current frame alignment, verify current-edge endpoints and test the emotions-only toggle. The browser runs offline with an isolated profile. Its result and screenshots are in the output directory's `qa/` folder. Frame export verifies scene IDs and intervals against the original source index, and records hashes of each original JPEG and thumbnail.
 
 Export on Snellius, using the existing uv environment:
 
@@ -37,13 +39,18 @@ Export on Snellius, using the existing uv environment:
   --root /scratch-shared/gmago/video2reaction \
   --analysis /scratch-shared/gmago/video2reaction/reports/2026-10-19-error-analysis \
   --out /scratch-shared/gmago/video2reaction/reports/2026-10-19-interactive-trajectories/trajectory_examples_10.json
+~/.local/bin/uv run --frozen --no-sync python scripts/export_trajectory_frames.py \
+  --trajectory /scratch-shared/gmago/video2reaction/reports/2026-10-19-interactive-trajectories/trajectory_examples_10.json \
+  --keyframes /scratch-shared/gmago/video2reaction/data/key_frames \
+  --out /scratch-shared/gmago/video2reaction/reports/2026-10-19-interactive-trajectories/trajectory_frames_10.json
 ```
 
-After copying that compact JSON, build locally with NumPy and Plotly:
+After copying both compact JSON files, build locally with NumPy and Plotly:
 
 ```bash
 python scripts/build_trajectory_explorer.py \
   --input outputs/analysis/2026-10-19-interactive-trajectories/trajectory_examples_10.json \
+  --frames outputs/analysis/2026-10-19-interactive-trajectories/trajectory_frames_10.json \
   --output outputs/analysis/2026-10-19-interactive-trajectories/video_trajectories_10.html
 python -m pytest tests/test_trajectory_explorer.py -q
 ```

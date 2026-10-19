@@ -34,17 +34,38 @@ def check(html, browser_path, out):
 
         assert page.locator('#video option').count() == 10
         assert page.locator('#emotion option').count() == 21
+        assert page.evaluate('Object.values(FRAMES.videos).reduce((n,v)=>n+v.frames.length,0)') == 374
+        decoded = page.evaluate("""async () => {
+            let count=0;
+            for(const video of Object.values(FRAMES.videos)) for(const frame of video.frames){
+                const image=new Image(); image.src='data:image/jpeg;base64,'+frame.jpeg_base64;
+                await image.decode();
+                if(image.naturalWidth!==frame.thumbnail_size[0] || image.naturalHeight!==frame.thumbnail_size[1])
+                    throw new Error('Decoded thumbnail dimensions differ');
+                count++;
+            }
+            return count;
+        }""")
+        assert decoded == 374
         schemas()
         visited = []
         for i in range(10):
             page.locator('#video').select_option(str(i))
             settle()
             assert page.evaluate('state.video') == i
+            assert page.locator('#previous-frame').is_hidden()
+            assert page.evaluate("!$('trajectory').data.some(t=>t.name==='Current edge t-1 to t')")
             page.locator('#scrub').evaluate('(el)=>{el.value=el.max;el.dispatchEvent(new Event("input"));}')
             settle()
             assert page.evaluate('state.scene === step().vad.length-1')
             error = page.evaluate('Math.max(...currentMixture(step(),state.scene).map((x,c)=>Math.abs(x-step().prediction[c])))')
             assert error < 2e-6, error
+            assert page.evaluate("JSON.stringify($('trajectory').data.find(t=>t.name==='Current edge t-1 to t').x) === JSON.stringify(step().vad.slice(-2).map(z=>z[0]))")
+            assert page.evaluate("$('trajectory').data.find(t=>t.name==='Background trajectory').opacity < .2")
+            assert page.evaluate("$('current-frame').dataset.video===step().sample_id && Number($('current-frame').dataset.scene)===state.scene")
+            assert page.evaluate("$('current-frame').src==='data:image/jpeg;base64,'+FRAMES.videos[step().sample_id].frames[state.scene].jpeg_base64")
+            assert page.evaluate("Number($('previous-frame').dataset.scene)===state.scene-1")
+            page.evaluate("() => Promise.all([$('current-frame').decode(),$('previous-frame').decode()])")
             schemas()
             visited.append(page.evaluate('step().sample_id'))
         page.locator('#video').select_option('0')
@@ -98,6 +119,25 @@ def check(html, browser_path, out):
         page.evaluate("$('trajectory').emit('plotly_click',{points:[{customdata:{kind:'scene',scene:21}}]})")
         settle()
         assert page.evaluate('state.scene') == 21
+        page.locator('#current-frame-open').click()
+        assert page.locator('#frame-dialog').is_visible()
+        assert page.evaluate("$('frame-dialog-image').src===$('current-frame').src")
+        page.locator('#frame-dialog-close').click()
+        page.locator('#emotions-only').check()
+        page.locator('#marker-size').select_option('scene')
+        settle()
+        assert page.evaluate("$('trajectory').data.every(t=>t.type==='scatter3d' && !t.mode.includes('lines') && t.customdata.every(d=>d.kind==='emotion'))")
+        assert page.locator('#all-paths').is_disabled()
+        assert page.locator('#focus-edge').is_disabled()
+        schemas()
+        page.locator('#trajectory').screenshot(path=str(out/'preview_emotions_only.png'))
+        page.locator('#emotions-only').uncheck()
+        page.locator('#focus-edge').uncheck()
+        settle()
+        assert page.evaluate("$('trajectory').data.some(t=>t.name==='Elapsed scenes')")
+        page.locator('#focus-edge').check()
+        page.locator('#marker-size').select_option('target')
+        settle()
         page.evaluate('window.scrollTo(0,0)')
         page.screenshot(path=str(out/'preview_desktop.png'), full_page=True)
         page.locator('#all-paths').check()
@@ -126,6 +166,10 @@ def check(html, browser_path, out):
         result = {'passed': True, 'videos_visited': visited, 'javascript_errors': errors,
                   'external_requests': network,
                   'checks': ['10 videos / 21 reactions', 'all final mixtures reconstruct predictions',
+                             'all 374 keyframes decode with recorded dimensions; previous/current alignment for ten videos',
+                             'current edge has exactly previous/current endpoints; first scene has no edge',
+                             'background paths fade; emotions-only removes all video geometry',
+                             'enlarged frame dialog',
                              'Plotly schemas', 'nine background paths plus selected path',
                              'real timeline bar clicks', 'nearest-reaction and video-table clicks',
                              'camera survives scene changes', 'play / pause', '3D click handlers',

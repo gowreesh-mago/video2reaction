@@ -1,13 +1,15 @@
 {
   "all_hashes_match": true,
-  "file_count": 12,
+  "file_count": 15,
   "remote_directory": "/scratch-shared/gmago/video2reaction/reports/2026-10-19-interactive-trajectories",
-  "html_sha256": "66799eea0622ec1063d4506a0905e0d3b8d6b4103a053590e6b8665b34ccaadd",
+  "html_sha256": "b9dc54918d429badb607ac37f17d0ce7998677b0daf221a7eeb365f890303da3",
   "json_sha256": "6eeaba0af83b7d7f8848d5d0318d8b26f0245632240cf5c24d5e3336a8edfe67",
+  "frames_sha256": "6749f21f39c3e4c3bd36dc79af8c064388d134198d7853c79c15cdb2043504aa",
   "local_directory": "/Users/gowreeshmago/Desktop/CODE/video2reaction/outputs/analysis/2026-10-19-interactive-trajectories",
   "source_branch": "research/interactive-trajectories-10videos",
   "video_count": 10,
   "scene_count": 374,
+  "keyframe_count": 374,
   "numerical_tests_passed": 6,
   "browser_checks": {
     "passed": true,
@@ -28,6 +30,10 @@
     "checks": [
       "10 videos / 21 reactions",
       "all final mixtures reconstruct predictions",
+      "all 374 keyframes decode with recorded dimensions; previous/current alignment for ten videos",
+      "current edge has exactly previous/current endpoints; first scene has no edge",
+      "background paths fade; emotions-only removes all video geometry",
+      "enlarged frame dialog",
       "Plotly schemas",
       "nine background paths plus selected path",
       "real timeline bar clicks",
@@ -42,10 +48,11 @@
     ]
   },
   "source_sha256": {
-    "source/build_trajectory_explorer.py": "dc5a8217da6a46e5f3f63b0b104b2c8e2624468b9458ab5fb3865bdc700c87af",
+    "source/build_trajectory_explorer.py": "afbefdea2e890e11b192443a4ffce4cad95deb8cbc8f8d4801e0fa1dd5adddbe",
     "source/export_trajectory_examples.py": "5f9c69902a04ef076e39f07a385fd4e1994a27482609170c60de46f7558b198e",
-    "source/qa_trajectory_explorer.py": "7dd6c75cc682711015d079b2ee7c5535ec14430be824fe146a1a1f3ba394a47c",
+    "source/export_trajectory_frames.py": "12c75e471bbfb240494d3397979e7295558e64b2f9f98fdbd7a1ec355ae1daa6",
+    "source/qa_trajectory_explorer.py": "03d85ce6ebef7775e34f246a6abac7be6d5dceec6b40ab99e848037d20a5ffc6",
     "source/test_trajectory_explorer.py": "6f46b6c6b3e3a706d5f17467838e34219a5186a734427545a6523a8a2cb83761",
-    "source/trajectory_explorer.html": "77b7eeb1f0b65170225188bd09650b7d7e6edae5bbb1ef1e2ec3eea2db208181"
+    "source/trajectory_explorer.html": "044658d967374d65e4fba4c08f12ae48af4ce18e17201d8418155a338ba7d8d1"
   }
 }
