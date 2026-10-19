@@ -207,8 +207,9 @@ def main(out):
                 setlabel(['Valence','Arousal','Dominance'][dim] if col==0 else f'PC {dim+1}',fontsize=8)
             # 3-D z labels can fall outside Matplotlib's tight bounding box.
             ax.set_zlabel('')
-            ax.text2D(.96,.58,'Dominance' if col==0 else 'PC 3',transform=ax.transAxes,
-                      fontsize=8,rotation=90,ha='right',va='center')
+            ax.text2D(.98,.95,'z: Dominance' if col==0 else 'z: PC 3',transform=ax.transAxes,
+                      fontsize=8,ha='right',va='top',
+                      bbox=dict(facecolor='white',edgecolor='none',alpha=.9))
             ax.tick_params(labelsize=7)
     save(fig,figures,'trajectories')
     write_report(out,a,spaceinfo,details,examples)
