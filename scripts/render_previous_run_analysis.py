@@ -205,6 +205,10 @@ def main(out):
             ax.set_title(f'{ex["sample_id"]}, KL={ex["kl"]:.3f}: '+('saved VAD' if col==0 else 'DINO PCA'),fontsize=10)
             for dim,setlabel in enumerate([ax.set_xlabel,ax.set_ylabel,ax.set_zlabel]):
                 setlabel(['Valence','Arousal','Dominance'][dim] if col==0 else f'PC {dim+1}',fontsize=8)
+            # 3-D z labels can fall outside Matplotlib's tight bounding box.
+            ax.set_zlabel('')
+            ax.text2D(.96,.58,'Dominance' if col==0 else 'PC 3',transform=ax.transAxes,
+                      fontsize=8,rotation=90,ha='right',va='center')
             ax.tick_params(labelsize=7)
     save(fig,figures,'trajectories')
     write_report(out,a,spaceinfo,details,examples)
