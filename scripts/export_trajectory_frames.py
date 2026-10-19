@@ -1,4 +1,4 @@
-"""Copy compact source keyframes for the ten already-exported trajectories only."""
+"""Copy compact source keyframes for the already-exported trajectories only."""
 import argparse
 import base64
 import csv
@@ -23,8 +23,9 @@ def seconds(value):
 def export(source, keyframes, output):
     raw = source.read_bytes()
     payload = json.loads(raw)
-    if len(payload['examples']) != 10 or len({e['sample_id'] for e in payload['examples']}) != 10:
-        raise ValueError('Expected exactly ten unique videos')
+    n = len(payload['examples'])
+    if n not in (10, 20) or len({e['sample_id'] for e in payload['examples']}) != n:
+        raise ValueError('Expected ten or twenty unique selected videos')
     videos = {}
     for example in payload['examples']:
         sid = example['sample_id']

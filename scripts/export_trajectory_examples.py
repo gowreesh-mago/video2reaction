@@ -1,4 +1,4 @@
-"""Export ten existing test trajectories, without loading a model or video data."""
+"""Export selected existing test trajectories, without loading a model or video data."""
 import argparse
 import hashlib
 import json
@@ -32,8 +32,19 @@ def kl(p, q):
     return (p * np.log(p / (q + 1e-10) + 1e-10)).sum(-1)
 
 
-def select_examples(ids, errors, rare_mass, counts):
+def select_examples(ids, errors, rare_mass, counts, mode='diagnostic'):
     """Stable strata for visual inspection, deliberately not a random test sample."""
+    if mode == 'kl_extremes':
+        if len(ids) < 20 or len(set(ids)) != len(ids) or not np.isfinite(errors).all():
+            raise ValueError('Need at least twenty unique test videos with finite errors')
+        if (np.asarray(counts) < 1).any():
+            raise ValueError('Every ranked video must have a saved scene')
+        ascending = sorted(range(len(ids)), key=lambda i: (errors[i], str(ids[i])))
+        best = ascending[:10]
+        worst = sorted([i for i in ascending if i not in set(best)], key=lambda i: (-errors[i], str(ids[i])))[:10]
+        return [(i, 'Best 10 · lowest KL') for i in best] + [(i, 'Worst 10 · highest KL') for i in worst]
+    if mode != 'diagnostic':
+        raise ValueError('Unknown example selection mode')
     valid = [i for i in range(len(ids)) if counts[i] >= 2]
     if len(valid) < 10:
         raise ValueError('Need at least ten videos with two or more scenes')
@@ -65,7 +76,7 @@ def validate_example(example, prototypes, temperature):
     n = len(z)
     if z.shape != (n, 3) or q.shape != (n, 21) or w.shape != (n,) or contributions.shape != q.shape:
         raise ValueError('Invalid trajectory dimensions')
-    if intervals.shape != (n, 2) or n < 2 or temperature <= 0:
+    if intervals.shape != (n, 2) or n < 1 or temperature <= 0:
         raise ValueError('Invalid intervals or temperature')
     for a in [z, q, w, contributions, intervals, pred, target, dino]:
         if not np.isfinite(a).all():
@@ -93,7 +104,7 @@ def validate_example(example, prototypes, temperature):
     return distance_squared
 
 
-def export(root, analysis, out):
+def export(root, analysis, out, selection='diagnostic'):
     root, analysis, out = map(Path, (root, analysis, out))
     run = root/'outputs/experiments'/RUN
     paths = {
@@ -144,7 +155,10 @@ def export(root, analysis, out):
     dino_errors = kl(target, a['prediction_dino_meanpool_s42'])
     rare_mass = target[:, a['rare_indices']].sum(1)
     examples = []
-    for i, group in select_examples(a['sample_id'], errors, rare_mass, counts):
+    selected = select_examples(a['sample_id'], errors, rare_mass, counts, selection)
+    ascending = sorted(range(len(errors)), key=lambda i: (errors[i], str(a['sample_id'][i])))
+    rank = {i: k+1 for k, i in enumerate(ascending)}
+    for i, group in selected:
         sid = str(a['sample_id'][i])
         j, k = ti[sid], pi[sid]
         start, end = t['offsets'][j:j+2]
@@ -159,6 +173,7 @@ def export(root, analysis, out):
         example = {
             'sample_id': sid, 'selection_group': group, **metadata[sid],
             'kl': float(errors[i]), 'dino_kl': float(dino_errors[i]),
+            'kl_rank': rank[i],
             'rare_target_mass': float(rare_mass[i]),
             'error_percentile': float(100*np.mean(errors <= errors[i])),
             'intervals_seconds': intervals.tolist(),
@@ -178,9 +193,15 @@ def export(root, analysis, out):
         'test_mean': target.mean(0).tolist(), 'test_video_count': len(target),
         'example_mean': np.mean([e['target'] for e in examples], axis=0).tolist(),
         'rare_labels': [classes[i] for i in a['rare_indices']],
-        'selection': 'Three lowest and three highest VAD KL errors, two nearest the median, '
+        'selection_mode': selection,
+        'example_count': len(examples),
+        'selection': ('Ten lowest and ten highest VAD KL errors across all 2,070 test videos. '
+                     'Ranked by this VAD model, not the DINO baseline. Ties use sample ID. '
+                     'These extremes illustrate successes and failures, not average performance.'
+                     if selection == 'kl_extremes' else
+                     'Three lowest and three highest VAD KL errors, two nearest the median, '
                      'and two with highest rare target mass not already selected. Ties use sample ID. '
-                     'Only clips with at least two scenes qualify. These are illustrative, not representative.',
+                     'Only clips with at least two scenes qualify. These are illustrative, not representative.'),
         'interpretation': [
             'VAD points are saved visual-model scene estimates with full-video context, not measured emotion states.',
             'Lines indicate scene order; they do not assert smooth emotional motion within scenes.',
@@ -204,5 +225,6 @@ if __name__ == '__main__':
     parser.add_argument('--root', type=Path, required=True)
     parser.add_argument('--analysis', type=Path, required=True)
     parser.add_argument('--out', type=Path, required=True)
+    parser.add_argument('--selection', choices=['diagnostic', 'kl_extremes'], default='diagnostic')
     args = parser.parse_args()
-    export(args.root, args.analysis, args.out)
+    export(args.root, args.analysis, args.out, args.selection)

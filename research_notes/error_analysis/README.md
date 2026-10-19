@@ -4,6 +4,7 @@ This analysis covers **308 completed prediction runs**, including the 264 DINO/V
 
 ## Local results
 
+- [Twenty-video explorer: 10 best / 10 worst, all-emotion timelines and audience/prediction comparison](../../outputs/analysis/2026-10-19-best-worst-trajectories/video_trajectories_20.html) · [Guide, selection and comment availability](best_worst_timelines.md)
 - [Ten-video trajectory explorer: playback, proximity and linked distributions](../../outputs/analysis/2026-10-19-interactive-trajectories/video_trajectories_10.html) · [Guide and provenance](interactive_trajectories.md)
 - [PDF report](../../output/pdf/video2reaction_error_analysis.pdf)
 - [Complete portable bundle: PDF, LaTeX, plots, JSON and CSV](../../output/pdf/video2reaction_error_analysis_bundle.zip)

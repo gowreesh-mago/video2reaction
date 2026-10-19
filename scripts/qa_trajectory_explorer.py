@@ -28,13 +28,16 @@ def check(html, browser_path, out):
             page.evaluate('() => renderQueue')
 
         def schemas():
-            issues = page.evaluate("['trajectory','distribution','distance','weights'].flatMap(id => "
+            issues = page.evaluate("['trajectory','distribution','distance','weights','emotion-time','video-summary'].flatMap(id => "
                                    "(Plotly.validate($(id).data,$(id).layout)||[]).map(e=>({id,...e})))")
             assert not issues, issues
 
-        assert page.locator('#video option').count() == 10
+        video_count=page.evaluate('E.length')
+        scene_count=page.evaluate('E.reduce((n,e)=>n+e.vad.length,0)')
+        assert video_count in (10,20)
+        assert page.locator('#video option').count() == video_count
         assert page.locator('#emotion option').count() == 21
-        assert page.evaluate('Object.values(FRAMES.videos).reduce((n,v)=>n+v.frames.length,0)') == 374
+        assert page.evaluate('Object.values(FRAMES.videos).reduce((n,v)=>n+v.frames.length,0)') == scene_count
         decoded = page.evaluate("""async () => {
             let count=0;
             for(const video of Object.values(FRAMES.videos)) for(const frame of video.frames){
@@ -46,13 +49,16 @@ def check(html, browser_path, out):
             }
             return count;
         }""")
-        assert decoded == 374
+        assert decoded == scene_count
         schemas()
         visited = []
-        for i in range(10):
+        for i in range(video_count):
             page.locator('#video').select_option(str(i))
             settle()
             assert page.evaluate('state.video') == i
+            assert page.evaluate("$('emotion-time').data.length===21 && $('scene-values').children.length===21")
+            assert page.evaluate("$('emotion-time').data.every((t,c)=>t.y.every((p,k)=>p===step().moment_probabilities[k][c]) && t.width.every((w,k)=>Math.abs(w-(step().intervals_seconds[k][1]-step().intervals_seconds[k][0]))<1e-9))")
+            assert page.evaluate("JSON.stringify($('video-summary').data[0].y)===JSON.stringify(step().target) && JSON.stringify($('video-summary').data[1].y)===JSON.stringify(step().prediction)")
             assert page.locator('#previous-frame').is_hidden()
             assert page.evaluate("!$('trajectory').data.some(t=>t.name==='Current edge t-1 to t')")
             page.locator('#scrub').evaluate('(el)=>{el.value=el.max;el.dispatchEvent(new Event("input"));}')
@@ -68,6 +74,37 @@ def check(html, browser_path, out):
             page.evaluate("() => Promise.all([$('current-frame').decode(),$('previous-frame').decode()])")
             schemas()
             visited.append(page.evaluate('step().sample_id'))
+        if video_count==20:
+            assert page.evaluate('E.slice(0,10).every((e,i)=>e.kl_rank===i+1) && E.slice(10).every((e,i)=>e.kl_rank===DATA.test_video_count-i)')
+        page.locator('#video').select_option('10' if video_count==20 else '0')
+        settle()
+        # Real pointer hover exposes all 21 values; a click synchronizes frame and emotion.
+        scene, emotion = page.evaluate('(() => {let k=2;return [k,argmax(step().moment_probabilities[k])];})()')
+        cell=page.locator('#emotion-time .trace.bars').nth(emotion).locator('.point').nth(scene)
+        cell.hover(force=True)
+        assert 'Hovering over scene 3' in page.locator('#hover-scene').inner_text()
+        assert page.locator('#scene-values button').count()==21
+        cell.click(force=True)
+        settle()
+        assert page.evaluate('state.scene')==scene
+        assert page.evaluate('state.emotion')==emotion
+        assert page.evaluate("Number($('current-frame').dataset.scene)")==scene
+        page.locator('#emotion-timeline-panel').screenshot(path=str(out/'preview_emotion_timeline.png'))
+        page.locator('#timeline-view').select_option('heatmap')
+        settle()
+        schemas()
+        assert page.evaluate("$('emotion-time').data[0].z.length===21 && $('emotion-time').data[0].x.length===$('emotion-time').data[0].z[0].length+1")
+        # Heatmap cells retain every exact probability and the original scene identity.
+        assert page.evaluate("$('emotion-time').data[0].z.every((row,c)=>row.every((v,k)=>{const d=$('emotion-time').data[0].customdata[c][k];return d===null?v===null:v===step().moment_probabilities[d[0]][c];}))")
+        page.locator('#emotion-timeline-panel').screenshot(path=str(out/'preview_emotion_heatmap.png'))
+        page.locator('#timeline-values').select_option('contribution')
+        settle()
+        assert page.evaluate("$('emotion-time').data[0].z.every((row,c)=>Math.abs(row.reduce((s,v)=>s+(v||0),0)-step().prediction[c])<2e-6)")
+        page.locator('#timeline-view').select_option('stacked')
+        settle()
+        assert page.evaluate("$('emotion-time').data.every((t,c)=>t.y.every((v,k)=>v===step().contributions[k][c]))")
+        page.locator('#timeline-values').select_option('probability')
+        settle()
         page.locator('#video').select_option('0')
         settle()
         page.locator('#all-paths').check()
@@ -79,7 +116,7 @@ def check(html, browser_path, out):
         page.locator('#sort').select_option('distance')
         settle()
         schemas()
-        assert page.evaluate("$('trajectory').data.filter(t=>t.customdata?.[0]?.kind==='other').length") == 9
+        assert page.evaluate("$('trajectory').data.filter(t=>t.customdata?.[0]?.kind==='other').length") == video_count-1
         assert 'fear' in page.locator('#distance-title').inner_text()
         # A real SVG bar click should update the slider and all linked plots.
         page.locator('#weights .point').nth(2).click(force=True)
@@ -142,7 +179,7 @@ def check(html, browser_path, out):
         page.screenshot(path=str(out/'preview_desktop.png'), full_page=True)
         page.locator('#all-paths').check()
         settle()
-        page.locator('#trajectory').screenshot(path=str(out/'preview_all_ten.png'))
+        page.locator('#trajectory').screenshot(path=str(out/'preview_all_paths.png'))
         page.locator('#all-paths').uncheck()
         settle()
         page.locator('details summary').click()
@@ -151,7 +188,7 @@ def check(html, browser_path, out):
         download_path = out/'download_check.json'
         download_info.value.save_as(download_path)
         downloaded = json.loads(download_path.read_text())
-        assert len(downloaded['examples']) == 10
+        assert len(downloaded['examples']) == video_count
         download_path.unlink()
         page.locator('details summary').click()
         page.set_viewport_size({'width': 390, 'height': 844})
@@ -165,12 +202,18 @@ def check(html, browser_path, out):
         assert not network, network
         result = {'passed': True, 'videos_visited': visited, 'javascript_errors': errors,
                   'external_requests': network,
-                  'checks': ['10 videos / 21 reactions', 'all final mixtures reconstruct predictions',
-                             'all 374 keyframes decode with recorded dimensions; previous/current alignment for ten videos',
+                  'checks': [f'{video_count} videos / 21 reactions', 'all final mixtures reconstruct predictions',
+                             'exact per-scene 21-class values and real scene widths in stacked timeline',
+                             'audience and final video prediction shown underneath',
+                             'real timeline hover and click synchronize the scene, emotion and frame',
+                             'heatmap preserves all scene probabilities and interval boundaries',
+                             'temporal contributions sum to video predictions',
+                             'best/worst ranks checked against the full test ranking',
+                             f'all {scene_count} keyframes decode with recorded dimensions; previous/current alignment for all videos',
                              'current edge has exactly previous/current endpoints; first scene has no edge',
                              'background paths fade; emotions-only removes all video geometry',
                              'enlarged frame dialog',
-                             'Plotly schemas', 'nine background paths plus selected path',
+                             'Plotly schemas', 'all background paths plus selected path',
                              'real timeline bar clicks', 'nearest-reaction and video-table clicks',
                              'camera survives scene changes', 'play / pause', '3D click handlers',
                              'reference / sorting / distribution controls', 'JSON download',

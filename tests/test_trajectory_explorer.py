@@ -65,3 +65,17 @@ def test_selection_is_unique_stable_and_ignores_single_scene_clips():
     perm = np.random.default_rng(2).permutation(30)
     shuffled = select_examples(ids[perm], errors[perm], rare[perm], counts[perm])
     assert [(ids[i], group) for i, group in chosen] == [(ids[perm[i]], group) for i, group in shuffled]
+
+
+def test_kl_extremes_rank_entire_test_set_including_single_scene_videos():
+    ids = np.array([f'v{i:02}' for i in range(35)])
+    errors = np.arange(35, dtype=float)
+    counts = np.full(35, 4)
+    counts[0] = 1
+    selected = select_examples(ids, errors, np.zeros(35), counts, 'kl_extremes')
+    assert [i for i, _ in selected[:10]] == list(range(10))
+    assert [i for i, _ in selected[10:]] == list(range(34, 24, -1))
+    assert len({i for i, _ in selected}) == 20
+    perm = np.random.default_rng(3).permutation(35)
+    shuffled = select_examples(ids[perm], errors[perm], np.zeros(35), counts[perm], 'kl_extremes')
+    assert [(ids[i], g) for i, g in selected] == [(ids[perm[i]], g) for i, g in shuffled]

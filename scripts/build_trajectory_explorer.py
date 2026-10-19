@@ -1,4 +1,4 @@
-"""Build an offline Plotly explorer from the compact ten-video trajectory export."""
+"""Build an offline Plotly explorer from a compact selected-trajectory export."""
 import argparse
 import base64
 import hashlib
@@ -31,8 +31,9 @@ def validate_frames(frames, payload, source_hash):
 
 def build(source, output, frames_path=None):
     payload = json.loads(source.read_text())
-    if len(payload['examples']) != 10 or len({e['sample_id'] for e in payload['examples']}) != 10:
-        raise ValueError('Expected exactly ten unique examples')
+    n = len(payload['examples'])
+    if n not in (10, 20) or len({e['sample_id'] for e in payload['examples']}) != n:
+        raise ValueError('Expected ten or twenty unique examples')
     prototypes = np.asarray(payload['prototypes'], dtype=float)
     if prototypes.shape != (21, 3) or not np.isfinite(prototypes).all():
         raise ValueError('Expected 21 finite VAD prototypes')

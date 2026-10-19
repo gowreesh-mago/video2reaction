@@ -3,24 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Video2Reaction · Ten video trajectories</title>
+<title>Video2Reaction · Emotion timelines</title>
 <style>
 :root{--ink:#182d3b;--muted:#576775;--line:#d9e2e7;--blue:#007f9b;--coral:#df673e;--purple:#7556a9;--paper:#f4f7f8}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}main{max-width:1600px;margin:auto;padding:30px 30px 60px}header{display:flex;justify-content:space-between;gap:28px;align-items:center;margin-bottom:24px}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--blue);font-weight:750}h1{font-size:36px;line-height:1.1;letter-spacing:-1px;margin:8px 0 10px}h2{font-size:18px;line-height:1.3;margin:0}h3{font-size:15px;margin:0 0 8px}p{margin:5px 0}.muted{color:var(--muted)}.sub{font-size:13px;color:var(--muted);max-width:950px}.badge{border:1px solid var(--line);border-radius:20px;padding:7px 13px;font-size:12px;white-space:nowrap;background:white}.controls,.panel,.facts{background:white;border:1px solid var(--line);border-radius:13px}.controls{padding:18px 20px;margin-bottom:16px}.top-controls{display:grid;grid-template-columns:minmax(300px,1.4fr) minmax(160px,.65fr) minmax(200px,.85fr);gap:20px}label.field{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:650}select,button,input{font:inherit}select{background:#fff;color:var(--ink);border:1px solid #bacbd4;border-radius:7px;padding:9px;width:100%}button{border:1px solid #bacbd4;background:white;color:var(--ink);border-radius:7px;padding:8px 13px;cursor:pointer}button:hover{background:#eef5f7}button.primary{background:var(--ink);color:white;border-color:var(--ink)}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #72c6de;outline-offset:2px}.playback{display:flex;align-items:center;gap:11px;margin-top:17px}.playback input[type=range]{flex:1;accent-color:var(--blue);min-width:80px}.playback select{width:115px}.scene-readout{font-size:12px;min-width:190px;font-variant-numeric:tabular-nums}.facts{display:grid;grid-template-columns:2fr repeat(3,1fr);margin-bottom:18px;padding:15px 20px;gap:20px}.fact-label{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted)}.fact-value{font-size:22px;font-weight:650;line-height:1.4}.fact-value.title{font-size:17px}.fact-detail{font-size:12px;color:var(--muted)}.grid{display:grid;grid-template-columns:1.13fr 1fr;gap:18px;align-items:start}.panel{overflow:hidden;margin-bottom:18px}.panel-head{padding:18px 20px 0}.chart{height:600px;width:100%}.chart.medium{height:350px}.panel-foot{padding:0 20px 17px;font-size:12px;color:var(--muted)}.inline-controls{display:flex;align-items:center;gap:15px;flex-wrap:wrap;margin-top:11px;font-size:12px}.inline-controls label{display:flex;align-items:center;gap:5px}.inline-controls select{width:auto;padding:5px;font-size:12px}.inline-controls button{font-size:12px;padding:5px 9px}.formula{font-family:ui-monospace,monospace;font-size:12px;background:#edf3f6;border-radius:6px;padding:8px 11px;margin-top:9px}.table-wrap{overflow:auto;padding:10px 20px 20px}table{border-collapse:collapse;width:100%;font-size:12px;white-space:nowrap}th{text-align:left;color:var(--muted);font-weight:650;border-bottom:1px solid var(--line);padding:10px 9px}td{padding:11px 9px;border-bottom:1px solid #eaf0f3}tbody tr{cursor:pointer}tbody tr:hover{background:#f1f8fa}tbody tr.active{background:#e8f4f7}td.wrap{white-space:normal;min-width:190px}td.num{text-align:right;font-variant-numeric:tabular-nums}.color-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}.notes{padding:20px}.notes summary{cursor:pointer;font-weight:650}.notes ul{padding-left:20px;font-size:13px}.notes code{font-size:11px;overflow-wrap:anywhere}a{color:#00738d}.status{font-size:12px;color:var(--blue);margin-top:10px;min-height:18px}.error{color:#a12621;padding:15px;border:1px solid #cf827e;background:#fff1ef;border-radius:8px}.key{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px}.key.orange{background:var(--coral)}.key.blue{background:var(--blue)}.key.purple{background:var(--purple)}.download{font-size:12px}.toolbar-note{font-size:12px;color:var(--muted);margin-top:7px}.count{font-size:12px;color:var(--muted);font-weight:400;margin-left:8px}
 @media(max-width:1000px){main{padding:20px 16px}.grid{grid-template-columns:1fr}.chart{height:550px}.facts{grid-template-columns:1.5fr 1fr}.top-controls{grid-template-columns:1fr 1fr}.top-controls .video-field{grid-column:1/-1}header .badge{display:none}.playback{flex-wrap:wrap}.playback input[type=range]{min-width:40%}.scene-readout{min-width:150px}h1{font-size:30px}}
 @media(max-width:560px){.top-controls{grid-template-columns:1fr}.facts{gap:12px}.fact-value{font-size:19px}.chart{height:520px}.playback select{width:90px}.scene-readout{width:100%}.panel-head{padding:15px 12px 0}.panel-foot{padding:0 12px 14px}}
 .frame-pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:15px 20px}.frame-card{margin:0;min-width:0}.frame-card button{padding:0;border:2px solid var(--blue);border-radius:8px;overflow:hidden;display:block;width:100%;background:#eaf0f3;aspect-ratio:16/9}.frame-card.current button{border-color:var(--coral)}.frame-card button:disabled{cursor:default;border-color:#d9e2e7}.frame-card img{display:block;width:100%;height:100%;object-fit:contain}.frame-card img[hidden]{display:none}.frame-card figcaption{font-size:12px;line-height:1.5;margin-top:7px}.frame-card figcaption strong{display:block}.frame-placeholder{padding:10px;display:block;font-size:12px;color:var(--muted)}.frame-placeholder[hidden]{display:none}dialog{border:1px solid var(--line);border-radius:13px;padding:18px;max-width:min(760px,95vw);background:white;color:var(--ink)}dialog::backdrop{background:rgba(18,34,45,.65)}dialog img{display:block;max-width:100%;margin:12px auto}dialog .dialog-head{display:flex;justify-content:space-between;gap:16px;align-items:center}#edge-readout{margin-top:8px;font-size:12px;color:var(--blue)}
+.timeline-chart{height:480px}.summary-chart{height:340px}.scene-values{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;padding:0 20px 18px}.scene-values button{font-size:11px;padding:7px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.scene-values .prob{display:block;font-variant-numeric:tabular-nums;font-weight:650;font-size:12px}.scene-values .swatch{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.hover-scene{font-size:12px;margin:0 20px 10px;color:var(--muted)}.summary-heading{border-top:1px solid var(--line);padding:16px 20px 0}#timeline-description{margin-top:9px}.timeline-scroller{overflow-x:auto}.timeline-scroller .timeline-chart,.timeline-scroller .summary-chart{min-width:650px}@media(max-width:1000px){.scene-values{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:560px){.scene-values{grid-template-columns:repeat(3,minmax(0,1fr));padding:0 12px 14px;gap:4px}.scene-values button{font-size:10px;padding:5px}.timeline-chart{height:500px}}
 </style>
 <script>__PLOTLY_BUNDLE__</script>
 </head>
 <body>
 <main>
-<header><div><div class="eyebrow">Video2Reaction / existing test runs</div><h1>Follow a video through emotion space</h1><p class="muted">Ten examples. Rotate the 3D view, play through scenes, and compare reactions.</p></div><span class="badge">Offline · saved predictions · seed 42</span></header>
+<header><div><div class="eyebrow">Video2Reaction / existing test runs</div><h1>Follow a video through emotion space</h1><p class="muted"><span id="example-intro">Explore scene probabilities and audience reactions.</span></p></div><span class="badge">Offline · saved predictions · seed 42</span></header>
 <section class="controls" aria-label="Video and playback controls">
 <div class="top-controls">
 <label class="field video-field">VIDEO EXAMPLE<select id="video"></select></label>
 <label class="field">REACTION TO FOLLOW<select id="emotion"></select></label>
-<label class="field">COMMON REACTION REFERENCE<select id="reference"><option value="training_mean">Training videos · mean audience labels</option><option value="example_mean">These 10 examples · mean audience labels</option><option value="test_mean">All 2,070 test videos · mean audience labels</option></select></label>
+<label class="field">COMMON REACTION REFERENCE<select id="reference"><option value="training_mean">Training videos · mean audience labels</option><option value="example_mean">Selected examples · mean audience labels</option><option value="test_mean">All 2,070 test videos · mean audience labels</option></select></label>
 </div>
 <div class="playback"><button id="play" class="primary" aria-label="Play trajectory">▶ Play</button><button id="prev" aria-label="Previous scene">‹</button><button id="next" aria-label="Next scene">›</button><input id="scrub" type="range" min="0" max="1" step="1" value="0" aria-label="Scene position"><span id="scene-readout" class="scene-readout" aria-live="off"></span><select id="speed" aria-label="Playback speed"><option value="1">1× time</option><option value="4">4× time</option><option value="8" selected>8× time</option><option value="16">16× time</option></select></div>
 <p class="toolbar-note">Playback uses scene durations. Each point is a saved keyframe-based scene estimate; connecting lines show order.</p>
@@ -31,9 +32,10 @@
 <div><span class="fact-label">DINO baseline error</span><div id="dino-error" class="fact-value"></div><div class="fact-detail">Same video and audience target</div></div>
 <div><span class="fact-label">Current nearest reaction</span><div id="nearest" class="fact-value"></div><div id="nearest-detail" class="fact-detail"></div></div>
 </section>
+<section class="panel" id="emotion-timeline-panel"><div class="panel-head"><h2>All 21 emotions over time</h2><p class="sub">Each scene contains a full reaction distribution. Width follows scene duration. Hover to inspect the values; click to select that scene and emotion.</p><div class="inline-controls"><label>View <select id="timeline-view"><option value="stacked">Stacked scenes</option><option value="heatmap">Emotion × time heatmap</option></select></label><label>Values <select id="timeline-values"><option value="probability">Scene probabilities</option><option value="contribution">Contribution to video prediction</option></select></label><button id="timeline-show-all">Show all emotions</button></div><p class="sub" id="timeline-description"></p></div><div class="timeline-scroller"><div id="emotion-time" class="timeline-chart" aria-label="All 21 emotion values in every scene over video time"></div></div><p id="hover-scene" class="hover-scene"></p><div id="scene-values" class="scene-values"></div><div class="summary-heading"><h3>Whole-video audience and predicted distributions</h3><p class="sub">The audience labels describe the entire video. The VAD prediction combines its saved scene probabilities using learned mixture weights.</p></div><div class="timeline-scroller"><div id="video-summary" class="summary-chart" aria-label="Whole-video audience and predicted reaction distributions"></div></div><div class="panel-foot">These are saved model probabilities and temporal contributions. Audience reactions are labelled for the whole video; there are no ground-truth emotion labels for individual scenes. The audience labels aggregate comment annotations; raw comments are not present in the dataset files available here.</div></section>
 <div class="grid">
 <div>
-<section class="panel"><div class="panel-head"><h2>Video trajectory in 3D</h2><p class="sub">Valence = pleasantness; arousal = activation; dominance = control. All axes span −1 to +1.</p><div class="inline-controls"><label><input type="checkbox" id="focus-edge" checked> Focus t−1 → t</label><label><input type="checkbox" id="emotions-only"> Emotions only</label><label><input type="checkbox" id="all-paths"> Compare all 10 paths</label><label><input type="checkbox" id="labels"> Emotion names</label><label>Emotion size <select id="marker-size"><option value="target">This video's audience</option><option value="scene">Current scene probability</option><option value="prediction">Video prediction</option><option value="reference">Common reference</option><option value="equal">Equal size</option></select></label><button id="reset-camera">Reset view</button></div><p id="edge-readout"></p></div><div id="trajectory" class="chart" aria-label="Interactive three-dimensional VAD trajectories"></div><div class="panel-foot"><span class="key orange"></span>Current scene &nbsp; <span class="key blue"></span>Current step t−1 → t &nbsp; <span class="key purple"></span>Reaction coordinates. Focus mode fades the other path segments. Click a path point to jump to its scene; click a reaction to follow it. Drag to rotate, scroll to zoom. Larger reaction markers mean more audience probability.</div></section>
+<section class="panel"><div class="panel-head"><h2>Video trajectory in 3D</h2><p class="sub">Valence = pleasantness; arousal = activation; dominance = control. All axes span −1 to +1.</p><div class="inline-controls"><label><input type="checkbox" id="focus-edge" checked> Focus t−1 → t</label><label><input type="checkbox" id="emotions-only"> Emotions only</label><label><input type="checkbox" id="all-paths"> Compare all paths</label><label><input type="checkbox" id="labels"> Emotion names</label><label>Emotion size <select id="marker-size"><option value="target">This video's audience</option><option value="scene">Current scene probability</option><option value="prediction">Video prediction</option><option value="reference">Common reference</option><option value="equal">Equal size</option></select></label><button id="reset-camera">Reset view</button></div><p id="edge-readout"></p></div><div id="trajectory" class="chart" aria-label="Interactive three-dimensional VAD trajectories"></div><div class="panel-foot"><span class="key orange"></span>Current scene &nbsp; <span class="key blue"></span>Current step t−1 → t &nbsp; <span class="key purple"></span>Reaction coordinates. Focus mode fades the other path segments. Click a path point to jump to its scene; click a reaction to follow it. Drag to rotate, scroll to zoom. Larger reaction markers mean more audience probability.</div></section>
 <section class="panel"><div class="panel-head"><h2 id="distance-title">Proximity over time</h2><p class="sub">The selected reaction's distance and scene probability. Smaller distance means closer in VAD space.</p></div><div id="distance" class="chart medium"></div><div class="panel-foot" id="distance-detail"></div></section>
 </div>
 <div>
@@ -46,8 +48,8 @@
 </div>
 </div>
 <section class="panel"><div class="panel-head"><h2>Nearest reactions at the current scene</h2><p class="sub">Distance is geometric; probability also depends on the distances to every other reaction and the model's temperature.</p></div><div class="table-wrap"><table><thead><tr><th>Reaction</th><th>Distance</th><th>Scene probability</th><th>Video prediction</th><th>Audience target</th><th>Common reference</th></tr></thead><tbody id="near-table"></tbody></table></div></section>
-<section class="panel"><div class="panel-head"><h2>All ten examples <span class="count">Click a row to explore</span></h2><p class="sub">Selected to expose successes and failures, not to estimate average performance. Rare reactions are the six least frequent classes in training.</p></div><div class="table-wrap"><table><thead><tr><th>Video</th><th>Selection</th><th>Scenes</th><th>VAD error ↓</th><th>DINO error ↓</th><th>Dominant audience reaction</th><th>Rare audience mass</th></tr></thead><tbody id="examples-table"></tbody></table></div></section>
-<section class="panel notes"><details><summary>How to interpret this explorer · model and data details</summary><p>The visual model maps DINOv2 frame features through a temporal Transformer into three VAD coordinates per scene. Fixed NRC VAD emotion coordinates convert distances to 21 reaction probabilities. Learned relevance and scene duration determine the mixture weights.</p><div class="formula">scene_probability(c) = softmax(−squared_distance_to_emotion(c) / temperature)<br>video_probability(c) = Σ scene_weight(t) × scene_probability(t, c)</div><ul><li>The 3D axes are the model's actual VAD outputs, not a principal-component projection. Fixed reaction coordinates are from NRC VAD Lexicon v2.1.</li><li>These scene estimates use full-video context. Playback and the running mixture are explanations of a completed prediction, not streaming or causal inference.</li><li>There is no scene-level emotion ground truth here. Audience targets are whole-video reaction distributions; the plot cannot establish that a particular scene caused a comment.</li><li>Lines connect successive scenes for orientation. The recorded model uses one constant estimate per scene; smooth motion between points is not observed.</li><li>Common references are per-video averages of audience label distributions, not pooled comment counts. The selected ten clips are deliberately biased toward diagnostic examples.</li><li>KL divergence measures distribution mismatch. Zero means identical distributions; larger values are worse. VAD means valence, arousal and dominance. DINO is the visual-feature baseline used in our previous experiments.</li></ul><p id="model-detail" class="sub"></p><p id="selection-detail" class="sub"></p><p class="sub">Rare classes: <span id="rare-labels"></span>.</p><p class="sub">Coordinates: <a href="https://saifmohammad.com/WebPages/nrc-vad.html" target="_blank" rel="noreferrer">NRC VAD Lexicon</a>. This private research export embeds the 21 coordinates used by the run; keep its source licensing with it.</p><p><button class="download" id="download">Download the ten-example JSON</button></p><p class="sub" id="hash-detail"></p></details></section>
+<section class="panel"><div class="panel-head"><h2>Selected videos <span class="count">Click a row to explore</span></h2><p class="sub">Selected to expose successes and failures, not to estimate average performance. Rare reactions are the six least frequent classes in training.</p></div><div class="table-wrap"><table><thead><tr><th>Video</th><th>Selection</th><th>Scenes</th><th>VAD error ↓</th><th>DINO error ↓</th><th>Dominant audience reaction</th><th>Rare audience mass</th></tr></thead><tbody id="examples-table"></tbody></table></div></section>
+<section class="panel notes"><details><summary>How to interpret this explorer · model and data details</summary><p>The visual model maps DINOv2 frame features through a temporal Transformer into three VAD coordinates per scene. Fixed NRC VAD emotion coordinates convert distances to 21 reaction probabilities. Learned relevance and scene duration determine the mixture weights.</p><div class="formula">scene_probability(c) = softmax(−squared_distance_to_emotion(c) / temperature)<br>video_probability(c) = Σ scene_weight(t) × scene_probability(t, c)</div><ul><li>The 3D axes are the model's actual VAD outputs, not a principal-component projection. Fixed reaction coordinates are from NRC VAD Lexicon v2.1.</li><li>These scene estimates use full-video context. Playback and the running mixture are explanations of a completed prediction, not streaming or causal inference.</li><li>There is no scene-level emotion ground truth here. Audience targets are whole-video reaction distributions; the plot cannot establish that a particular scene caused a comment.</li><li>Lines connect successive scenes for orientation. The recorded model uses one constant estimate per scene; smooth motion between points is not observed.</li><li>Common references are per-video averages of audience label distributions, not pooled comment counts. The selected clips are deliberately chosen for diagnostic inspection.</li><li>KL divergence measures distribution mismatch. Zero means identical distributions; larger values are worse. VAD means valence, arousal and dominance. DINO is the visual-feature baseline used in our previous experiments.</li></ul><p id="model-detail" class="sub"></p><p id="selection-detail" class="sub"></p><p class="sub">Rare classes: <span id="rare-labels"></span>.</p><p class="sub">Coordinates: <a href="https://saifmohammad.com/WebPages/nrc-vad.html" target="_blank" rel="noreferrer">NRC VAD Lexicon</a>. This private research export embeds the 21 coordinates used by the run; keep its source licensing with it.</p><p><button class="download" id="download">Download example data as JSON</button></p><p class="sub" id="hash-detail"></p></details></section>
 <div class="status" id="status" role="status">Loading the saved trajectories…</div>
 </main>
 <dialog id="frame-dialog"><div class="dialog-head"><strong id="frame-dialog-title"></strong><button id="frame-dialog-close">Close</button></div><img id="frame-dialog-image" alt="Enlarged scene keyframe"><p id="frame-dialog-caption" class="sub"></p></dialog>
@@ -58,7 +60,8 @@
 const DATA=JSON.parse(document.getElementById('trajectory-data').textContent);
 const FRAMES=JSON.parse(document.getElementById('frame-data').textContent);
 const $=id=>document.getElementById(id), C=DATA.class_order, E=DATA.examples;
-const palette=['#007f9b','#cd7144','#6455a5','#7c922e','#c65380','#268979','#b08923','#4565aa','#9a625b','#768290'];
+const palette=Array.from({length:E.length},(_,i)=>`hsl(${(i*137.5)%360},55%,42%)`);
+const emotionColors=['#2E91E5','#E15F99','#1CA71C','#FB0D0D','#DA16FF','#222A2A','#B68100','#750D86','#EB663B','#511CFB','#00A08B','#FB00D1','#FC0080','#B2828D','#6C7C32','#778AAE','#862A16','#A777F1','#620042','#1616A7','#DA60CA'];
 const cfg={responsive:true,displaylogo:false,scrollZoom:true,modeBarButtonsToRemove:['select2d','lasso2d'],toImageButtonOptions:{format:'png',scale:2}};
 const font={family:'-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif',size:12,color:'#334956'};
 const layoutBase={paper_bgcolor:'#fff',plot_bgcolor:'#fff',font,margin:{l:65,r:35,t:35,b:55},hoverlabel:{font:{size:12}},hovermode:'closest'};
@@ -145,6 +148,70 @@ function enlargeFrame(prefix){
  $('frame-dialog-caption').textContent=$(prefix+'-frame-caption').innerText;
  $('frame-dialog').showModal();
 }
+function emotionTimelineData(e){
+ const contribution=$('timeline-values').value==='contribution';
+ const values=contribution?e.contributions:e.moment_probabilities;
+ const custom=(k,c)=>[k,c,k+1,...e.intervals_seconds[k],e.moment_probabilities[k][c],e.contributions[k][c]];
+ const hover='<b>%{text}</b><br>Scene %{customdata[2]} · %{customdata[3]:.3f}–%{customdata[4]:.3f}s<br>Scene probability: %{customdata[5]:.3%}<br>Contribution to video: %{customdata[6]:.3%}<extra></extra>';
+ if($('timeline-view').value==='stacked')return C.map((c,j)=>({
+  type:'bar',name:c,x:e.intervals_seconds.map(midpoint),y:values.map(row=>row[j]),
+  width:e.intervals_seconds.map(p=>p[1]-p[0]),marker:{color:emotionColors[j],line:{width:.2,color:'#fff'}},
+  customdata:values.map((_,k)=>custom(k,j)),text:values.map(()=>c),textposition:'none',hovertemplate:hover,
+  meta:{kind:'emotion-timeline',emotion:j}
+ }));
+ const segments=[];
+ e.intervals_seconds.forEach((p,k)=>{
+  if(k>0 && p[0]>e.intervals_seconds[k-1][1]+1e-6)segments.push({start:e.intervals_seconds[k-1][1],end:p[0],scene:-1});
+  segments.push({start:p[0],end:p[1],scene:k});
+ });
+ const edges=[segments[0].start,...segments.map(s=>s.end)];
+ const maximum=contribution?Math.max(...values.flat()):1;
+ return [{type:'heatmap',x:edges,y:C.map((_,c)=>c),
+  z:C.map((_,c)=>segments.map(s=>s.scene<0?null:values[s.scene][c])),
+  customdata:C.map((_,c)=>segments.map(s=>s.scene<0?null:custom(s.scene,c))),
+  text:C.map(c=>segments.map(()=>c)),hovertemplate:hover,hoverongaps:false,zsmooth:false,
+  zmin:0,zmax:maximum,colorscale:[[0,'#f2f6f8'],[.15,'#b5dce5'],[.45,'#4babbf'],[.75,'#007f9b'],[1,'#183c69']],
+  colorbar:{title:{text:contribution?'Contribution':'Probability',side:'right'},tickformat:'.0%',thickness:12,len:.9},
+  meta:{kind:'emotion-heatmap'}
+ }];
+}
+function plotEmotionTimeline(e,i){
+ const contribution=$('timeline-values').value==='contribution',heatmap=$('timeline-view').value==='heatmap';
+ $('timeline-description').textContent=contribution?
+  'Each value is scene weight × emotion probability. Summing a reaction across scenes gives its whole-video prediction. The total height is the scene weight.':
+  'Every scene has all 21 probabilities, summing to 100%. Values are constant within each recorded scene; there is no interpolation between scenes.';
+ const yaxis=heatmap?{range:[20.5,-.5],tickmode:'array',tickvals:C.map((_,c)=>c),ticktext:C,tickfont:{size:11},fixedrange:true}:
+  {title:{text:contribution?'Contribution to video prediction':'Scene probability'},range:[0,contribution?Math.max(...e.weights)*1.08:1],tickformat:'.0%',gridcolor:'#edf2f5',fixedrange:true};
+ const shape={...highlight(e,i),fillcolor:'rgba(0,0,0,0)',opacity:1,line:{color:'#243d4c',width:2},layer:'above'};
+ return Plotly.react('emotion-time',emotionTimelineData(e),{
+  ...layoutBase,margin:{l:heatmap?120:65,r:heatmap?115:25,t:heatmap?20:100,b:55},
+  uirevision:`emotion-timeline-${state.video}-${heatmap}-${contribution}`,
+  ...(!heatmap?{barmode:'stack',bargap:0,legend:{orientation:'h',y:1.29,x:0,font:{size:11},traceorder:'normal'}}:{}),
+  xaxis:{title:{text:'Video time (seconds)'},range:[0,e.intervals_seconds.at(-1)[1]],gridcolor:'#edf2f5'},
+  yaxis,shapes:[shape],hovermode:'closest'
+ },cfg);
+}
+function sceneValues(e,i,hovered){
+ const contribution=$('timeline-values').value==='contribution';
+ const values=contribution?e.contributions[i]:e.moment_probabilities[i];
+ const pct=p=>p===0?'0%':p>=.001?(100*p).toFixed(2)+'%':(100*p).toPrecision(2)+'%';
+ $('hover-scene').textContent=`${hovered?'Hovering over':'Selected'} scene ${i+1} · ${time(e.intervals_seconds[i][0])}–${time(e.intervals_seconds[i][1])} · all 21 ${contribution?'contributions':'probabilities'} below. Click a value to select it.`;
+ $('scene-values').innerHTML=C.map((c,j)=>`<button data-scene="${i}" data-emotion="${j}" title="${escapeHTML(c)}: ${pct(values[j])}"><span class="swatch" style="background:${emotionColors[j]}"></span>${escapeHTML(c)}<span class="prob">${pct(values[j])}</span></button>`).join('');
+}
+function plotVideoSummary(e){
+ const bar=(name,values,color)=>({type:'bar',name,x:C,y:values,marker:{color},customdata:C.map((_,c)=>c),hovertemplate:'%{x}: %{y:.3%}<extra>'+name+'</extra>'});
+ return Plotly.react('video-summary',[bar('Audience labels',e.target,'#263d4c'),bar('VAD video prediction',e.prediction,'#007f9b'),
+  {...bar('DINO video prediction',e.dino_prediction,'#7556a9'),visible:'legendonly'}],{
+   ...layoutBase,margin:{l:65,r:25,t:35,b:105},barmode:'group',bargap:.25,uirevision:`video-summary-${state.video}`,
+   legend:{orientation:'h',y:1.2,font:{size:11}},
+   xaxis:{categoryorder:'array',categoryarray:C,tickangle:-35,tickfont:{size:11},fixedrange:true},
+   yaxis:{title:{text:'Whole-video probability'},range:[0,1],tickformat:'.0%',gridcolor:'#edf2f5',fixedrange:true}
+  },cfg);
+}
+function chooseTimelineCell(k,c){
+ if(!Number.isInteger(k)||k<0||k>=step().vad.length||!Number.isInteger(c)||c<0||c>=C.length)return;
+ pause();state.scene=k;state.emotion=c;$('emotion').value=c;safeRender();
+}
 function plotDistribution(e,i){
  let order=C.map((_,k)=>k);if($('sort').value==='target')order.sort((a,b)=>e.target[b]-e.target[a]);else if($('sort').value==='distance')order=nearestOrder(e,i);
  const labels=order.map(k=>C[k]),running=$('distribution-mode').value==='running';
@@ -181,33 +248,40 @@ async function render(){
  const e=step(),i=state.scene,near=nearestOrder(e,i)[0];
  $('scrub').max=e.vad.length-1;$('scrub').value=i;
  $('scene-readout').textContent=`Scene ${i+1}/${e.vad.length} · ${time(e.intervals_seconds[i][0])}–${time(e.intervals_seconds[i][1])}`;
- $('group').textContent=e.selection_group;$('clip-title').textContent=e.movie_name;$('clip-subtitle').textContent=e.clip_name+' · '+e.sample_id;
+ $('group').textContent=e.selection_group;$('clip-title').textContent=e.movie_name;$('clip-subtitle').textContent=e.clip_name+' · '+e.sample_id+(e.kl_rank?` · VAD KL rank ${e.kl_rank}/${DATA.test_video_count}`:'');
  $('vad-error').textContent=e.kl.toFixed(3);$('dino-error').textContent=e.dino_kl.toFixed(3);$('nearest').textContent=C[near];$('nearest-detail').textContent=`Distance ${Math.sqrt(e.distance_squared[i][near]).toFixed(3)} · scene probability ${percent(e.moment_probabilities[i][near])}`;
- tables(e,i);frameCards(e,i);
- await Promise.all([plot3D(e,i),plotDistribution(e,i),plotDistance(e,i),plotWeights(e,i)]);
- state.ready=true;setStatus(`Showing example ${state.video+1} of 10 · scene ${i+1} of ${e.vad.length}. All data and Plotly are embedded; this file works offline.`);
+ tables(e,i);frameCards(e,i);sceneValues(e,i,false);
+ await Promise.all([plot3D(e,i),plotDistribution(e,i),plotDistance(e,i),plotWeights(e,i),plotEmotionTimeline(e,i),plotVideoSummary(e)]);
+ state.ready=true;setStatus(`Showing example ${state.video+1} of ${E.length} · scene ${i+1} of ${e.vad.length}. All data and Plotly are embedded; this file works offline.`);
 }
 async function init(){
- $('video').innerHTML=E.map((e,i)=>`<option value="${i}">${String(i+1).padStart(2,'0')} · ${escapeHTML(e.movie_name)} — ${escapeHTML(e.clip_name)}</option>`).join('');
+ $('video').innerHTML=Array.from(new Set(E.map(e=>e.selection_group))).map(group=>`<optgroup label="${escapeHTML(group)}">${E.map((e,i)=>e.selection_group===group?`<option value="${i}">${String(i+1).padStart(2,'0')} · KL ${e.kl.toFixed(3)} · ${escapeHTML(e.movie_name)} — ${escapeHTML(e.clip_name)}</option>`:'').join('')}</optgroup>`).join('');
+ $('example-intro').textContent=DATA.selection_mode==='kl_extremes'?'10 lowest-KL and 10 highest-KL test videos · scene timelines, frames and audience reactions.':`${E.length} examples. Rotate the 3D view, play through scenes, and compare reactions.`;
  $('emotion').innerHTML=C.map((c,i)=>`<option value="${i}">${c}</option>`).join('');state.emotion=argmax(step().target);$('emotion').value=state.emotion;
  $('model-detail').textContent=`Saved run: ${DATA.run}. Decoder temperature: ${DATA.temperature.toFixed(6)}. ${DATA.checks.join('; ')} verified during export.`;
  $('selection-detail').textContent=DATA.selection;$('rare-labels').textContent=DATA.rare_labels.join(', ');
  $('hash-detail').textContent='Trajectory SHA-256: '+DATA.sources.trajectory.sha256;
  $('video').onchange=()=>selectVideo($('video').value);$('emotion').onchange=()=>selectEmotion($('emotion').value);
- ['reference','all-paths','labels','marker-size','distribution-mode','sort','focus-edge','emotions-only'].forEach(id=>$(id).onchange=safeRender);
+ ['reference','all-paths','labels','marker-size','distribution-mode','sort','focus-edge','emotions-only','timeline-view','timeline-values'].forEach(id=>$(id).onchange=safeRender);
  $('previous-frame-open').onclick=()=>enlargeFrame('previous');$('current-frame-open').onclick=()=>enlargeFrame('current');
  $('frame-dialog-close').onclick=()=>$('frame-dialog').close();
+ $('timeline-show-all').onclick=()=>Plotly.restyle('emotion-time',{visible:true});
+ $('scene-values').onclick=event=>{const cell=event.target.closest('[data-scene]');if(cell)chooseTimelineCell(Number(cell.dataset.scene),Number(cell.dataset.emotion));};
  $('scrub').oninput=()=>jump($('scrub').value);$('play').onclick=play;$('prev').onclick=()=>jump(state.scene-1);$('next').onclick=()=>jump(state.scene+1);
  $('speed').onchange=()=>{if(state.playing){clearTimeout(state.timer);schedule();}};
  $('reset-camera').onclick=()=>Plotly.relayout('trajectory',{'scene.camera':{eye:{x:1.55,y:1.6,z:1.05},center:{x:0,y:0,z:0},up:{x:0,y:0,z:1}}});
  $('near-table').onclick=event=>{const row=event.target.closest('[data-emotion]');if(row)selectEmotion(row.dataset.emotion);};
  $('examples-table').onclick=event=>{const row=event.target.closest('[data-video]');if(row)selectVideo(row.dataset.video);};
- $('download').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='trajectory_examples_10.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ $('download').onclick=()=>{const url=URL.createObjectURL(new Blob([JSON.stringify(DATA,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download=`trajectory_examples_${E.length}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
  await safeRender();
  $('trajectory').on('plotly_click',event=>{const d=event.points[0]?.customdata;if(!d)return;if(d.kind==='emotion')selectEmotion(d.emotion);if(d.kind==='scene')jump(d.scene);if(d.kind==='other')selectVideo(d.video,d.scene);});
  $('distribution').on('plotly_click',event=>{const c=event.points[0]?.customdata;if(Number.isInteger(c))selectEmotion(c);});
  $('distance').on('plotly_click',event=>{const s=event.points[0]?.customdata;if(Number.isInteger(s))jump(s);});
  $('weights').on('plotly_click',event=>{const s=event.points[0]?.customdata?.[0];if(Number.isInteger(s))jump(s);});
+ $('emotion-time').on('plotly_hover',event=>{const d=event.points[0]?.customdata;if(d&&Number.isInteger(d[0])&&d[0]>=0)sceneValues(step(),d[0],true);});
+ $('emotion-time').on('plotly_unhover',()=>sceneValues(step(),state.scene,false));
+ $('emotion-time').on('plotly_click',event=>{const d=event.points[0]?.customdata;if(d)chooseTimelineCell(d[0],d[1]);});
+ $('video-summary').on('plotly_click',event=>{const c=event.points[0]?.customdata;if(Number.isInteger(c))selectEmotion(c);});
 }
 init().catch(err=>{setStatus('Could not initialize viewer: '+err.message);$('status').className='status error';console.error(err);});
 </script>

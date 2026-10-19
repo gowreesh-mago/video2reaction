@@ -1,5 +1,14 @@
 # Experiment checklist
 
+## Emotion timelines: ten best and ten worst — October 19, 2026
+
+- [x] Create `research/emotion-timelines-best-worst`, preserving earlier report edits.
+- [x] Select the exact ten lowest and ten highest VAD KL cases across all 2,070 test videos; independently verify the selected IDs against the prior full numerical export.
+- [x] Export 20 trajectories and 619 compact scene keyframes. Preserve source hashes, scene intervals, audience labels, final VAD predictions and DINO comparisons.
+- [x] Add all 21 scene probabilities over time, stacked and heatmap views, hover values, scene/frame linkage, temporal contributions, and whole-video audience versus prediction bars underneath.
+- [x] Inspect available annotation files: current train/validation/test metadata has aggregate reaction labels; raw comments were not found in the inspected dataset trees. Request a path to comment-level annotations.
+- [x] Pass browser/visual checks for all 20 videos and 619 images; verify matching hashes for all 19 delivered files on the Mac and Snellius. [Viewer guide](error_analysis/best_worst_timelines.md).
+
 ## Interactive ten-video trajectories — October 19, 2026
 
 - [x] Create branch `research/interactive-trajectories-10videos`, preserving existing report edits.
