@@ -4,6 +4,7 @@ This analysis covers **308 completed prediction runs**, including the 264 DINO/V
 
 ## Local results
 
+- [Ten-video trajectory explorer: playback, proximity and linked distributions](../../outputs/analysis/2026-10-19-interactive-trajectories/video_trajectories_10.html) · [Guide and provenance](interactive_trajectories.md)
 - [PDF report](../../output/pdf/video2reaction_error_analysis.pdf)
 - [Complete portable bundle: PDF, LaTeX, plots, JSON and CSV](../../output/pdf/video2reaction_error_analysis_bundle.zip)
 - [Interactive video and label embeddings](../../outputs/analysis/2026-10-19-error-analysis/embeddings_3d.html)
