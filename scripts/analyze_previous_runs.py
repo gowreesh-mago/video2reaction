@@ -177,6 +177,7 @@ def main(root, out):
     train_p = np.stack([target_distribution(train_rows[v]) for v in train_ids]).astype(float)
     train_movies = {str(v['imdbid']) for v in train_rows.values()}
     rare = np.argsort(train_p.mean(0), kind='stable')[:6]
+    common3 = np.argsort(train_p.mean(0), kind='stable')[-3:]
     runs, detail, excluded, ref = [], {}, [], None
     predictions, paths = {}, {}
     for directory in sorted((root/'outputs/experiments').iterdir()):
@@ -226,6 +227,7 @@ def main(root, out):
                         'metrics':evaluate(p[mask],q[mask])[0] if mask.any() else None})
             masks = {'rare_present':p[:,rare].sum(1)>0,
                      'rare_mass_at_least_10pct':p[:,rare].sum(1)>=.1,
+                     'dominant_outside_train_top3':topk_mask(p,1)[:,common3].sum(1)==0,
                      'seen_movie':np.array([v in train_movies for v in data['movie_id']]),
                      'unseen_movie':np.array([v not in train_movies for v in data['movie_id']])}
             for c,label in enumerate(CLASSES):
@@ -279,6 +281,7 @@ def main(root, out):
         'excluded_without_test_predictions':excluded,'class_order':CLASSES,
         'rare_rule':'Six smallest TRAIN soft-label masses; not test-selected',
         'rare_labels':[CLASSES[i] for i in rare], 'test_n':len(p),'train_n':len(train_p),
+        'most_common_train_labels':[CLASSES[i] for i in common3],
         'missing_display_metadata':missing_metadata,
         'detail':detail,'groups':group_results,'pairs_vs_dino_seed42':pairs,
         'uncertainty':'Paired movie-cluster percentile bootstrap, 3000 draws; fixed seed-42 models. Descriptive, no multiple-comparison correction. Weighted F1 is non-additive and is not bootstrapped here.',
