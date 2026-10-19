@@ -1,0 +1,58 @@
+{
+  "date_utc": "2026-10-19T10:56:47.256237+00:00",
+  "branch": "research/error-analysis-dino-20261019",
+  "final_code_commit": "85c459b1fd7f442420df367a9821e8ac6bd45164",
+  "analysis_source_commit": "90aedff",
+  "projection_export_source_commit": "fbfd709",
+  "numeric_audit_run_count": 308,
+  "test_videos": 2070,
+  "official_metrics": 11,
+  "detailed_representative_runs": 13,
+  "trajectory_audits": 3,
+  "test_scenes_each": 91312,
+  "core_download_file_count": 35,
+  "core_download_sha256_verified": true,
+  "dataset_or_full_features_downloaded": false,
+  "new_predictor_training_or_inference": false,
+  "jobs": [
+    {
+      "id": "28283046",
+      "state": "FAILED",
+      "stage": "numeric recomputation passed; missing metadata export failed"
+    },
+    {
+      "id": "28283214",
+      "state": "FAILED",
+      "stage": "numeric audit completed; PyTorch import during trajectory export failed"
+    },
+    {
+      "id": "28283298",
+      "state": "COMPLETED",
+      "exit_code": "0:0",
+      "elapsed": "00:00:24",
+      "stage": "six tests and resumed trajectory/projection export passed"
+    }
+  ],
+  "validation": {
+    "local_tests_passed": 6,
+    "cluster_tests_passed": 6,
+    "metric_absolute_tolerance": 1e-10,
+    "pdf_pages": 12,
+    "pdf_visually_reviewed": true,
+    "latex_final_warnings": 0,
+    "html": "Plotly schema validated during export; standalone JS embedded. Browser UI unavailable for live interaction test.",
+    "portable_source_build": true,
+    "portable_pdf_text_identical_pages": 12
+  },
+  "paper_prediction_comparison": "Pending: authors per-video predictions not found; user asked for their location.",
+  "shared_cluster_torch": "torch/bin/torch_shm_manager absent; environment unmodified; analysis does not import torch.",
+  "local_report": "/Users/gowreeshmago/Desktop/CODE/video2reaction/output/pdf/video2reaction_error_analysis.pdf",
+  "report_sha256": "3d299ac10bd17a910038dcb14a3b592e727c467de89c89531e8e4683ec01ec1c",
+  "local_analysis_directory": "/Users/gowreeshmago/Desktop/CODE/video2reaction/outputs/analysis/2026-10-19-error-analysis",
+  "remote_report_directory": "snellius.surf.nl:/scratch-shared/gmago/video2reaction/reports/2026-10-19-error-analysis/",
+  "remote_sync_verified": true,
+  "remote_package_files_sha256_verified": 69,
+  "local_bundle": "/Users/gowreeshmago/Desktop/CODE/video2reaction/output/pdf/video2reaction_error_analysis_bundle.zip",
+  "bundle_sha256": "b6158ea118e7b87670fa414f7745016b02e412890ecd58f7c7a9ecc4f2af8118",
+  "bundle_bytes": 15183200
+}

@@ -5,6 +5,7 @@ This analysis covers **308 completed prediction runs**, including the 264 DINO/V
 ## Local results
 
 - [PDF report](../../output/pdf/video2reaction_error_analysis.pdf)
+- [Complete portable bundle: PDF, LaTeX, plots, JSON and CSV](../../output/pdf/video2reaction_error_analysis_bundle.zip)
 - [Interactive video and label embeddings](../../outputs/analysis/2026-10-19-error-analysis/embeddings_3d.html)
 - [Interactive saved VAD trajectories](../../outputs/analysis/2026-10-19-error-analysis/vad_trajectories_3d.html)
 - [Full numerical analysis](../../outputs/analysis/2026-10-19-error-analysis/analysis.json)
@@ -13,6 +14,8 @@ This analysis covers **308 completed prediction runs**, including the 264 DINO/V
 - [DINO class errors and support](../../outputs/analysis/2026-10-19-error-analysis/dino_meanpool_s42_per_class.csv)
 
 The analysis directory also contains matching tables for twelve other representative runs, plot sources, the LaTeX report source, and provenance/checksum files. The PDF bundle includes these results for portable review. These generated files are intentionally excluded from Git.
+
+The 12-page PDF was visually checked, its final LaTeX build has no warnings, and the extracted portable source compiles independently with identical text on all 12 pages. All 69 packaged files and the PDF/ZIP hashes match on the Mac and Snellius. See [delivery verification](delivery.json).
 
 ## Main findings
 
