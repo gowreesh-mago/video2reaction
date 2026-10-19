@@ -66,6 +66,23 @@ def metadata_text(value):
     return value if isinstance(value, str) and value.strip() else '[missing metadata]'
 
 
+def saved_prototypes(path, provenance):
+    """Read fixed coordinates using the run's exact asset hash and label mapping."""
+    if sha(path) != provenance['asset_sha256']:
+        raise ValueError('Prototype asset differs from saved run provenance')
+    asset=json.loads(Path(path).read_text())
+    if asset['class_order'] != CLASSES or asset['scale'] != [-1,1]:
+        raise ValueError('Prototype class order or scale differs')
+    if provenance['output_class_order'] != CLASSES:
+        raise ValueError('Run output class order differs')
+    words=provenance['vad_word_for_each_class']
+    matrix=np.array([[asset['labels'][c][axis] for axis in ('valence','arousal','dominance')]
+                     for c in words],dtype=np.float32)
+    if matrix.shape!=(21,3) or not np.isfinite(matrix).all() or (np.abs(matrix)>1).any():
+        raise ValueError('Invalid fixed coordinates')
+    return matrix
+
+
 def entropy(p):
     return -(p * np.log(np.maximum(p, 1e-30))).sum(-1)
 
@@ -344,11 +361,10 @@ def export_spaces(root,out,train_ids,train_p,ref,paths,predictions):
             spreads.append(float(np.average(((t['vad'][a:b]-mean)**2).sum(1),weights=mass)))
             supports.append(float(1/(mass**2).sum()))
         np.testing.assert_allclose(recon,predictions[name],atol=2e-6,rtol=2e-5)
-        # Existing checkpoint buffer supplies exact class coordinates; no guessed lexicon values.
-        import torch
-        state=torch.load(directory/'best.pt',map_location='cpu',weights_only=False)
-        model_state=state.get('model',state.get('model_state_dict',state))
-        prototypes=model_state['prototypes'].cpu().numpy()
+        # Fixed buffer is determined by the immutable, checksummed run asset.
+        # Avoid loading PyTorch: no checkpoint weights or predictor inference are needed.
+        provenance=json.loads((directory/'trajectory_provenance.json').read_text())
+        prototypes=saved_prototypes(root/'data/lexicons/nrc-vad-v2.1/reaction_vad.json',provenance)
         export['prototypes']=prototypes
         export['label_expected_vad']=p@prototypes
         export[name+'_mean_vad']=np.array(means)
@@ -384,13 +400,36 @@ def export_spaces(root,out,train_ids,train_p,ref,paths,predictions):
         'neighbour_id':str(ref['sample_id'][nearest[i]]),'vad_distance':float(distance[i,nearest[i]]),
         'js_divergence':float(js[i])} for i in candidates[:20]]
     info['interpretation']='Saved VAD is predicted, not annotated. Label expected VAD is a weighted lexicon centroid, not a measured video emotion. PCA axes are not VAD axes. No VAD-to-DINO mapping is trained in this previous-run analysis.'
+    info['export_source_sha256']=sha(__file__)
     np.savez_compressed(out/'spaces.npz',**export)
     dump(out/'spaces.json',info)
+
+
+def resume_spaces(root,out):
+    """Resume only the projection export after a completed numeric audit."""
+    audit=json.loads((out/'analysis.json').read_text())
+    if audit['numpy']!=np.__version__:
+        raise ValueError('Use the original audit environment')
+    paths={name:root/'outputs/experiments'/record['run_id'] for name,record in audit['detail'].items()}
+    ref=aligned(paths['dino_meanpool_s42']/'test/predictions.npz')
+    with np.load(out/'plot_arrays.npz',allow_pickle=False) as f:
+        np.testing.assert_array_equal(f['sample_id'],ref['sample_id'])
+        np.testing.assert_array_equal(f['target'],ref['target_distribution'])
+        predictions={name:aligned(path/'test/predictions.npz',ref)['predicted_distribution'] for name,path in paths.items()}
+        for name,q in predictions.items():
+            np.testing.assert_array_equal(f['prediction_'+name],q)
+    rows=json.loads((root/'data/metadata/train.json').read_text())
+    ids=sorted(rows)
+    train_p=np.stack([target_distribution(rows[v]) for v in ids]).astype(float)
+    export_spaces(root,out,ids,train_p,ref,paths,predictions)
+    dump(out/'file_manifest.json',{str(p.relative_to(out)):sha(p) for p in sorted(out.rglob('*')) if p.is_file() and p.name!='file_manifest.json'})
+    print('COMPLETE spaces; existing audit covers',audit['run_count'],'runs',flush=True)
 
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root',type=Path,required=True)
     parser.add_argument('--out',type=Path,required=True)
+    parser.add_argument('--spaces-only',action='store_true')
     a=parser.parse_args()
-    main(a.root,a.out)
+    (resume_spaces if a.spaces_only else main)(a.root,a.out)

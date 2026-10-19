@@ -83,6 +83,24 @@ def main(out):
         fig.colorbar(im,ax=ax,label='Videos')
     save(fig,figures,'entropy')
 
+    variation={}
+    fig,axs=plt.subplots(1,2,figsize=(11,4.5),layout='constrained')
+    for j,k in enumerate(FOCUS):
+        ratio=q[k].std(0)/p.std(0)
+        correlation=float(np.corrcoef(q[k][:,rare].sum(1),p[:,rare].sum(1))[0,1])
+        variation[ORDER[k]]={'median_class_sd_ratio':float(np.median(ratio)),
+            'median_rare_class_sd_ratio':float(np.median(ratio[rare])),
+            'rare_mass_pearson_r':correlation}
+        axs[0].plot(x,ratio,'o-',label=SHORT[k],c=colors[j],markersize=3)
+        axs[1].scatter(p[:,rare].sum(1),q[k][:,rare].sum(1),s=5,alpha=.15,c=colors[j],label=SHORT[k])
+    axs[0].axhline(1,c='gray',linestyle=':')
+    axs[0].set(xticks=x,xticklabels=labels,ylabel='Predicted SD / target SD',title='Variation across videos, for each reaction')
+    axs[0].tick_params(axis='x',rotation=65,labelsize=8);axs[0].legend(fontsize=8)
+    axs[1].plot([0,.5],[0,.5],':',c='gray')
+    axs[1].set(xlabel='Ground-truth rare mass',ylabel='Predicted rare mass',title='Does rare probability follow the right videos?')
+    save(fig,figures,'variation')
+    (out/'descriptive_correlations.json').write_text(json.dumps(variation,indent=2)+'\n')
+
     fig,axs=plt.subplots(2,1,figsize=(12,9),layout='constrained')
     for ax,k in zip(axs,[1,3]):
         vals=np.array([[r[f'top{k}_recall'] for r in d['class_rows']] for d in details])
@@ -113,14 +131,14 @@ def main(out):
     save(fig,figures,'all_metrics')
 
     fig,axs=plt.subplots(2,2,figsize=(11,8),layout='constrained')
-    stratanames=['all','rare_present','rare_mass_at_least_10pct','unseen_movie']
-    stratalabels=['All videos','Any rare mass','Rare mass >=10%','Unseen movie']
+    stratanames=['all','rare_present','rare_mass_at_least_10pct','dominant_outside_train_top3','unseen_movie']
+    stratalabels=['All videos','Any rare mass','Rare >=10%','Outside top 3','Unseen movie']
     for ax,metric in zip(axs.flat,['kl','cosine','mrr','f1_top1']):
         for j,k in enumerate(FOCUS):
             vals=[details[k]['metrics'][metric]]+[details[k]['strata'][s]['metrics'][metric] for s in stratanames[1:]]
-            ax.plot(range(4),vals,'o-',label=SHORT[k],c=colors[j])
+            ax.plot(range(5),vals,'o-',label=SHORT[k],c=colors[j])
         ns=[len(p)]+[details[0]['strata'][s]['n'] for s in stratanames[1:]]
-        ax.set(xticks=range(4),xticklabels=[f'{l}\nn={n}' for l,n in zip(stratalabels,ns)],ylabel=metric,title=metric.replace('f1_top1','Top-1 weighted F1'))
+        ax.set(xticks=range(5),xticklabels=[f'{l}\nn={n}' for l,n in zip(stratalabels,ns)],ylabel=metric,title=metric.replace('f1_top1','Top-1 weighted F1'))
         ax.tick_params(axis='x',labelsize=8);ax.grid(axis='y',alpha=.2)
     axs[0,0].legend(fontsize=8)
     save(fig,figures,'strata')
@@ -220,13 +238,14 @@ def interactive(out,data,spaces,metadata,a):
             name=ex['sample_id'],text=[f'Scene {i}, weight {weight:.4f}' for i,weight in enumerate(w)],hovertemplate='%{text}<br>V=%{x:.3f}, A=%{y:.3f}, D=%{z:.3f}<extra></extra>'))
     buttons=[dict(label=f'{ex["sample_id"]}: KL {ex["kl"]:.3f}',method='update',args=[{'visible':[i==j for i in range(len(examples))]}]) for j,ex in enumerate(examples)]
     fig.update_layout(height=750,title='Actual saved VAD coordinates: best VAD condition, seed 42',updatemenus=[dict(buttons=buttons,x=0,y=1.1)],scene=dict(xaxis_title='Valence',yaxis_title='Arousal',zaxis_title='Dominance'))
-    (out/'vad_trajectories_3d.html').write_text('<!doctype html><meta charset="utf-8"><title>Saved VAD trajectories</title><h1 style="font-family:system-ui">Saved per-scene VAD trajectories</h1><p style="font-family:system-ui">Marker area reflects model relevance; colour shows scene order. These are predictions from a model with full-video context, not independently annotated emotional states. Examples include low error, high error and high rare-reaction mass.</p>'+fig.to_html(full_html=False,include_plotlyjs=True))
+    (out/'vad_trajectories_3d.html').write_text('<!doctype html><meta charset="utf-8"><title>Saved VAD trajectories</title><h1 style="font-family:system-ui">Saved per-scene VAD trajectories</h1><p style="font-family:system-ui">Marker size reflects model relevance; colour shows scene order. These are predictions from a model with full-video context, not independently annotated emotional states. Examples include low error, high error and high rare-reaction mass.</p>'+fig.to_html(full_html=False,include_plotlyjs=True))
 
 
 def write_report(out,a,spaceinfo,details,examples):
     dino=details[0];vad=details[2];prior=details[-1]
     rare_names=', '.join(a['rare_labels'])
     means=a['groups']
+    variation=json.loads((out/'descriptive_correlations.json').read_text())
     metricheaders=['Model','KL','Cheb.','Clark','CAD','Cosine','Inter.']
     metricrows=[[s]+[f'{d["metrics"][m]:.4f}' for m in ['kl','chebyshev','clark','cad','cosine','intersection']] for s,d in zip(SHORT,details)]
     rankrows=[[s]+[f'{d["metrics"][m]:.4f}' for m in ['mrr','tpe','f1_top1','f1_top2','f1_top3']] for s,d in zip(SHORT,details)]
@@ -251,7 +270,12 @@ The ground truth is a distribution of reactions extracted from comments. It is n
     text+=r'''\subsection{Main findings}
 '''
     text+=f"The DINO baseline's mean test KL over its three original seeds is {means['dino_meanpool']['test_mean']['kl']:.6f}; the wide DINO condition is {means['on_dino_meanpool_wide']['test_mean']['kl']:.6f}. The best VAD condition by the earlier validation ranking is {means['on_vad_soft_tau010']['test_mean']['kl']:.6f}. Lower KL is better. These are averages of separate model scores, not scores of an ensemble.\n"
-    text+=f"The detailed plots below use seed 42 consistently. DINO assigns {dino['groups']['rare']['predicted_mass']:.4f} probability to the six rare reactions in total, against {dino['groups']['rare']['target_mass']:.4f} in the labels. The best VAD condition assigns {vad['groups']['rare']['predicted_mass']:.4f}. Its rare-class Top-1 macro F1 is {vad['groups']['rare']['macro_f1']['1']:.4f}, compared with {dino['groups']['rare']['macro_f1']['1']:.4f} for DINO. Adding probability to rare classes alone does not establish better recognition of those classes.\n"
+    text+=f"The detailed plots below use seed 42 consistently. DINO assigns {dino['groups']['rare']['predicted_mass']:.4f} probability to the six rare reactions in total, against {dino['groups']['rare']['target_mass']:.4f} in the labels. The best VAD condition assigns {vad['groups']['rare']['predicted_mass']:.4f}. All six rare classes have zero dominant-label support in this test set, so their zero Top-1 macro F1 is uninformative. Their Top-3 recall is also zero for both models despite nonzero Top-3 support. Adding rare probability has not produced correct rare-reaction retrieval in these representative runs.\n"
+    predicted_classes=sum(r['top1_prediction_support']>0 for r in dino['class_rows'])
+    missed=[r['label'] for r in dino['class_rows'] if r['top1_target_support']>0 and r['top1_recall']==0]
+    text+=f"DINO predicts only {predicted_classes} of the 21 classes as its top reaction. Supported classes with zero Top-1 recall are {esc(', '.join(missed))}. This is a stronger diagnostic of narrow recognition than a good aggregate KL score alone.\n"
+    tail=dino['strata']['dominant_outside_train_top3']
+    text+=f"Outside the three most common training reactions ({esc(', '.join(a['most_common_train_labels']))}), {tail['n']} test videos remain. DINO has Top-1 F1 {tail['metrics']['f1_top1']:.4f} on that subset, compared with {dino['metrics']['f1_top1']:.4f} overall. These class-frequency effects should be central to any next hypothesis.\n"
     text+=f"The mean target entropy is {dino['distribution']['target_entropy_mean']:.3f} nats. DINO predicts {dino['distribution']['prediction_entropy_mean']:.3f}; the best VAD condition predicts {vad['distribution']['prediction_entropy_mean']:.3f}. Larger entropy means probability is spread over more reactions. The plots test whether models are too diffuse, too concentrated, or fail differently across videos.\n"
     text+=r'''\section{Models and interpretation of comparisons}
 All DINO runs use frozen DINOv2-base frame embeddings (768 numbers per scene keyframe). The baseline projects each frame and averages it before classifying the reaction distribution. The wide condition increases capacity. The VAD models use a temporal Transformer and predict three numbers per scene: valence, arousal and dominance. Distances to fixed NRC reaction coordinates produce per-scene probabilities; the pooling rule combines scenes. The free models predict 21 reaction logits without that three-dimensional distance constraint.
@@ -272,6 +296,8 @@ Population bias and individual-video error answer different questions. A model c
 '''
     text+=fig('distribution_bias','Asterisks mark the six rarest reactions by training probability mass. Red in the lower panel means too much predicted probability; blue means too little. Class order follows the official evaluator.')
     text+=fig('entropy','Entropy compares how spread out the distributions are. Points above the dotted diagonal are more diffuse than the corresponding labels. These are separate predictions for the same test clips.')
+    text+=fig('variation','A ratio below one means the predictions vary less between videos than the target probabilities do. Matching the total rare mass is insufficient if that mass does not track which videos actually contain rare reactions. Standard deviations and Pearson correlations here are descriptive test-set summaries.')
+    text+=f"DINO's median predicted-to-target standard-deviation ratio across the 21 classes is {variation['dino_meanpool_s42']['median_class_sd_ratio']:.3f}; for the six rare classes it is {variation['dino_meanpool_s42']['median_rare_class_sd_ratio']:.3f}. Its rare-mass correlation with the target is {variation['dino_meanpool_s42']['rare_mass_pearson_r']:.3f}, compared with {variation['on_vad_soft_tau010_s42']['rare_mass_pearson_r']:.3f} for the best VAD condition. Thus the VAD model assigns substantially more rare mass without tracking the videos containing that mass. The DINO model better matches the population total but still strongly reduces variation between videos.\n"
     text+=fig('calibration','For each probability bin, compare mean predicted mass with mean label mass. The diagonal indicates agreement in that bin. These are descriptive calibration curves against comment-derived soft labels, not calibration against direct human emotion measurements. Bin counts are saved in analysis.json.')
     text+=r'''\section{Rare and long-tail reactions}
 '''
@@ -298,7 +324,7 @@ The third view is the expected lexicon coordinate under a video's ground-truth r
     text+=f"The first three DINO components retain {100*spaceinfo['dino_variance_retained']:.1f}\\% of training embedding variance. The first three label components retain {100*spaceinfo['label_variance_retained']:.1f}\\% of training label variance. A visually weak separation in three dimensions therefore cannot by itself disprove separability in the full feature space.\n"
     text+=fig('spaces3d','The same test videos appear in all three panels; colour encodes rare-reaction probability. The interactive HTML allows rotation and selection of each of the 21 reaction probabilities. PCA coordinate systems are separate, so positions across panels are not directly comparable.')
     text+=r'''\subsection{The checkpoint coordinates already exist}
-We inspected the saved trajectory arrays and loaded the exact fixed prototype buffer from the corresponding selected checkpoints. For three representative VAD runs, all 91,312 test-scene coordinates are finite and have three dimensions. Their saved contributions independently reconstruct the final video predictions within export tolerance. Low-error, high-error and high-rare-mass trajectory examples are exported with scene order and model weights.
+We inspected the saved trajectory arrays and read the fixed prototype asset after verifying its checksum and class mapping against each run's provenance. No model inference is needed. For three representative VAD runs, all 91,312 test-scene coordinates are finite and have three dimensions. Their saved contributions independently reconstruct the final video predictions within export tolerance. Low-error, high-error and high-rare-mass trajectory examples are exported with scene order and model weights.
 '''
     text+=fig('trajectories','Two saved example trajectories from the best VAD condition, beside the corresponding DINO frame features in the fixed training-fit PCA view. Colour indicates scene order; marker size indicates model relevance. Lines join scene keyframes, not dense observed motion.')
     text+=r'''\subsection{VAD to DINO: what these results can establish}

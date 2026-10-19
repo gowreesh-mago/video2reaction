@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from scripts.analyze_previous_runs import aligned, diagnostic, sample_metrics, metadata_text
+from scripts.analyze_previous_runs import aligned, diagnostic, sample_metrics, metadata_text, saved_prototypes, sha
 from src.experiments.metrics import evaluate
 from src.experiments.taxonomy import REACTION_CLASSES
 
@@ -62,3 +62,18 @@ def test_missing_metadata_is_explicit_and_never_changes_numeric_results():
     for value in (float('nan'), None, '', 3):
         assert metadata_text(value) == '[missing metadata]'
     assert metadata_text('A title') == 'A title'
+
+
+def test_prototypes_preserve_recorded_permutation_and_reject_changed_asset(tmp_path):
+    import json
+    path=tmp_path/'prototypes.json'
+    asset={'class_order':REACTION_CLASSES,'scale':[-1,1],
+           'labels':{c:dict(valence=i/21,arousal=0,dominance=0) for i,c in enumerate(REACTION_CLASSES)}}
+    path.write_text(json.dumps(asset))
+    provenance={'asset_sha256':sha(path),'output_class_order':REACTION_CLASSES,
+                'vad_word_for_each_class':REACTION_CLASSES[::-1]}
+    values=saved_prototypes(path,provenance)
+    np.testing.assert_allclose(values[:,0],np.arange(21)[::-1]/21)
+    path.write_text(json.dumps({**asset,'scale':[0,1]}))
+    with pytest.raises(ValueError,match='differs from saved'):
+        saved_prototypes(path,provenance)
