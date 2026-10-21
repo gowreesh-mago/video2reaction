@@ -51,6 +51,7 @@ def predicted_vad(data, model, torch, out):
     values = np.empty((data['offsets'][-1], 3), np.float32)
     outputs = np.empty((len(data['ids']), 21), np.float32)
     started = time.monotonic()
+    device = next(model.parameters()).device
     with torch.inference_mode():
         for start in range(0, len(data['ids']), 16):
             end = min(start + 16, len(data['ids']))
@@ -62,11 +63,11 @@ def predicted_vad(data, model, torch, out):
             lengths = torch.tensor([len(x) for x in frames])
             x = torch.nn.utils.rnn.pad_sequence(frames, batch_first=True)
             mask = torch.arange(x.shape[1])[None, :] < lengths[:, None]
-            logits, _, details = model(x, mask, return_details=True)
+            logits, _, details = model(x.to(device), mask.to(device), return_details=True)
             for j, i in enumerate(range(start, end)):
                 a, b = data['offsets'][i:i+2]
-                values[a:b] = details['vad'][j, :b-a].numpy()
-            outputs[start:end] = logits.softmax(-1).numpy()
+                values[a:b] = details['vad'][j, :b-a].cpu().numpy()
+            outputs[start:end] = logits.softmax(-1).cpu().numpy()
             if start % 512 == 0:
                 log('infer_vad', completed=end, total=len(data['ids']), seconds=time.monotonic()-started)
     if not np.isfinite(values).all() or (np.abs(values) > 1).any():
@@ -92,11 +93,12 @@ def saved_vad(data, source, split):
 def head_prediction(model, values, offsets, torch):
     """Preserve the baseline's per-scene LayerNorm -> projection -> mean -> head."""
     hidden = np.empty((len(values), model.hidden_dim), np.float32)
+    device = next(model.parameters()).device
     with torch.inference_mode():
         for start in range(0, len(values), 2048):
-            hidden[start:start+2048] = model.projection(torch.from_numpy(np.array(values[start:start+2048], dtype=np.float32))).numpy()
+            hidden[start:start+2048] = model.projection(torch.from_numpy(np.array(values[start:start+2048], dtype=np.float32)).to(device)).cpu().numpy()
         pooled = clip_mean(hidden, offsets).astype(np.float32)
-        q = model.head(torch.from_numpy(pooled)).softmax(-1).numpy()
+        q = model.head(torch.from_numpy(pooled).to(device)).softmax(-1).cpu().numpy()
     return q
 
 
@@ -133,6 +135,7 @@ def run(args):
     code = verify_code(Path(__file__).resolve().parents[1])
     torch.set_num_threads(min(8, int(os.environ.get('SLURM_CPUS_PER_TASK', 4))))
     torch.manual_seed(args.seed)
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     out = args.out
     if out.exists() and any(out.iterdir()):
         raise FileExistsError(f'Refusing to overwrite {out}')
@@ -145,6 +148,7 @@ def run(args):
     cache = Path(json.loads((source / 'feature_cache.json').read_text())['path'])
     assert cache == Path(json.loads((baseline / 'feature_cache.json').read_text())['path'])
     environment = {p: importlib.metadata.version(p) for p in ['torch', 'numpy', 'scikit-learn', 'scipy']}
+    environment['device'] = device
     provenance = dict(seed=args.seed, smoke=args.smoke, slurm_job_id=os.environ['SLURM_JOB_ID'], code=code,
                       packages=environment, source_run=str(source), baseline_run=str(baseline),
                       source_checkpoint_sha256=sha(source / 'best.pt'), baseline_checkpoint_sha256=sha(baseline / 'best.pt'),
@@ -156,9 +160,11 @@ def run(args):
     state = torch.load(source / 'best.pt', map_location='cpu', weights_only=True)
     assert state['config'] == cfg
     trajectory.load_state_dict(state['model'])
+    trajectory.to(device)
     base_cfg = yaml.safe_load((baseline / 'config.yaml').read_text())
     dino = ReactionPredictor(**base_cfg['model']).eval()
     dino.load_state_dict(torch.load(baseline / 'best.pt', map_location='cpu', weights_only=True)['model'])
+    dino.to(device)
     train = load_split(root, cache, 'train', cfg, args.smoke)
     val = load_split(root, cache, 'val', cfg, args.smoke)
     assert not set(train['ids']) & set(val['ids'])

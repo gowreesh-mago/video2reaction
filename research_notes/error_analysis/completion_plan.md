@@ -57,6 +57,6 @@ On 21 October, the [lab's Hugging Face account](https://huggingface.co/infofusio
 
 ## Runtime and storage
 
-The shared uv PyTorch 2.8.0 environment fails because `torch/bin/torch_shm_manager` is absent. Use a separate uv environment at `envs/projection-cpu-20261021`; preserve the existing environment and checkpoints. Cached DINO inputs make a CPU run practical. Slurm jobs have a two-hour wall limit, and the smoke test has a shorter override. Jobs run independently of the Mac after submission. Scheduler delays remain outside our control.
+The shared uv PyTorch 2.8.0 environment fails because `torch/bin/torch_shm_manager` is absent. A separate uv CPU environment was created for checking the code. The first CPU submission was rejected because the account has no CPU-product budget. The three-video smoke test was accepted on the funded `gpu_mig` partition as job `28448175`. A separate CUDA environment, `envs/projection-gpu-20261021`, will accelerate the full runs on that partition. Preserve the existing environment and checkpoints. Full jobs have a one-hour wall limit, and smoke tests have a 20-minute override. Jobs run independently of the Mac after submission. Scheduler delays remain outside our control.
 
 All full feature arrays and train/validation coordinate exports stay on Snellius. Only plots, reports, selected model parameters, compact prediction arrays, logs and manifests are synchronized to the Mac.
