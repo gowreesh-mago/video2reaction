@@ -100,8 +100,8 @@ def main(args):
     fig.savefig(figures/'reaction_scores.png', dpi=180); fig.savefig(figures/'reaction_scores.pdf'); plt.close(fig)
     methods = [n for n in NAMES if n != 'original_vad']
     fig, axes = plt.subplots(1, 2, figsize=(12, 4.6), constrained_layout=True)
-    for ax, metric, title in [(axes[0], 'r2_vs_train_mean', 'Reconstruction: explained error reduction'),
-                              (axes[1], 'centered_cosine', 'Cosine after subtracting training mean')]:
+    for ax, metric, title in [(axes[0], 'r2_vs_train_mean', 'Reconstruction:\nexplained error reduction'),
+                              (axes[1], 'centered_cosine', 'Cosine after subtracting\nthe training mean')]:
         ax.barh(np.arange(len(methods)), [summary[n]['reconstruction'][metric] for n in methods], color='#3b7c6a')
         ax.set_yticks(np.arange(len(methods)), [NAMES[n] for n in methods]); ax.invert_yaxis(); ax.set_title(title); ax.axvline(0,color='black',lw=.7)
     fig.savefig(figures/'reconstruction.png', dpi=180); fig.savefig(figures/'reconstruction.pdf'); plt.close(fig)
@@ -191,7 +191,7 @@ def main(args):
 Can the three learned valence, arousal and dominance coordinates retain enough visual information to recover useful DINO embeddings?
 ''' + conclusion.replace('_',r'\_') + r'''
 \section{Execution and model details}
-The three-video smoke test was Snellius job 28448335. The full seed jobs were 28448337\_0, 28448337\_1 and 28448337\_2, for seeds 42, 43 and 44. All completed with exit code 0:0 on 22 October 2026. They used frozen source commit \texttt{81b34098f278}, H100 allocations and an isolated uv environment with PyTorch 2.8.0 and NumPy 2.2.6. The official splits contain 7,243 training, 1,035 validation and 2,070 test clips.
+Snellius job 28448335 ran the three-video smoke test. Array 28448337 ran seeds 42, 43 and 44 in tasks 0, 1 and 2, respectively. All completed with exit code 0:0 on 22 October 2026. They used frozen source commit \texttt{81b34098f278}, H100 allocations and an isolated uv environment with PyTorch 2.8.0 and NumPy 2.2.6. The official splits contain 7,243 training, 1,035 validation and 2,070 test clips.
 
 The cached visual encoder is DINOv2-base: each scene keyframe has a 768-dimensional visual feature. The existing VAD model projects this to 128 dimensions and applies two Transformer layers, with four attention heads per layer. This lets each scene use context from other scenes. A small nonlinear output layer produces three coordinates in $[-1,1]$. They were learned from video-level reaction labels with fixed NRC emotion coordinates, not from observed scene-level emotion labels. The original VAD predictor additionally uses scene relevance and duration to combine reaction probabilities.
 
