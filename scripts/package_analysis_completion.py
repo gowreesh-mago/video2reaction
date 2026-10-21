@@ -23,6 +23,7 @@ def main(args):
     for name in ['video2reaction_error_analysis.pdf','video2reaction_trajectory_report.pdf','video2reaction_trajectory_report_source.zip']:
         shutil.copy2(root/'output/pdf'/name,reports/name)
     shutil.copy2(root/'research_notes/error_analysis/completion_plan.md',out/'EXPERIMENT_PLAN.md')
+    shutil.copy2(root/'research_notes/error_analysis/projection_review.md',out/'HYPOTHESIS_REVIEW.md')
     launch=root/'research_notes/error_analysis/projection_launch.json'
     if launch.exists(): shutil.copy2(launch,out/'launch_record.json')
     summary_path=out/'03_vad_to_dino/summary/summary.json'
@@ -67,7 +68,7 @@ table{border-collapse:collapse;width:100%;background:white}td,th{padding:13px 16
 <p>One folder for the previous-run analysis, interactive video examples, and the new VAD-to-DINO experiment.</p><div class="grid">'''+content+'''</div>
 <h2>Requested work</h2><table><thead><tr><th>Item</th><th>Status</th></tr></thead><tbody>'''+table+'''</tbody></table>
 <p class="note"><strong>Paper-model comparison:</strong> the fine-tuned checkpoint or per-video predictions are still missing. Our visual-description model is a separate baseline. No paired comparison is claimed.</p>
-<p><a href="EXPERIMENT_PLAN.md">Experiment design</a> · <a href="README.md">Folder guide</a> · <a href="STATUS.md">Markdown checklist</a> · <a href="01_previous_run_analysis/analysis.json">Previous results JSON</a></p>
+<p><a href="EXPERIMENT_PLAN.md">Experiment design</a> · <a href="HYPOTHESIS_REVIEW.md">Hypothesis and code review</a> · <a href="README.md">Folder guide</a> · <a href="STATUS.md">Markdown checklist</a> · <a href="01_previous_run_analysis/analysis.json">Previous results JSON</a></p>
 <footer>Updated '''+html.escape(now)+'''. Full videos, the dataset, and complete DINO feature arrays remain on Snellius.</footer></main></html>'''
     (out/'index.html').write_text(page)
     manifest=[]

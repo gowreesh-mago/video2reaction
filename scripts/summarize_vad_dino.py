@@ -10,6 +10,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
+from matplotlib.patches import FancyBboxPatch
 import plotly.graph_objects as go
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
@@ -68,6 +69,20 @@ def main(args):
     dump(out / 'status.json', {'status': report['status'], 'completed_seeds': sorted(runs), 'missing_seeds': missing})
     figures = out / 'figures'; figures.mkdir(exist_ok=True)
     plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False})
+    fig, ax = plt.subplots(figsize=(12, 2.7), constrained_layout=True)
+    ax.set(xlim=(0, 12), ylim=(0, 2.6)); ax.axis('off')
+    boxes = [('Scene DINO\n768 values', '#e5eff5'), ('Frozen trajectory\nmodel: 3 VAD values', '#e5eff5'),
+             ('Learned reverse map\n768 DINO values', '#f6dfcf'), ('Frozen DINO\nreaction head', '#e5eff5'),
+             ('21 reaction\nprobabilities', '#e4f1e9')]
+    for i,(label,color) in enumerate(boxes):
+        x0 = .05 + 2.4*i
+        ax.add_patch(FancyBboxPatch((x0,.95),2.05,1.0,boxstyle='round,pad=.05',facecolor=color,edgecolor='#466273'))
+        ax.text(x0+1.025,1.45,label,ha='center',va='center',fontsize=10)
+        if i<4: ax.annotate('',xy=(x0+2.35,1.45),xytext=(x0+2.08,1.45),arrowprops={'arrowstyle':'->','color':'#466273'})
+    ax.text(6,2.35,'VAD-to-DINO experiment: scene reconstruction followed by reaction prediction',ha='center',weight='bold',fontsize=12)
+    ax.text(6,.45,'Only the reverse map is fitted. Training DINO features are its targets; validation error selects its parameters.',ha='center',fontsize=10)
+    ax.text(6,.10,'At test time, inputs are visual. The original DINO prediction path and component bottlenecks are controls.',ha='center',fontsize=10)
+    fig.savefig(figures/'method_schematic.png',dpi=180);fig.savefig(figures/'method_schematic.pdf');fig.savefig(figures/'method_schematic.svg');plt.close(fig)
     labels = [NAMES[n] for n in NAMES]
     x = np.arange(len(labels))
     fig, axes = plt.subplots(1, 2, figsize=(12, 5), constrained_layout=True)
@@ -158,6 +173,7 @@ def main(args):
 Can the three learned valence, arousal and dominance coordinates retain enough visual information to recover useful DINO embeddings?
 ''' + conclusion.replace('_',r'\_') + r'''
 \section{Experiment}
+\includegraphics[width=\textwidth]{figures/method_schematic.png}
 Each saved visual trajectory model maps scene DINO features to three VAD coordinates. We freeze it and learn the reverse mapping to 768 DINO dimensions. The mappings are linear ridge regression, quadratic ridge regression, and radial-basis ridge regression. Radial basis functions respond to coordinates near 128 training centers. Ridge regularization limits coefficient magnitude.
 
 We use up to eight evenly spaced scenes per training clip, with equal total clip weight. Training data alone determine normalization, centers and coefficients. Validation reconstruction mean squared error selects ridge strength from 0.0001, 0.01 and 1.0, and radial-basis bandwidth from 0.5, 1 and 2. All selections are frozen before test evaluation. The three existing paired checkpoint seeds are 42, 43 and 44.
@@ -198,14 +214,14 @@ The exact paired comparison with the paper's fine-tuned LLaVA or Qwen model is b
         for paragraph in paragraphs:
             text='\n'.join(textwrap.wrap(paragraph,90));fig.text(.09,y,text,fontsize=11,va='top',linespacing=1.5);y-=.027*(text.count('\n')+1)+.05
         pdf.savefig(fig);plt.close(fig)
-        for name in ['reaction_scores','reconstruction','distribution_differences']:
+        for name in ['method_schematic','reaction_scores','reconstruction','distribution_differences']:
             fig,ax=plt.subplots(figsize=(11.69,8.27));ax.imshow(plt.imread(figures/(name+'.png')));ax.axis('off');pdf.savefig(fig,bbox_inches='tight');plt.close(fig)
     (out/'index.html').write_text('<!doctype html><meta charset="utf-8"><title>VAD to DINO results</title>'
         '<style>body{max-width:1050px;margin:40px auto;font:17px/1.6 system-ui;padding:0 20px;color:#193244}img{width:100%}a{color:#05668d}</style>'
         '<h1>VAD to DINO: results</h1><p>'+html.escape(conclusion)+'</p>'
         '<p><a href="projection_report.pdf">PDF report</a> · <a href="projection_report.tex">LaTeX source</a> · '
         '<a href="projection_3d.html">Interactive 3D plot</a> · <a href="all_seed_metrics.csv">All metrics</a> · '
-        '<a href="summary.json">JSON results</a></p>' + ''.join(f'<img src="figures/{n}.png" alt="{n}">' for n in ['reaction_scores','reconstruction','distribution_differences']) +
+        '<a href="summary.json">JSON results</a></p>' + ''.join(f'<img src="figures/{n}.png" alt="{n}">' for n in ['method_schematic','reaction_scores','reconstruction','distribution_differences']) +
         '<h2>Paper-model comparison</h2><p>The exact paired comparison requires the paper’s fine-tuned predictions or checkpoint. It remains missing.</p>')
     print(json.dumps({'status':report['status'],'selected':chosen,'output':str(out)}),flush=True)
 

@@ -13,7 +13,7 @@ Local delivery folder: `outputs/analysis/2026-10-21-completion/`.
 - [x] Confirm missing experiment: actual VAD-to-DINO reconstruction.
 - [x] Implement projection experiment and controls with validation-only parameter selection.
 - [x] Pass 12 local numerical tests.
-- [ ] Pass the three-video cluster smoke test (28448335).
+- [x] Pass the three-video cluster smoke test (28448335): all mappings, original-prediction reproduction, metrics and exports completed.
 - [x] Queue three paired seeds (42, 43, 44): 28448337_0, 28448337_1, 28448337_2, dependent on smoke success.
 - [ ] Finish all jobs, review results, create plots, and synchronize compact outputs locally.
 - [ ] Consolidate the previous plots/reports and new results in the delivery folder.
@@ -49,6 +49,12 @@ This is 24 candidate fits per seed, 72 in total, producing 12 selected decoders 
 Report reconstruction mean squared error, explained error reduction relative to the training-mean predictor, cosine similarity both before and after subtracting the training mean, and within-test clip retrieval. Raw cosine alone can be misleading if features share a large common mean.
 
 Pass reconstructed scenes through the **unchanged original DINO head**, including its per-scene layer normalization and projection before pooling. Report all eleven benchmark metrics, each emotion's error/support, rare-reaction mass and recall, per-video errors, and movie-cluster bootstrap intervals for paired KL differences. No new reaction head is fitted, so failure can reflect both lost information and incompatibility with the frozen head. Success would support information retention, not a causal interpretation of scene emotion or comment attribution.
+
+## Direct projected-emotion decoder (added before inspecting full test scores)
+
+The reverse map can also place the 21 fixed NRC emotion coordinates into DINO space. A complementary experiment tests that use directly: compare each original scene DINO feature with these projected emotion anchors, convert distances to probabilities, and average those probabilities across scenes. This uses no trained reaction classifier.
+
+Evaluate the four fitted maps (including the shuffled control), two distances (mean squared distance and cosine distance after subtracting the training DINO mean), and uniform or actual-duration pooling. Select temperature from 0.003, 0.01, 0.03, 0.1, 0.3, 1 and 3 using validation KL. Freeze temperature and the preferred non-shuffled model before test scoring. This produces 16 variants per seed, 48 across three seeds; temperature candidates are calibration choices, not independent results. Record which fixed emotion points fall outside the learned training VAD bounding box, since applying the reverse map there requires extrapolation. All eleven metrics and rare-class diagnostics are retained.
 
 ## Paper comparison dependency
 

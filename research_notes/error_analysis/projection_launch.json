@@ -20,5 +20,11 @@
     "42": "28448337_0",
     "43": "28448337_1",
     "44": "28448337_2"
-  }
+  },
+  "smoke_status": "COMPLETED",
+  "smoke_exit_code": "0:0",
+  "smoke_elapsed": "00:08:09",
+  "smoke_validation_max_abs_difference": 7.450580596923828e-08,
+  "seeds_last_observed_status": "RUNNING",
+  "seeds_started_amsterdam": "2026-10-22T00:09:45+02:00"
 }
