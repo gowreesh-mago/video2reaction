@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #SBATCH --job-name=v2r-vad-dino
 #SBATCH --account=gusr133332
-#SBATCH --partition=gpu_mig,gpu_a100,gpu_h100
+#SBATCH --partition=gpu_h100
 #SBATCH --gpus=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32G

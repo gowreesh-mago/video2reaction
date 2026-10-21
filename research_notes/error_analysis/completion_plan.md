@@ -12,8 +12,9 @@ Local delivery folder: `outputs/analysis/2026-10-21-completion/`.
 - [x] Check Snellius access and account `gusr133332`; no jobs running at the initial check.
 - [x] Confirm missing experiment: actual VAD-to-DINO reconstruction.
 - [x] Implement projection experiment and controls with validation-only parameter selection.
-- [ ] Pass local numerical tests and a three-video cluster smoke test.
-- [ ] Launch three paired seeds (42, 43, 44) and record Slurm IDs.
+- [x] Pass 12 local numerical tests.
+- [ ] Pass the three-video cluster smoke test (28448335).
+- [x] Queue three paired seeds (42, 43, 44): 28448337_0, 28448337_1, 28448337_2, dependent on smoke success.
 - [ ] Finish all jobs, review results, create plots, and synchronize compact outputs locally.
 - [ ] Consolidate the previous plots/reports and new results in the delivery folder.
 - [ ] Exact paired comparison with the paper's fine-tuned model: **blocked by missing predictions/checkpoint**.
@@ -57,6 +58,6 @@ On 21 October, the [lab's Hugging Face account](https://huggingface.co/infofusio
 
 ## Runtime and storage
 
-The shared uv PyTorch 2.8.0 environment fails because `torch/bin/torch_shm_manager` is absent. A separate uv CPU environment was created for checking the code. The first CPU submission was rejected because the account has no CPU-product budget. The three-video smoke test was accepted on the funded `gpu_mig` partition as job `28448175`. A separate CUDA environment, `envs/projection-gpu-20261021`, will accelerate the full runs on that partition. Preserve the existing environment and checkpoints. Full jobs have a one-hour wall limit, and smoke tests have a 20-minute override. Jobs run independently of the Mac after submission. Scheduler delays remain outside our control.
+The shared uv PyTorch 2.8.0 environment fails because `torch/bin/torch_shm_manager` is absent. A separate uv CPU environment was created for checking the code. The first CPU submission was rejected because the account has no CPU-product budget. The first three-video smoke test was accepted on the funded `gpu_mig` partition as job `28448175`, then cancelled while pending. The CUDA smoke is `28448335`; the dependent three-seed array is `28448337`, on `gpu_h100`. H100 had the earliest tested start estimate. Shared jobs cannot combine the MIG, A100 and H100 partitions, so the submitted command explicitly selects H100. A separate CUDA environment, `envs/projection-gpu-20261021`, accelerates the full runs on H100. Preserve the existing environment and checkpoints. Full jobs have a one-hour wall limit, and smoke tests have a 20-minute override. Jobs run independently of the Mac after submission. Scheduler delays remain outside our control.
 
 All full feature arrays and train/validation coordinate exports stay on Snellius. Only plots, reports, selected model parameters, compact prediction arrays, logs and manifests are synchronized to the Mac.

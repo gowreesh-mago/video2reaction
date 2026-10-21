@@ -519,3 +519,18 @@ sacct -j 27382205,27382293,27382294,27382295,27382296,27382297 --format=JobIDRaw
 source configs/clusters/snellius.env
 python3 scripts/collect_results.py --reconcile
 ```
+
+## 22 October: finish requested analysis and VAD-to-DINO experiment
+
+Deadline: **22 October, 06:00 Europe/Amsterdam**. [Plan](error_analysis/completion_plan.md) · [Launch record](error_analysis/projection_launch.json) · [Local output folder](../outputs/analysis/2026-10-21-completion/index.html).
+
+- [x] Consolidated prior plots, 308-run metric analysis, rare-reaction diagnostics, reports and video explorers locally.
+- [x] Implemented linear, quadratic and radial-basis VAD-to-DINO mappings plus shuffled-pair and DINO component controls.
+- [x] Twelve local numerical checks passed.
+- [x] Code committed/pushed; isolated uv CUDA environment created on Snellius.
+- [x] Submitted smoke **28448335** and dependent seeds **28448337_0, 28448337_1, 28448337_2** on `gpu_h100`.
+- [ ] Confirm smoke success and all three completed seeds.
+- [ ] Review and synchronize new results, plots, LaTeX/PDF supplement and checksums.
+- [ ] Exact paired paper-model comparison: **blocked on missing fine-tuned checkpoint/per-video predictions**. Public model account and cluster project searches found none; the cached base Qwen model is not the fine-tuned model.
+
+Each full job has a one-hour wall limit and a 05:40 Amsterdam deadline. The final completed seed automatically generates the summary. CPU partition submission was rejected for absent CPU-product budget. Pending MIG smoke 28448175 was cancelled before execution; H100 was selected after checking individual funded partition start estimates. Mixed shared GPU partitions are unsupported, so actual submissions explicitly use H100. No full dataset or full feature arrays are copied to the Mac.

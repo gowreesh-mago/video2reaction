@@ -1,0 +1,24 @@
+{
+  "submitted_at": "2026-10-21T22:01:28.962063+00:00",
+  "source_commit": "81b34098f278",
+  "release": "/scratch-shared/gmago/video2reaction/releases/81b34098f278-vad-dino",
+  "environment": "/scratch-shared/gmago/video2reaction/envs/projection-gpu-20261021",
+  "smoke_job": "28448335",
+  "partition": "gpu_h100",
+  "account": "gusr133332",
+  "smoke_clips": 3,
+  "array_wall_limit": "01:00:00",
+  "completion_deadline_amsterdam": "2026-10-22T05:40:00+02:00",
+  "requested_delivery_deadline_amsterdam": "2026-10-22T06:00:00+02:00",
+  "dependency": "afterok:28448335",
+  "old_cpu_smoke_job": "28448175",
+  "old_cpu_smoke_cancelled_while_pending": true,
+  "automatic_summary_after_all_seeds": true,
+  "output_root": "/scratch-shared/gmago/video2reaction/reports/2026-10-21-completion/projection",
+  "array_job": "28448337",
+  "seed_jobs": {
+    "42": "28448337_0",
+    "43": "28448337_1",
+    "44": "28448337_2"
+  }
+}

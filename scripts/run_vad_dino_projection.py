@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from scripts.analyze_previous_runs import sha, dump, write_csv, diagnostic, sample_metrics, clustered_interval
 from src.experiments.data import target_distribution
 from src.experiments.taxonomy import REACTION_CLASSES
+from src.experiments.registry import atomic_json
 from src.experiments.vad_dino import Basis, RidgeMap, scene_sample, reconstruction_metrics, clip_mean, retrieval
 
 RUNS = {42: ('27685259', '27682150'), 43: ('27685364', '27682169'), 44: ('27685447', '27682189')}
@@ -263,7 +264,7 @@ def run(args):
             'Feature fitting uses at most eight evenly sampled scenes per training clip; test uses every scene.',
             'Training coordinates are in-sample predictions of the original model; validation/test are held out.',
             'The original benchmark split may share movies; intervals resample movies to respect clustering.'])
-    dump(out / 'results.json', summary)
+    atomic_json(out / 'results.json', summary)
     log('completed', seconds=summary['elapsed_seconds'], output=str(out))
 
 
