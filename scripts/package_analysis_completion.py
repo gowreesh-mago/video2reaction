@@ -24,6 +24,11 @@ def main(args):
         shutil.copy2(root/'output/pdf'/name,reports/name)
     shutil.copy2(root/'research_notes/error_analysis/completion_plan.md',out/'EXPERIMENT_PLAN.md')
     shutil.copy2(root/'research_notes/error_analysis/projection_review.md',out/'HYPOTHESIS_REVIEW.md')
+    results_note=root/'research_notes/error_analysis/projection_results.md'
+    if results_note.exists():
+        text=results_note.read_text().replace('../../outputs/analysis/2026-10-21-completion/','').replace(
+            '../../output/pdf/video2reaction_vad_dino_supplement.pdf','05_reports/video2reaction_vad_dino_supplement.pdf')
+        (out/'RESULTS.md').write_text(text)
     launch=root/'research_notes/error_analysis/projection_launch.json'
     if launch.exists(): shutil.copy2(launch,out/'launch_record.json')
     summary_path=out/'03_vad_to_dino/summary/summary.json'
@@ -73,7 +78,7 @@ table{border-collapse:collapse;width:100%;background:white}td,th{padding:13px 16
     (out/'index.html').write_text(page)
     manifest=[]
     for path in sorted(out.rglob('*')):
-        if not path.is_file() or path.name in {'manifest.json','manifest.sha256'}:continue
+        if not path.is_file() or path in {out/'manifest.json',out/'delivery_verified.json'}:continue
         digest=hashlib.sha256()
         with path.open('rb') as f:
             for block in iter(lambda:f.read(8*1024*1024),b''):digest.update(block)

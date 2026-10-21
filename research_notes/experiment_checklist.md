@@ -526,11 +526,12 @@ Deadline: **22 October, 06:00 Europe/Amsterdam**. [Plan](error_analysis/completi
 
 - [x] Consolidated prior plots, 308-run metric analysis, rare-reaction diagnostics, reports and video explorers locally.
 - [x] Implemented linear, quadratic and radial-basis VAD-to-DINO mappings plus shuffled-pair and DINO component controls.
-- [x] Twelve local numerical checks passed.
+- [x] Twelve numerical checks passed locally and in the cluster smoke test; four additional targeted checks passed locally (16 total).
 - [x] Code committed/pushed; isolated uv CUDA environment created on Snellius.
 - [x] Submitted smoke **28448335** and dependent seeds **28448337_0, 28448337_1, 28448337_2** on `gpu_h100`.
-- [ ] Confirm smoke success and all three completed seeds.
-- [ ] Review and synchronize new results, plots, LaTeX/PDF supplement and checksums.
+- [x] Confirm smoke success: 28448335 completed end to end.
+- [x] All three seeds completed with exit 0:0; 2,070 test clips and 91,312 scenes per seed.
+- [x] Reviewed and synchronized results, plots, four-page LaTeX/PDF supplement and numerical verification. Final delivery checksums are recorded in the local folder.
 - [ ] Exact paired paper-model comparison: **blocked on missing fine-tuned checkpoint/per-video predictions**. Public model account and cluster project searches found none; the cached base Qwen model is not the fine-tuned model.
 
 Each full job has a one-hour wall limit and a 05:40 Amsterdam deadline. The final completed seed automatically generates the summary. CPU partition submission was rejected for absent CPU-product budget. Pending MIG smoke 28448175 was cancelled before execution; H100 was selected after checking individual funded partition start estimates. Mixed shared GPU partitions are unsupported, so actual submissions explicitly use H100. No full dataset or full feature arrays are copied to the Mac.

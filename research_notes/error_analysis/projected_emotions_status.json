@@ -1,0 +1,8 @@
+{
+  "status": "not_launched",
+  "reason": "Automatic approval review rejected submission as outside the clarified VAD-to-DINO reconstruction scope.",
+  "approval_requested": true,
+  "submitted_job_ids": [],
+  "prepared_source_commit": "a4723580e7b6",
+  "updated_at": "2026-10-21T22:19:29.448771+00:00"
+}

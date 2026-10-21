@@ -61,15 +61,21 @@ def main(args):
     val = {name: float(np.mean([r['selected'][name]['val_mse'] for r in runs.values()]))
            for name in ('vad_linear', 'vad_quadratic', 'vad_rbf')}
     chosen = min(val, key=val.get)
+    top3_sets = {}
+    for seed in sorted(runs):
+        with np.load(paths[seed]/'plot_arrays.npz',allow_pickle=False) as f:
+            q=f['prediction_'+chosen];classes=f['class_order']
+            sets=np.unique(np.sort(np.argsort(q,axis=1)[:,-3:],axis=1),axis=0)
+            top3_sets[str(seed)]=[[str(classes[i]) for i in row] for row in sets]
     report = {'status': 'incomplete' if missing else 'completed', 'seeds': sorted(runs),
               'missing_seeds': missing, 'selected_mapping_by_validation': chosen,
-              'mean_validation_reconstruction_mse': val, 'summary': summary,
+              'mean_validation_reconstruction_mse': val, 'summary': summary, 'preferred_mapping_top3_sets_by_seed':top3_sets,
               'paper_paired_comparison': 'blocked: no fine-tuned paper checkpoint or per-video predictions available'}
     dump(out / 'summary.json', report)
     dump(out / 'status.json', {'status': report['status'], 'completed_seeds': sorted(runs), 'missing_seeds': missing})
     figures = out / 'figures'; figures.mkdir(exist_ok=True)
-    plt.rcParams.update({'font.size': 10, 'axes.spines.top': False, 'axes.spines.right': False})
-    fig, ax = plt.subplots(figsize=(12, 2.7), constrained_layout=True)
+    plt.rcParams.update({'font.size': 13, 'axes.spines.top': False, 'axes.spines.right': False})
+    fig, ax = plt.subplots(figsize=(10, 2.7), constrained_layout=True)
     ax.set(xlim=(0, 12), ylim=(0, 2.6)); ax.axis('off')
     boxes = [('Scene DINO\n768 values', '#e5eff5'), ('Frozen trajectory\nmodel: 3 VAD values', '#e5eff5'),
              ('Learned reverse map\n768 DINO values', '#f6dfcf'), ('Frozen DINO\nreaction head', '#e5eff5'),
@@ -77,7 +83,7 @@ def main(args):
     for i,(label,color) in enumerate(boxes):
         x0 = .05 + 2.4*i
         ax.add_patch(FancyBboxPatch((x0,.95),2.05,1.0,boxstyle='round,pad=.05',facecolor=color,edgecolor='#466273'))
-        ax.text(x0+1.025,1.45,label,ha='center',va='center',fontsize=10)
+        ax.text(x0+1.025,1.45,label,ha='center',va='center',fontsize=11.5)
         if i<4: ax.annotate('',xy=(x0+2.35,1.45),xytext=(x0+2.08,1.45),arrowprops={'arrowstyle':'->','color':'#466273'})
     ax.text(6,2.35,'VAD-to-DINO experiment: scene reconstruction followed by reaction prediction',ha='center',weight='bold',fontsize=12)
     ax.text(6,.45,'Only the reverse map is fitted. Training DINO features are its targets; validation error selects its parameters.',ha='center',fontsize=10)
@@ -113,7 +119,7 @@ def main(args):
         axes[1].plot(ratio, '.-', label=NAMES[name])
     for ax in axes:
         ax.set_xticks(np.arange(len(classes)), classes, rotation=45, ha='right'); ax.grid(alpha=.2)
-    axes[0].set_title(f'Class means: representative seed {seed}'); axes[0].set_ylabel('Probability'); axes[0].legend(fontsize=8)
+    axes[0].set_title(f'Class means: representative seed {seed}'); axes[0].set_ylabel('Probability'); axes[0].legend(fontsize=11)
     axes[1].axhline(1,color='black',linestyle='--',label='Matches observed variation')
     axes[1].set_ylabel('Predicted / observed standard deviation'); axes[1].set_title('Does the model vary enough between clips?')
     fig.savefig(figures/'distribution_differences.png',dpi=180);fig.savefig(figures/'distribution_differences.pdf');plt.close(fig)
@@ -122,16 +128,22 @@ def main(args):
     dominant = arrays['target'].argmax(1)
     hover = [f'{sid}<br>Observed dominant reaction: {classes[c]}' for sid,c in zip(arrays['sample_id'],dominant)]
     graph = go.Figure()
-    graph.add_trace(go.Scatter3d(x=coords[:,0],y=coords[:,1],z=coords[:,2],mode='markers',name='Original video DINO mean',
-        marker={'size':3,'color':dominant,'colorscale':'Turbo','opacity':.55},text=hover,hovertemplate='%{text}<extra></extra>'))
-    graph.add_trace(go.Scatter3d(x=mapped[:,0],y=mapped[:,1],z=mapped[:,2],mode='markers',name='Reconstructed video DINO mean',
-        marker={'size':3,'color':dominant,'colorscale':'Turbo','symbol':'diamond'},text=hover,hovertemplate='%{text}<extra></extra>'))
-    graph.update_layout(title=f'VAD to DINO: actual and reconstructed video features, seed {seed}',
-        scene={'xaxis_title':'DINO component 1','yaxis_title':'DINO component 2','zaxis_title':'DINO component 3'},
-        annotations=[{'text':'Both point clouds use the same training-fitted DINO axes. Toggle traces with the legend.',
-                      'xref':'paper','yref':'paper','x':0,'y':0,'showarrow':False}],height=800)
+    graph.add_trace(go.Scatter3d(x=coords[:,0].tolist(),y=coords[:,1].tolist(),z=coords[:,2].tolist(),mode='markers',name='Original video DINO mean',
+        marker={'size':3,'color':dominant.tolist(),'colorscale':'Turbo','opacity':.55},text=hover,hovertemplate='%{text}<extra></extra>'))
+    graph.add_trace(go.Scatter3d(x=mapped[:,0].tolist(),y=mapped[:,1].tolist(),z=mapped[:,2].tolist(),mode='markers',name='Reconstructed video DINO mean',
+        marker={'size':3,'color':dominant.tolist(),'colorscale':'Turbo','symbol':'diamond'},text=hover,hovertemplate='%{text}<extra></extra>'))
+    graph.update_layout(title={'text':f'VAD to DINO: actual and reconstructed video features, seed {seed}<br>'
+        '<sup>Shared axes fitted on sampled training scenes; points are video means. Toggle traces with the legend.</sup>'},
+        scene={'xaxis_title':'DINO component 1','yaxis_title':'DINO component 2','zaxis_title':'DINO component 3'},height=800)
     graph.write_html(out/'projection_3d.html',include_plotlyjs=True,full_html=True)
     best = summary[chosen]; original = summary['original_dino']
+    rare_note=(f"The six training-defined rare reactions carry {100*best['rare_target_mass']:.4f}% of observed probability. "
+               f"Original DINO predicts {100*original['rare_predicted_mass']:.4f}%; the selected reconstruction predicts "
+               f"{100*best['rare_predicted_mass']:.4f}%. Clark distance improves from "
+               f"{original['metrics']['clark']['mean']:.4f} to {best['metrics']['clark']['mean']:.4f}, while KL and dominant-reaction F1 worsen. "
+               "A better Clark score alone does not establish better rare-reaction prediction.")
+    if all(len(v)==1 for v in top3_sets.values()) and len({tuple(v[0]) for v in top3_sets.values()})==1:
+        rare_note += ' Every test clip has the same three highest-ranked reactions in every seed: '+', '.join(next(iter(top3_sets.values()))[0])+'.'
     conclusion = (f"The validation-selected mapping is {NAMES[chosen]}. Its three-seed mean test reconstruction "
                   f"explained error reduction is {best['reconstruction']['r2_vs_train_mean']:.4f}. "
                   f"The frozen DINO reaction head gives KL {best['metrics']['kl']['mean']:.4f}, compared with "
@@ -144,7 +156,7 @@ def main(args):
         r2 = s['reconstruction'].get('r2_vs_train_mean')
         lines.append(f"| {NAMES[n]} | {s['metrics']['kl']['mean']:.4f} | {s['metrics']['f1_top1']['mean']:.4f} | {r2:.4f} |" if r2 is not None else
                      f"| {NAMES[n]} | {s['metrics']['kl']['mean']:.4f} | {s['metrics']['f1_top1']['mean']:.4f} | n/a |")
-    lines += ['', '## What was tested', '',
+    lines += ['', '## Rare reactions and ranking collapse', '', rare_note, '', '## What was tested', '',
               'Three learned scene VAD coordinates were mapped to 768 DINO dimensions using linear, quadratic and radial-basis ridge regression. '
               'A shuffled-clip control breaks the training relationship between VAD and visual features. Models use at most eight scenes per training clip. '
               'Validation reconstruction error selects hyperparameters. Every test scene is evaluated after choices are frozen.', '',
@@ -164,6 +176,12 @@ def main(args):
     (out/'README.md').write_text('\n'.join(lines)+'\n')
     # LaTeX source stays editable and builds independently from these local figures.
     tex_rows = '\n'.join(NAMES[n].replace('&',r'\&') + f" & {s['metrics']['kl']['mean']:.4f} & {s['metrics']['f1_top1']['mean']:.4f}" + r'\\' for n,s in summary.items())
+    metric_names={'chebyshev':r'Largest class error $\downarrow$', 'kl':r'KL divergence $\downarrow$',
+        'clark':r'Clark distance $\downarrow$', 'cad':r'Cumulative absolute distance $\downarrow$',
+        'cosine':r'Cosine similarity $\uparrow$', 'intersection':r'Probability overlap $\uparrow$',
+        'mrr':r'Mean reciprocal rank $\uparrow$', 'tpe':r'Top-reaction probability error $\downarrow$',
+        'f1_top1':r'Weighted Top-1 F1 $\uparrow$', 'f1_top2':r'Weighted Top-2 F1 $\uparrow$', 'f1_top3':r'Weighted Top-3 F1 $\uparrow$'}
+    metric_rows='\n'.join(label+' & '+' & '.join(f"{summary[n]['metrics'][metric]['mean']:.4f}" for n in ['original_dino',chosen,'original_vad'])+r'\\' for metric,label in metric_names.items())
     tex = r'''\documentclass[11pt,a4paper]{article}
 \usepackage[margin=22mm]{geometry}\usepackage{graphicx,booktabs,hyperref}
 \title{VAD to DINO: Reconstruction and Reaction Prediction}
@@ -172,8 +190,15 @@ def main(args):
 \section{Question and result}
 Can the three learned valence, arousal and dominance coordinates retain enough visual information to recover useful DINO embeddings?
 ''' + conclusion.replace('_',r'\_') + r'''
+\section{Execution and model details}
+The three-video smoke test was Snellius job 28448335. The full seed jobs were 28448337\_0, 28448337\_1 and 28448337\_2, for seeds 42, 43 and 44. All completed with exit code 0:0 on 22 October 2026. They used frozen source commit \texttt{81b34098f278}, H100 allocations and an isolated uv environment with PyTorch 2.8.0 and NumPy 2.2.6. The official splits contain 7,243 training, 1,035 validation and 2,070 test clips.
+
+The cached visual encoder is DINOv2-base: each scene keyframe has a 768-dimensional visual feature. The existing VAD model projects this to 128 dimensions and applies two Transformer layers, with four attention heads per layer. This lets each scene use context from other scenes. A small nonlinear output layer produces three coordinates in $[-1,1]$. They were learned from video-level reaction labels with fixed NRC emotion coordinates, not from observed scene-level emotion labels. The original VAD predictor additionally uses scene relevance and duration to combine reaction probabilities.
+
+The separate DINO baseline applies layer normalization to each 768-dimensional scene feature, maps it linearly to 128 dimensions, averages the scene representations, and applies a 128-unit hidden layer with a GELU activation followed by 21 output logits and a softmax. This entire predictor stays frozen when evaluating reconstructed features.
+
 \section{Experiment}
-\includegraphics[width=\textwidth]{figures/method_schematic.png}
+\includegraphics[width=\textwidth]{figures/method_schematic.pdf}
 Each saved visual trajectory model maps scene DINO features to three VAD coordinates. We freeze it and learn the reverse mapping to 768 DINO dimensions. The mappings are linear ridge regression, quadratic ridge regression, and radial-basis ridge regression. Radial basis functions respond to coordinates near 128 training centers. Ridge regularization limits coefficient magnitude.
 
 We use up to eight evenly spaced scenes per training clip, with equal total clip weight. Training data alone determine normalization, centers and coefficients. Validation reconstruction mean squared error selects ridge strength from 0.0001, 0.01 and 1.0, and radial-basis bandwidth from 0.5, 1 and 2. All selections are frozen before test evaluation. The three existing paired checkpoint seeds are 42, 43 and 44.
@@ -184,11 +209,19 @@ The controls are the training-mean feature, DINO reconstruction through three or
 Reconstructed scene features are passed through the unchanged DINO predictor: scene layer normalization, a linear projection, mean pooling, then its nonlinear reaction classifier. We do not train a new reaction head. KL measures distribution mismatch and lower is better. Top-1 F1 combines precision and recall for the dominant reaction and higher is better.
 \begin{center}\begin{tabular}{lrr}\toprule Method & Mean KL & Mean Top-1 F1\\\midrule
 ''' + tex_rows + r'''\bottomrule\end{tabular}\end{center}
-\includegraphics[width=\textwidth]{figures/reaction_scores.png}
+\includegraphics[width=\textwidth]{figures/reaction_scores.pdf}
 \section{Reconstruction and distribution diagnostics}
 Explained error reduction is one minus reconstruction error divided by the error of predicting the training-mean feature. It can be negative. Both errors average scenes within clips, then average clips. Centered cosine subtracts the training mean so a common feature offset cannot dominate similarity. Three-seed error bars show standard deviation, not confidence intervals.
-\includegraphics[width=\textwidth]{figures/reconstruction.png}
-\includegraphics[width=\textwidth]{figures/distribution_differences.png}
+\includegraphics[width=\textwidth]{figures/reconstruction.pdf}
+\includegraphics[width=\textwidth]{figures/distribution_differences.pdf}
+\section{All metrics and rare reactions}
+\begin{center}\small\begin{tabular}{lrrr}\toprule Metric & DINO & Reconstructed & Original VAD\\\midrule
+''' + metric_rows + r'''\bottomrule\end{tabular}\end{center}
+KL penalizes missing target probability. Largest class error measures the worst class discrepancy. Clark distance measures relative errors; the implementation adds $10^{-8}$ to its squared denominator. Cumulative absolute distance compares cumulative probabilities in the fixed taxonomy order. Cosine compares distribution direction, and probability overlap sums the shared mass. Mean reciprocal rank rewards placing the true dominant reaction near the top. Top-reaction probability error measures its probability mismatch. Weighted Top-$k$ F1 combines precision and recall for the selected $k$ reactions, weighted by their target support.
+
+''' + rare_note.replace('%',r'\%') + r'''
+
+In this implementation, very small predictions on absent classes contribute little to Clark distance because of its denominator constant. That can coexist with severe underprediction when a rare reaction is present. The per-class support and probability errors therefore matter alongside the aggregate score.
 \section{Interpretation and limits}
 This experiment tests information retained by learned VAD coordinates and compatibility with a frozen DINO head. A reverse mapping cannot create information absent from its input. Poor results can reflect information loss, a limited mapping family, or a mismatch with the frozen reaction head; they do not rule out every VAD method. No scene-level ground truth verifies the emotional interpretation of the coordinates. The original VAD model's training coordinates are in-sample; validation and test remain held out for the new decoder.
 
@@ -218,7 +251,7 @@ The exact paired comparison with the paper's fine-tuned LLaVA or Qwen model is b
             fig,ax=plt.subplots(figsize=(11.69,8.27));ax.imshow(plt.imread(figures/(name+'.png')));ax.axis('off');pdf.savefig(fig,bbox_inches='tight');plt.close(fig)
     (out/'index.html').write_text('<!doctype html><meta charset="utf-8"><title>VAD to DINO results</title>'
         '<style>body{max-width:1050px;margin:40px auto;font:17px/1.6 system-ui;padding:0 20px;color:#193244}img{width:100%}a{color:#05668d}</style>'
-        '<h1>VAD to DINO: results</h1><p>'+html.escape(conclusion)+'</p>'
+        '<h1>VAD to DINO: results</h1><p>'+html.escape(conclusion)+'</p><p>'+html.escape(rare_note)+'</p>'
         '<p><a href="projection_report.pdf">PDF report</a> · <a href="projection_report.tex">LaTeX source</a> · '
         '<a href="projection_3d.html">Interactive 3D plot</a> · <a href="all_seed_metrics.csv">All metrics</a> · '
         '<a href="summary.json">JSON results</a></p>' + ''.join(f'<img src="figures/{n}.png" alt="{n}">' for n in ['method_schematic','reaction_scores','reconstruction','distribution_differences']) +
